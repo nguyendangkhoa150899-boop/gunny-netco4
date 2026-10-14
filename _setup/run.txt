@@ -1,0 +1,92 @@
+========================================================================
+ GUNNY92 — HUONG DAN DUNG SERVER TEST (VPS Windows Server 2019, 12 tieng)
+========================================================================
+
+SU THAT TRUOC KHI BAT DAU:
+- May thue theo gio het han la XOA SACH. Moi thu lam trong 12h se MAT.
+- Nen coi 12h nay la CHAY THU: xem bo co len duoc khong, launcher co vao duoc khong.
+  Len duoc roi thi thue goi THANG de lam that (luc do lam lai se nhanh vi da quen).
+- Day la lan dau, nhieu buoc. Co the KHONG xong het trong 12h — khong sao, muc tieu
+  toi thieu: vao duoc toi man dang nhap va tao 1 account choi thu NGAY TREN VPS.
+
+CHUAN BI TRUOC KHI DONG HO CHAY (lam o may nha, chua ton gio VPS):
+- Nen phan can thiet cua bo Gunny (BO 3 video, cac file .rar, Website, Website1,
+  newweb, HelperV1.1, tank-gku.bak). Giu lai:
+    Server\  Request\  Flash\  Resource.Server\  website_backend\  launcher_base\
+    + 5 file: tank41.bak, tank.bak, member.bak, admin.bak, gm.bak
+- Up phan do + thu muc _setup nay len Google Drive (de tren VPS tai ve, nhanh hon keo tha RDP).
+
+MAT KHAU sa (dung xuyen suot): Gunny$Sa2026Kx
+
+------------------------------------------------------------------------
+ THU TU LAM TREN VPS (dang nhap bang Remote Desktop)
+------------------------------------------------------------------------
+
+[1] TAI BO VE VPS
+    - Mo trinh duyet tren VPS, tai file da nen tu Google Drive ve, giai nen ra C:\Gunny92
+    - Giai nen thu muc _setup ra C:\Gunny92\_setup
+
+[2] CAI SQL SERVER 2022 (Developer — MIEN PHI, ban day du)
+    - Tai "SQL Server 2022 Developer" tu microsoft.com.
+    - Cai kieu Basic, hoac Custom chon:
+        * Instance: MAC DINH (Default instance = MSSQLSERVER). DUNG chon ten SQLEXPRESS.
+        * Authentication: MIXED MODE. Mat khau sa: Gunny$Sa2026Kx
+    - Tai them SSMS (SQL Server Management Studio) de thao tac bang giao dien.
+
+[3] KHOI PHUC 5 DATABASE (dung giao dien SSMS cho de)
+    - Mo SSMS, dang nhlocalhost, login sa / Gunny$Sa2026Kx.
+    - Chuot phai muc "Databases" -> Restore Database -> Device -> chon file .bak -> OK.
+    - Lam cho ca 5: tank41, tank, member, admin, gm.  (BO tank-gku.bak)
+    - SSMS tu dien ten + duong dan, khong can go lenh.
+
+[4] SUA CONFIG (tro ve localhost + mat khau sa moi)
+    - Mo PowerShell (chuot phai -> Run as administrator), chay:
+        powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\1-sua-config.ps1
+    - No sua 6 file config, in ra "da sua: ..."
+
+[5] SUA IP TRONG DATABASE (de client ket noi dung may)
+    - Trong SSMS, mo New Query, chay:
+        USE Db_Tank41;
+        UPDATE Server_List SET IP='127.0.0.1', Port=9200 WHERE ID=4;
+        SELECT ID, Name, IP, Port FROM Server_List;
+    - Neu bang Server_List khong co, bao Claude (ten bang co the khac).
+
+[6] CAI IIS + URL REWRITE + PHP (phan kho nhat, lam tu tu)
+    - Bat IIS: Server Manager -> Add Roles -> Web Server (IIS), tick CGI.
+    - Tai & cai "URL Rewrite 2.1" tu iis.net.
+    - Tai PHP 7.4 NTS x64 + ban "php_sqlsrv" / "php_pdo_sqlsrv" cho 7.4, bo vao ext, bat trong php.ini.
+    - Tao 2 site trong IIS:
+        * Request   -> tro vao C:\Gunny92\Request        (cong 80)
+        * backend   -> tro vao C:\Gunny92\website_backend\public
+    - (Phan nay fiddly. Lam toi day ma ket, chup man hinh hoi Claude.)
+
+[7] MO TUONG LUA (chi may test thi co the bo qua)
+    - Mo cong TCP 9200 (game) va 80 (web). KHONG mo 1433, 2108, 2109, 9302, 9308.
+
+[8] SUA FILE HOSTS
+    - Mo Notepad bang Admin -> mo C:\Windows\System32\drivers\etc\hosts
+    - Dan noi dung file _setup\hosts-them.txt vao, Save.
+
+[9] BAT SERVER (dung thu tu nay)
+    1. SQL Server (da chay san sau khi cai)
+    2. IIS (da chay)
+    3. C:\Gunny92\Server\center\Center.Service.exe   (Run as administrator)
+    4. C:\Gunny92\Server\fight\Fighting.Service.exe
+    5. C:\Gunny92\Server\road\Road.Service.exe
+    - Moi exe mo 1 cua so den, co dong "open for connections" la OK.
+    - LUU Y: truoc khi chay, quet 3 exe nay + launcher tren virustotal.com.
+
+[10] VAO GAME THU
+    - Mo launcher (launcher_base\dist\...\EasyGunny Team.exe hoac ban cai).
+    - Bam Dang ky, tao 1 account moi -> Dang nhap -> vao game.
+    - Loi gi chup man hinh gui Claude.
+
+------------------------------------------------------------------------
+ LAM SACH (lam TRUOC khi cho ban be vao, test 1 minh thi chua can)
+------------------------------------------------------------------------
+- Go backdoor + route nap + file nguy hiem:
+    powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\2-go-backdoor-nap.ps1
+- Xoa account / nhan vat cu cua admin cu trong DB: HOI CLAUDE (can xem ten bang that).
+- Doi khoa APP_KEY / KEY_REQUEST / CHARGE_KEY: hoi Claude.
+
+KET: toi buoc nao cung duoc. Vuong cho nao chup man hinh gui Claude, dung co giai mai.

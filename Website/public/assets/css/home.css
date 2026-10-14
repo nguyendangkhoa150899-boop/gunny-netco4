@@ -1,0 +1,57 @@
+#bgvid {
+  position: absolute;
+  top: -77px;
+  left: -47px;
+  object-fit: cover;
+}
+
+@media (max-width:1025px) {
+  .section__iframe iframe {
+    pointer-events: all;
+  }
+}
+
+.container {
+  display: block;
+  margin: 0 auto;
+}
+
+hr.split {
+  margin: 0;
+  border: 0;
+  background: transparent;
+}
+
+.clearfix:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.desktop {
+  display: flex;
+}
+
+.mobile {
+  display: none;
+}
+
+@media (max-width:1025px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: flex;
+  }
+}
+
+@media (max-width:700px) {
+  .desktop {
+    display: none;
+  }
+
+  .mobile {
+    display: flex;
+  }
+}

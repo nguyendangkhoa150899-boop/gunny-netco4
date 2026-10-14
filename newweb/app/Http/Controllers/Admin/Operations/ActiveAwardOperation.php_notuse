@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Operations;
+
+use App\Http\Controllers\Admin\ShopGoodsCrudController;
+use Illuminate\Support\Facades\Route;
+
+trait ActiveAwardOperation
+{
+    /**
+     * Define which routes are needed for this operation.
+     *
+     * @param string $segment    Name of the current entity (singular). Used as first URL segment.
+     * @param string $routeName  Prefix of the route name.
+     * @param string $controller Name of the current CrudController.
+     */
+    protected function setupActiveAwardRoutes($segment, $routeName, $controller)
+    {
+//        Route::get($segment.'/{id}/activeaward', [
+//            'as'        => $routeName.'.activeaward',
+//            'uses'      => 'ActiveAwardCrudController@index',
+//            'operation' => 'activeaward',
+//        ]);
+    }
+
+    /**
+     * Add the default settings, buttons, etc that this operation needs.
+     */
+    protected function setupActiveAwardDefaults()
+    {
+        $this->crud->allowAccess('activeaward');
+
+        $this->crud->operation('activeaward', function () {
+            $this->crud->loadDefaultOperationSettingsFromConfig();
+        });
+
+        $this->crud->operation('list', function () {
+            // $this->crud->addButton('top', 'activeaward', 'view', 'crud::buttons.activeaward');
+             $this->crud->addButton('line', 'activeaward', 'view', 'crud::buttons.activeaward');
+        });
+    }
+
+    /**
+     * Show the view for performing the operation.
+     *
+     * @return Response
+     */
+    public function activeaward($id)
+    {
+        //do nothing
+    }
+}

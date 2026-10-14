@@ -1,0 +1,31 @@
+body {
+    background-color: #021031;
+}
+
+.content-container {
+    width: 956px;
+    margin: auto;
+}
+
+.overlay,
+.loadingunready,
+.overlay-loading {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, .75);
+    //display: flex;
+    display: none;
+    align-content: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.loadingunready {
+    display: flex;
+    background-color: rgba(0, 0, 0, 1);
+}
+.overlay-loading {
+    z-index: 2001;
+}

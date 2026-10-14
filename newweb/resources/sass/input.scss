@@ -1,0 +1,74 @@
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=number] {
+    font-size: 20px;
+    color: white;
+    outline: none;
+    border: 1px dashed white;
+    background-color: #0b437a;
+    padding: 2px 4px;
+
+    &::-webkit-input-placeholder { /* Edge */
+        color: white;
+    }
+
+    &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: white;
+    }
+
+    &::placeholder {
+        color: white;
+    }
+}
+
+input[type=checkbox] {
+    &.switch {
+        height: 0;
+        width: 0;
+        visibility: hidden;
+    }
+
+    &:checked + label {
+        background: #bada55;
+
+        &:after {
+            left: calc(100% - 3px);
+            transform: translateX(-100%);
+        }
+    }
+}
+
+label.switch_label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 40px;
+    height: 22px;
+    background: grey;
+    display: inline-block;
+    border-radius: 11px;
+    position: relative;
+    top: 4px;
+
+    &:after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 90px;
+        transition: 0.3s;
+    }
+
+    &:active {
+        :after {
+            width: 130px;
+        }
+    }
+
+    &.disabled {
+
+    }
+}

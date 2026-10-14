@@ -1,0 +1,35 @@
+header {
+    background-color: #2d2444;
+    height: 60px;
+    z-index: 10;
+    position: relative;
+
+    .content-container {
+        display: flex;
+        height: 100%;
+
+        & > div {
+            flex: 1;
+            align-self: center;
+            color: white;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo {
+            width: 72px;
+            max-width: 72px;
+        }
+
+        .news,
+        .hotdog,
+        .recharge,
+        .comunity {
+            font-family: iCielSoupofJustice, sans-serif;
+            border-left: 1px solid #33ccff;
+            font-size: 25px;
+        }
+    }
+}

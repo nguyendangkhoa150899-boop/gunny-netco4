@@ -1,0 +1,15 @@
+.select-tank-helpers{
+    margin-top: 7px;
+    /*display: inline-block; */
+    /*margin-right: auto;*/
+}
+
+@media (max-width: 767px){
+    .main-header .navbar-custom-menu {
+        display: none!important;
+    }
+
+    .select-tank-helpers {
+        margin-top: 0;
+    }
+}

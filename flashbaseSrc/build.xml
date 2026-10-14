@@ -1,0 +1,26 @@
+<project name="EasyGunny" default="build">
+
+	<property environment="env" />
+	<fail unless="env.FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
+	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+	
+	<property name="OUTPUT" location="lib/EasyGunny.swc"/>
+
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar"/>
+
+	<target name="build">
+
+		<mkdir dir="lib" />
+
+		<!-- compile SWC -->
+		<compc output="${OUTPUT}" debug="true" warnings="false">
+			<!-- <load-config filename="${FLEX_HOME}/frameworks/air-config.xml" /> --> <!-- uncomment for AIR -->
+			<sp path-element="src" />
+			<include-sources dir="src" includes="*"  />
+		</compc>
+
+
+		<!-- cleanup -->
+		<delete dir="lib/tempDoc" />
+	</target>
+</project>

@@ -1,0 +1,458 @@
+#home {
+    #content {
+        background-image: url(/images/contentbackground1.jpg);
+        height: 799px;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        .content-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .news {
+            max-width: 580px;
+            margin-top: 206px;
+            padding-left: 60px;
+            padding-top: 10px;
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+            margin-right: 100px;
+            flex: 1;
+
+            .news-item {
+                display: flex;
+                padding: 5px 12px 10px 12px;
+                max-height: 120px;
+                overflow: hidden;
+
+                .image {
+                    margin-right: 5px;
+                    width: 135px;
+                    display: flex;
+                    align-items: center;
+
+                    img {
+                        width: 100%;
+                    }
+                }
+
+                .content {
+                    color: white;
+                    font-size: 14px;
+                    display: flex;
+                    flex-direction: column;
+                    flex: 1;
+
+                    .title {
+                        a {
+                            color: #0c95f2;
+                            font-weight: bold;
+                            text-transform: uppercase;
+
+                            &:hover {
+                                color: #f1f20c;
+                            }
+                        }
+                    }
+
+                    .date {
+                        color: #cefcfc;
+                    }
+
+                    .description {
+                        flex: 1;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        line-height: 19px;
+                    }
+                }
+            }
+        }
+
+        .top {
+            width: 276px;
+            margin-top: 336px;
+            color: white;
+            padding: 10px;
+            position: relative;
+
+            .title {
+                text-align: center;
+                background-color: #032148;
+                border: 1px solid #32cdd7;
+                padding: 3px;
+                margin-bottom: 10px;
+                position: relative;
+                cursor: pointer;
+            }
+
+            .toogle-select-top {
+                position: absolute;
+                top: 14px;
+                right: 20px;
+                color: white;
+            }
+
+            .select-top {
+                display: none;
+                list-style: none;
+                padding-left: 0;
+                position: absolute;
+                top: 42px;
+                left: 10px;
+                width: calc(100% - 20px);
+
+                &.showing {
+                    display: block;
+                }
+
+                li {
+                    background-color: #032148;
+                    border-bottom: 1px solid #32cdd7;
+                    border-left: 1px solid #32cdd7;
+                    border-right: 1px solid #32cdd7;
+                    padding: 3px;
+                    text-align: center;
+                    cursor: pointer;
+
+                    &.hidden {
+                        display: none;
+                    }
+                }
+            }
+
+            table {
+                background-color: #032148;
+                border: 1px solid #32cdd7;
+                width: 100%;
+                display: none;
+
+                &.showing {
+                    display: block;
+                }
+
+                tr {
+                    th, td {
+                        padding: 2px 10px;
+                        overflow: hidden;
+                        white-space: nowrap;
+                        max-width: 126px;
+                        text-overflow: ellipsis;
+                    }
+                }
+            }
+        }
+    }
+
+    .floater {
+        position: fixed;
+        left: -2px;
+        top: calc(50% - 216px);
+        z-index: 99;
+        background-image: url(/images/khungtruotbackground.png);
+        height: 432px;
+        width: 178px;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+
+        .charger {
+            position: relative;
+            top: -15px;
+            cursor: pointer;
+        }
+
+        .giftcode {
+            position: relative;
+            top: -15px;
+            cursor: pointer;
+        }
+
+        .register, .login {
+            background-image: url(/images/floaterbuttonbackground.png);
+            width: 145px;
+            height: 45px;
+            font-family: 'iCielSoupofJustice';
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            padding-top: 3px;
+            border: 3px solid #000066;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 7px;
+        }
+
+        .choingay {
+            cursor: pointer;
+        }
+    }
+
+    .overlay {
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        z-index: 100;
+        background-color: rgba(0, 0, 0, .75);
+        left: 0;
+        top: 0;
+        display: none;
+        //display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .loginform, .forgotpassform, .twofaform, .forgotpass2faform {
+            display: none;
+            background-image: url(/images/loginframe.png);
+            width: 841px;
+            height: 381px;
+            position: relative;
+            //display: flex;
+            align-content: center;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            padding: 148px 133px 0 136px;
+
+            &__form-group {
+                display: flex;
+                align-items: stretch;
+
+                &__inputs {
+                    display: flex;
+                    align-items: stretch;
+                    justify-content: center;
+                    align-content: center;
+                    flex-direction: column;
+                    margin-right: 35px;
+
+                    input {
+                        width: 407px;
+                        margin-bottom: 15px;
+                        padding: 5px 10px;
+
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                    }
+                }
+
+                &__button {
+                    width: 130px;
+                    border: none;
+                    height: 118px;
+                    border-radius: 12px;
+                    background-image: url(/images/loginbutton.png);
+                    background-position: 0;
+
+                    &:hover {
+                        background-position: -130px;
+                    }
+                }
+            }
+
+            &__footer {
+                display: flex;
+                width: 572px;
+                padding-right: 165px;
+                justify-content: space-between;
+
+                a {
+                    font-size: 20px;
+                    color: white;
+                }
+            }
+        }
+
+        .registerform, .forgotpass_password {
+            background-image: url(/images/registerframe.png);
+            width: 841px;
+            height: 682px;
+            position: relative;
+            align-content: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            display: none;
+            padding: 130px 130px 20px 130px;
+
+            &__form {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-content: center;
+                align-items: stretch;
+
+                &__inline-form-group {
+                    display: flex;
+
+                    .registerform__form__form-group {
+                        flex: 1;
+                        margin-right: 10px;
+
+                        &:last-child {
+                            margin-right: 0;
+                        }
+                    }
+                }
+
+                &__form-group {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 5px;
+
+                    label {
+                        color: white;
+                        font-size: 20px;
+                        margin-bottom: 2px;
+                    }
+
+                    &__button {
+                        border: 1px solid #05eed4;
+                        width: 437px;
+                        padding: 3px;
+                        border-radius: 22px;
+                        color: white;
+                        font-size: 24px;
+                        margin: 0 auto 14px;
+
+                        &.register {
+                            background-color: #0b437a;
+
+                            &:hover {
+                                background-color: #de8c03;
+                            }
+                        }
+
+                        &.back {
+                            background-color: #072a4c;
+
+                            &:hover {
+                                background-color: #de8c03;
+                            }
+                        }
+                    }
+
+                    img {
+                        height: 42px;
+                        width: 140px;
+                    }
+                }
+            }
+        }
+
+        .twofaform, .forgotpassform, .forgotpass2faform {
+
+            label {
+                text-align: center;
+                color: white;
+            }
+
+            .timeout {
+                margin-top: 5px;
+                color: white;
+
+                .code_timeout {
+                    display: inline-block;
+                }
+            }
+
+            &__footer {
+                width: auto;
+                padding-right: 0;
+
+                a {
+                    margin-right: 10px;
+
+                    &:first-child {
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+
+        .forgotpassform {
+            padding: 124px 133px 0 136px;
+
+            form {
+                width: 100%;
+            }
+
+            label {
+                padding-top: 5px;
+            }
+
+            .forgotpass__form-group__inputs {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            button {
+                border: 1px solid #05eed4;
+                width: 437px;
+                padding: 3px;
+                border-radius: 22px;
+                color: white;
+                font-size: 24px;
+                margin: 0 auto 14px;
+
+                &.submit {
+                    background-color: #0b437a;
+
+                    &:hover {
+                        background-color: #de8c03;
+                    }
+                }
+
+                &.back {
+                    background-color: #072a4c;
+
+                    &:hover {
+                        background-color: #de8c03;
+                    }
+                }
+            }
+        }
+
+        .forgotpass2faform {
+            //display: flex;
+
+            .forgotpass2facode_timeout {
+                display: inline-block;
+            }
+        }
+
+        .forgotpass_password {
+            //display: flex;
+            background-image: url(/images/forgotpass_passwordframe.png);
+            height: 550px;
+        }
+
+        .toppopup {
+            display: none;
+            background-repeat: no-repeat;
+            background-size: 100%;
+            width: 603px;
+            height: 766px;
+            position: relative;
+            cursor: pointer;
+
+            @media(max-width: 1366px) {
+                width: 551px;
+                height: 700px;
+            }
+        }
+
+        .close {
+            position: absolute;
+            right: -24px;
+            top: -26px;
+            cursor: pointer;
+        }
+    }
+}

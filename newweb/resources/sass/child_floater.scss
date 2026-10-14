@@ -1,0 +1,46 @@
+.child-floater {
+    position: fixed;
+    left: -2px;
+    top: calc(50% - 172px);
+    z-index: 99;
+    background-image: url(/images/khungtruotbackground_taikhoan.png);
+    height: 345px;
+    width: 135px;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: space-between;
+    padding: 19px 0;
+
+    .charger {
+        position: relative;
+        top: -15px;
+        cursor: pointer;
+    }
+
+    .giftcode {
+        position: relative;
+        top: -15px;
+        cursor: pointer;
+    }
+
+    .register, .login {
+        background-image: url(/images/floaterbuttonbackground.png);
+        width: 145px;
+        height: 45px;
+        font-family: 'iCielSoupofJustice';
+        color: white;
+        font-size: 24px;
+        text-align: center;
+        padding-top: 3px;
+        border: 3px solid #000066;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 7px;
+    }
+
+    .choingay {
+        cursor: pointer;
+    }
+}

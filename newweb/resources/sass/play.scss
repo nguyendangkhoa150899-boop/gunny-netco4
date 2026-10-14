@@ -1,0 +1,177 @@
+#play {
+    background-image: url("/images/playbackground.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 1491px;
+    position: relative;
+    padding-left: 50px;
+
+    @media(max-width: 1600px) {
+        padding-left: 0;
+    }
+
+    .lachuoi {
+        background-image: url("/images/lachuoi.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        top: 0;
+        left: 40px;
+        width: 552px;
+        height: 338px;
+    }
+
+    .nv1 {
+        background-image: url("/images/1.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        top: 0;
+        left: calc(50% - 284px);
+        width: 353px;
+        height: 574px;
+    }
+    .nv2 {
+        background-image: url("/images/2.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        top: 0;
+        left: calc(50% + 10px);
+        width: 479px;
+        height: 583px;
+    }
+    .mamxanh {
+        background-image: url("/images/Mam-Xanh.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        top: 207px;
+        left: calc(50% + -36px);
+        width: 181px;
+        height: 209px;
+    }
+    .kien {
+        background-image: url("/images/Kien-Xanh.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        bottom: 195px;
+        left: 0;
+        width: 297px;
+        height: 368px;
+    }
+    .mntt {
+        background-image: url("/images/mntt.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 470px;
+        height: 365px;
+    }
+
+    #content {
+        background-image: url("/images/playKhung.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 1560px;
+        height: 718px;
+        position: relative;
+        top: 372px;
+        margin: 0 auto;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        padding-top: 15px;
+
+        @media(max-width: 1366px) {
+            background-image: url("/images/playKhung_1366.png");
+            width: 1415px;
+            margin-left: calc(50% - 707px);
+        }
+
+        .goc20 {
+            background-image: url("/images/Goc20.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            top: 48px;
+            left: 80px;
+            width: 173px;
+            height: 289px;
+
+            @media(max-width: 1366px) {
+                background-image: url("/images/Goc20_1366.png");
+                width: 153px;
+                height: 256px;
+                top: 64px;
+                left: 56px;
+            }
+        }
+        .goc30 {
+            background-image: url("/images/Goc30.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            top: 48px;
+            right: 80px;
+            width: 173px;
+            height: 289px;
+
+            @media(max-width: 1366px) {
+                background-image: url("/images/Goc30_1366.png");
+                width: 152px;
+                height: 252px;
+                top: 64px;
+                right: 56px;
+            }
+        }
+        .goc50 {
+            background-image: url("/images/Goc50.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            bottom: 48px;
+            left: 80px;
+            width: 173px;
+            height: 289px;
+
+            @media(max-width: 1366px) {
+                background-image: url("/images/Goc50_1366.png");
+                width: 153px;
+                height: 256px;
+                bottom: 46px;
+                left: 56px;
+            }
+        }
+        .goc65 {
+            background-image: url("/images/Goc65.png");
+            background-repeat: no-repeat;
+            background-position: center;
+            position: absolute;
+            bottom: 48px;
+            right: 80px;
+            width: 173px;
+            height: 289px;
+
+            @media(max-width: 1366px) {
+                background-image: url("/images/Goc65_1366.png");
+                width: 152px;
+                height: 255px;
+                bottom: 46px;
+                right: 56px;
+            }
+        }
+
+        .swf-area {
+            //background-image: url("/images/playtest.png");
+            //background-repeat: no-repeat;
+            //background-position: center;
+            width: 1000px;
+            height: 600px;
+        }
+    }
+}

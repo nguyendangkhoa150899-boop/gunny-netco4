@@ -1,0 +1,27 @@
+<?php
+
+return [
+    'member' => 'Quản lý tài khoản',
+    'members' => 'Quản lý tài khoản',
+    'UserID' => 'UserID',
+    'Email' => 'Tên tài khoản',
+    'Money' => 'Coin',
+    'IsBan' => 'Khóa?',
+    'BanReason' => 'Lý do khóa',
+    'IPCreate' => 'Địa chỉ IP',
+    'addcoin_form_text' => 'Nhập số tiền (đồng):',
+    'add_coin_error_money_is_not_a_number' => 'Vui lòng nhập vào một số!',
+    'add_coin_success' => 'Nạp thẻ thành công!',
+    'add_coin_fail' => 'Nạp thẻ thất bại, vui lòng liên hệ tác giả để được trợ giúp!',
+    'removecoin_form_text' => 'Nhập số coin muốn xóa:',
+    'remove_coin_success' => 'Xóa coin thành công!',
+    'remove_coin_fail' => 'Xóa coin thất bại, vui lòng liên hệ tác giả để được trợ giúp!',
+    'banmember_form_text' => 'Nhập lý do khóa:',
+    'ban_member_reason_is_empty_error' => 'Lý do khóa không được để trống!',
+    'ban_member_error_message' => 'Khóa thất bại, vui lòng liên hệ tác giả để được trợ giúp',
+    'ban_member_success' => 'Khóa thành công!',
+    'ban_member_reason_title' => 'Nhập lý do khóa tài khoản:',
+    'resetpassword_form_text' => 'Chắc chắn muốn reset password cho tài khoản này?',
+    'resetpass_success' => 'Reset Password thành công, Password mới:',
+    'resetpass_fail' => 'Reset Password thất bại!',
+];

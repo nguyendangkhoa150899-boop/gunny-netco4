@@ -1,0 +1,11 @@
+# THEM VAO FILE HOSTS — tro cac ten mien cu ve VPS, khoi phai build lai launcher / sua domain.
+#
+# Tren VPS: mo Notepad bang quyen Admin -> mo C:\Windows\System32\drivers\etc\hosts -> dan cac dong duoi -> Save.
+# (Neu test launcher o may khac, cung dan y het cac dong nay vao hosts cua may do.)
+# Thay 127.0.0.1 bang IP VPS neu dan o may khac (khong phai chinh VPS).
+#
+127.0.0.1   gunny92.com
+127.0.0.1   launcher.gunny92.com
+127.0.0.1   quest1.gunny92.com
+127.0.0.1   flash1.gunny92.com
+127.0.0.1   res.gunny92.com

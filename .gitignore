@@ -1,0 +1,61 @@
+# ===== Gunny NetCo4 — chi version-control MA NGUON + config + script. KHONG dua binary/DB/secret len git. =====
+
+# --- Binary & runtime (tai qua Drive, khong len git) ---
+*.exe
+*.dll
+*.bak
+*.swf
+*.swc
+*.rar
+*.zip
+*.7z
+*.mkv
+*.mp4
+*.pdb
+*.so
+*.plugin
+*.cache
+*.antiddos
+
+# --- Thu muc build / runtime ---
+bin/
+obj/
+**/bin/
+**/obj/
+vendor/
+node_modules/
+dist/
+win-unpacked/
+win-ia32-unpacked/
+
+# --- Secret ---
+.env
+*.key
+secrets.*
+
+# --- Du lieu phien / log (co email, IP, token nguoi choi cu) ---
+storage/framework/sessions/
+storage/logs/
+storage/debugbar/
+storage/backups/
+Server/*/logs/
+Server/road/datas/
+
+# --- Thu muc KHONG can cho phat trien (binary/anh/launcher/tool/web trung) ---
+Server/
+Flash/
+Resource.Server/
+launcher_base/
+HelperV1.1/
+GM/
+Website1/
+_install/
+
+# --- Tai lieu HDSD video ---
+*.png
+!**/src/**/*.png
+
+# NuGet restore (khong len git)
+packages/
+**/packages/
+*.nupkg

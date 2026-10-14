@@ -1,0 +1,166 @@
+#banner {
+    background-image: url("/images/banner.jpg");
+    background-position-y: -60px;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 643px;
+    position: relative;
+    z-index: 5;
+
+    .content-container {
+        height: 100%;
+        padding-left: 18px;
+
+        .khung {
+            height: 100%;
+            max-width: 800px;
+            margin: auto;
+
+            .top {
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+                background-image: url(/images/khungtop.png);
+                background-position: center 40px;
+                background-repeat: no-repeat;
+                overflow: visible;
+                padding-top: 97px;
+
+                .tai-client,
+                .tai-web {
+                    background-image: url("/images/buttontaibackground.png");
+                    background-position: 0;
+                    background-repeat: no-repeat;
+                    width: 196px;
+                    height: 111px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-position: -196px;
+                    }
+                }
+
+                .logo {
+                    position: absolute;
+                    top: 7px;
+                    left: 168px;
+                    display: flex;
+                    justify-content: center;
+                }
+            }
+
+            .bottom {
+                padding: 34px 150px;
+                position: relative;
+                top: -28px;
+                overflow: hidden;
+                height: 348px;
+
+                .slider-container {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+                    top: 3px;
+                    overflow: hidden;
+                    display: flex;
+
+                    .slide {
+                        position: relative;
+                        top: 3px;
+
+                        .item {
+                            text-align: center;
+                        }
+                    }
+                }
+
+                .khungslide {
+                    background-image: url(/images/khungbottom.png);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            .slidebuttons {
+                position: relative;
+                top: -22px;
+                display: flex;
+                justify-content: center;
+
+                .slidebutton {
+                    height: 47px;
+                    //width: 63px;
+                    background-image: url(/images/slidebuttonbackground.png);
+                    background-repeat: no-repeat;
+                    background-position: center;
+                    font-family: 'iCielSoupofJustice';
+                    font-size: 50px;
+                    display: flex;
+                    justify-content: center;
+                    align-content: flex-start;
+                    color: white;
+                    padding: 0 33px;
+                    cursor: pointer;
+
+                    div {
+                        background-repeat: no-repeat;
+                        background-position: 0;
+                        position: relative;
+                        top: -20px;
+
+                        &.number1 {
+                            background-image: url(/images/slidebutton1.png);
+                            width: 21px;
+                        }
+                        &.number2 {
+                            background-image: url(/images/slidebutton2.png);
+                            width: 32px;
+                        }
+                        &.number3 {
+                            background-image: url(/images/slidebutton3.png);
+                            width: 32px;
+                        }
+                        &.number4 {
+                            background-image: url(/images/slidebutton4.png);
+                            width: 33px;
+                        }
+                    }
+
+                    &:hover, &.active {
+                        .number1 {
+                            background-position-x: -21px;
+                        }
+                        .number2 {
+                            background-position-x: -32px;
+                        }
+                        .number3 {
+                            background-position-x: -32px;
+                        }
+                        .number4 {
+                            background-position-x: -33px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .line {
+        background-image: url(/images/line.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 139px;
+        position: absolute;
+        bottom: -77px;
+        left: 0;
+        width: 100%;
+    }
+}

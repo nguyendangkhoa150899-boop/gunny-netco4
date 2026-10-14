@@ -1,0 +1,107 @@
+$qualityColors: #e1e1e1, #1dfb00, #0070dd, #a335ee, #ff8000, #ff0099;
+
+.item-hover-pop {
+    position: relative;
+
+    &:hover {
+        .item_popup {
+            display: block;
+        }
+    }
+}
+
+.item_popup {
+    position: absolute;
+    top: -50px;
+    left: 50px;
+    display: none;
+    background-color: rgba(0, 0, 0, .7);
+    padding: 2px;
+    border-radius: 5px;
+    min-width: 204px;
+
+    .popup_container {
+        border: 1px solid #7b7b7b;
+        border-radius: 5px;
+        padding: 2px;
+
+        @for $i from 1 through 5 {
+            .quality_#{$i} {
+                color: nth($qualityColors, $i);
+            }
+        }
+
+        .item_name {
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .item_quality
+        , .item_category
+        , .item_damage
+        , .item_angle
+        {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+
+            &_label {
+                font-weight: 600;
+                font-size: 12px;
+                word-break: break-word;
+                width: 37px;
+                //text-align: center;
+                line-height: 12px;
+                color: black;
+                text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+                margin-right: 2px;
+            }
+
+            &_value {
+                font-size: 14px;
+                font-weight: 600;
+            }
+        }
+
+        .item_category {
+
+            &_label {
+                font-size: 15px;
+            }
+        }
+
+        .item_damage, .item_angle {
+
+            &_label {
+                width: 65px;
+            }
+        }
+
+        .item_properties {
+            margin-top: 10px;
+
+            &_property {
+                font-size: 15px;
+                font-weight: 500;
+                color: #f49230;
+                margin-bottom: 5px;
+            }
+        }
+
+        .item_description {
+            margin-top: 10px;
+            font-size: 14px;
+            line-height: 18px;
+        }
+
+        .item_valid_date {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 500;
+
+            &.forever {
+                color: #ffff00;
+            }
+        }
+    }
+}
