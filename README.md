@@ -252,3 +252,21 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 - Đã tạo 2 tác vụ SYSTEM: `GunnyServers` (onstart) và `GunnyWatchdog` (5 phút/lần), cùng chạy `C:\Gunny92\start-servers.ps1` (chờ SQL rồi bật Center → Fighting → Road nếu chưa chạy). Đã test qua 1 lần reboot: game tự lên sau khoảng 3 phút.
 - `sshd` trước đây để Manual nên reboot xong mất SSH. Đã đặt `Automatic`. Nếu mất SSH: vào bảng điều khiển VPS trên web nhà cung cấp (QEMU console), PowerShell Run as administrator: `Start-Service sshd; Set-Service sshd -StartupType Automatic`.
 - Windows Update tự cài bản vá SQL Server, làm SQL tắt khoảng 3 phút (15:27 đến 15:30 ngày 15/10), rồi chờ reboot. Gặp thì kiểm tra `Get-Service MSSQLSERVER` và khóa `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired`; reboot lúc vắng người (game tự lên nhờ GunnyServers).
+
+## 18. Shop web + kế hoạch kinh tế 2 tháng (Boomerang · Thương Cổ · Búa · Thiên Sứ)
+**Code:** `_setup/sql/shop-web.sql` (Db_Member `Web_Shop`, `Web_ShopMua`, `Web_Diem`, `Web_SoDiem`), `MiniGameController::shop/shopMua`, `app/Support/Diem.php`, admin **Shop web** (`admin/pages/shop.php`).
+- **A. Xu web**: đổi 1:1 với xu game nên ai cũng nhiều (nhân vật mới có 10 triệu). Dùng cho kệ thường/trung cấp.
+- **B. Điểm hoạt động**: **không đổi từ xu được**, chỉ kiếm: điểm danh +10/ngày (`diem_diemdanh`), đủ 7/14/21/28 ngày +20 (`diem_moc`), mỗi lượt lật thẻ (thắng boss phó bản) +5 (`diem_phoban`), tối đa 50/ngày (`diem_phoban_tran`). Acc phụ 10 triệu xu không dồn được nên đồ hiếm bán bằng điểm.
+- Mua: khóa dòng hàng + lịch sử mua của người đó (UPDLOCK) nên bấm đồng thời không vượt giới hạn; trừ tiền 1 lệnh không âm; đồ vào `Web_Ruong` (mặc định khóa) rồi rút vào game.
+- **Chỉ bán đồ gốc có trong client.** Đã kiểm: Boomerang / SUPER-Boomerang (DB ghi "VIP-Boomerang") / Legend-Boomerang, Thương cổ / SUPER / LEGEND-Thương Cổ, Búa Minotaure / SUPER-Búa Thor / LEGEND-Búa Thor, Thiên sứ ban phúc / VIP / WOW / Super / LEGEND, mảnh ghép VIP/WOW đều có trong client và có ảnh. Đồ admin cũ tự chế (chỉ số 1000×4, sát thương 7.000 đến 15.000, "Bậc Max", "( VIP n )", "Siêu/Supper/Wow Thương cổ", ID 1300xxxxxx / 2222xxxxx / 3222xxxxx) **client không có**: không bán.
+- **Tiến hóa đúng logic game** (`Item_Strengthen_Goods`): món gốc cường hóa +10/+11 lên bậc 1, +12 lên bậc 2; bậc 2 dát vàng (`GoldEquipTemplateLoad`, đá 11560, 5%/viên, giữ 30 ngày) thành bản vàng. Shop chỉ bán **bản gốc**, phần lên cấp người chơi tự cày.
+
+**Thu nhập điểm ước tính:** chơi đều ~60/ngày (≈3.600 / 2 tháng), chơi thường ~25/ngày (≈1.500).
+
+| Giai đoạn | Mục tiêu | Mua ở đâu |
+|---|---|---|
+| Tuần 1 đến 2 | Vũ khí SUPER (Boomerang / Thương cổ / Búa Minotaure 2 triệu, Búa Thor 2,5 triệu) + VIP/WOW Thiên sứ (0,8 / 1,5 triệu), cường hóa +12 lên bậc 2 | Kệ xu web, 1 cái/tài khoản |
+| Tuần 3 đến 5 | Vũ khí LEGEND bản gốc: Thương Cổ / Búa Thor 900 điểm, Legend-Boomerang 700 (chơi đều ~15 ngày, chơi thường ~5 tuần), cường hóa +12 | Kệ điểm, 1 cái/tài khoản |
+| Tuần 6 đến 8 | Dát vàng LEGEND bậc 2 (kỳ vọng ~20 viên đá 11560 × 30 điểm, 5 viên/ngày) + LEGEND-Thiên Sứ Ban Phúc 1.200 điểm cho người cày nhiều | Kệ điểm + lật thẻ |
+
+Chỉnh giá/giới hạn ở admin, không cần sửa code. Mở thật nên **bỏ 10 triệu xu tặng sẵn** và **tắt code NETCO4VIP** (code test cho thẳng Thánh Kiếm vàng vĩnh viễn).
