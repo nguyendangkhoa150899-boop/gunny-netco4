@@ -16,9 +16,9 @@
 # Bien moi truong (tuy chon): GUNNY_VPS (mac dinh Administrator@171.244.39.225)
 #                             GUNNY_KEY (mac dinh ~/.ssh/gunny_vps)
 #
+# Shell mac dinh khi SSH vao VPS la PowerShell 5.1: lenh tu xa phai la cu phap PowerShell (khong co &&).
 # KHONG day: .env, vendor/, storage/, bin/*.dll, Server/*.exe (gitignored / build rieng).
-# Sua gameSrc/ (server C#) hoac Request/*.cs -> phai build bang Visual Studio roi copy
-# exe/dll len VPS bang tay (xem README muc "Sua code server game").
+# Sua gameSrc/ (server C#) hoac Request/*.cs -> build bang Visual Studio roi copy exe/dll len tay.
 set -euo pipefail
 
 VPS="${GUNNY_VPS:-Administrator@171.244.39.225}"
@@ -26,6 +26,9 @@ KEY="${GUNNY_KEY:-$HOME/.ssh/gunny_vps}"
 ROOT="C:/Gunny92"
 DIRS='^(website_backend|Request|admin|_setup)/'
 SSHO=(-i "$KEY" -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=20 -q)
+
+rps(){ ssh "${SSHO[@]}" "$VPS" "\$ProgressPreference='SilentlyContinue'; $1" 2>/dev/null; }
+win(){ printf '%s' "$1" | sed 's#/#\#g'; }   # C:/a/b -> C:\a\b
 
 cd "$(git rev-parse --show-toplevel)"
 
@@ -42,7 +45,7 @@ fi
 if [ $# -ge 1 ]; then
   LAST="$1"
 else
-  LAST=$(ssh "${SSHO[@]}" "$VPS" 'type C:\Gunny92\.deployed-commit 2>nul' | tr -d '\r\n ' || true)
+  LAST=$(rps "Get-Content C:\Gunny92\.deployed-commit -EA SilentlyContinue" | tr -d '\r\n ' || true)
 fi
 if [ -z "$LAST" ]; then
   echo "VPS chua co .deployed-commit. Chay lai voi commit goc: ./_setup/deploy.sh <commit>" >&2; exit 1
@@ -58,17 +61,14 @@ else
 fi
 [ -n "${DRY:-}" ] && { echo "(DRY: khong day)"; exit 0; }
 
-win(){ printf '%s' "$1" | sed 's#/#\\#g'; }   # C:/a/b -> C:\a\b
-
 if [ -n "$CHANGES" ]; then
-  # tao thu muc dich
   MK=$(echo "$CHANGES" | awk -F'\t' '$1!="D"{print $2}' | xargs -r -n1 dirname | sort -u \
-       | while read -r d; do printf 'if not exist "%s" mkdir "%s" & ' "$(win "$ROOT/$d")" "$(win "$ROOT/$d")"; done)
-  [ -n "$MK" ] && ssh "${SSHO[@]}" "$VPS" "${MK% & }"
+       | while read -r d; do printf "New-Item -ItemType Directory -Force -Path '%s' | Out-Null; " "$(win "$ROOT/$d")"; done)
+  [ -n "$MK" ] && rps "$MK" >/dev/null
 
   while IFS=$'\t' read -r st p; do
     case "$st" in
-      D) echo "  xoa  $p"; ssh "${SSHO[@]}" "$VPS" "del /f /q \"$(win "$ROOT/$p")\" 2>nul" || true ;;
+      D) echo "  xoa  $p"; rps "Remove-Item -Force -EA SilentlyContinue '$(win "$ROOT/$p")'" >/dev/null || true ;;
       *) echo "  day  $p"; scp "${SSHO[@]}" "$p" "$VPS:$ROOT/$p" ;;
     esac
   done <<< "$CHANGES"
@@ -76,11 +76,11 @@ fi
 
 POST=""
 if echo "$CHANGES" | grep -q $'\twebsite_backend/'; then
-  POST+='cd /d C:\Gunny92\website_backend && C:\PHP7\php.exe artisan view:clear && C:\PHP7\php.exe artisan route:clear && C:\PHP7\php.exe artisan config:clear & '
+  POST+="Set-Location C:\Gunny92\website_backend; C:\PHP7\php.exe artisan view:clear | Out-Null; C:\PHP7\php.exe artisan route:clear | Out-Null; C:\PHP7\php.exe artisan config:clear | Out-Null; "
 fi
 if echo "$CHANGES" | grep -q $'\tRequest/'; then
-  POST+='C:\Windows\System32\inetsrv\appcmd.exe recycle apppool /apppool.name:DefaultAppPool & '
+  POST+="C:\Windows\System32\inetsrv\appcmd.exe recycle apppool /apppool.name:DefaultAppPool | Out-Null; "
 fi
-POST+="echo $HEAD_SHA> C:\\Gunny92\\.deployed-commit"
-ssh "${SSHO[@]}" "$VPS" "$POST" >/dev/null
+POST+="Set-Content -Path C:\Gunny92\.deployed-commit -Value '$HEAD_SHA' -Encoding ascii"
+rps "$POST" >/dev/null
 echo ">> xong. VPS dang o $HEAD_SHA"
