@@ -413,10 +413,25 @@ class MiniGameController extends \App\Http\BaseController
     {
         $k = $mission . '|' . $khoa;
         if (isset($this->dropCache[$k])) return $this->dropCache[$k];
-        $tank = DB::connection('sqlsrv_tank41');
-        $r = $tank->selectOne("SELECT TOP 1 DropID FROM Db_Tank.dbo.Drop_Condiction WHERE CondictionType=5 AND Para1 LIKE ? AND Para2 LIKE '%,1,%' ORDER BY DropID", ['%,' . $mission . ',%']);
-        if (!$r) $r = $this->mem()->selectOne("SELECT TOP 1 c.DropID FROM Web_The_Man m JOIN Db_Tank.dbo.Drop_Condiction c
-            ON c.CondictionType=5 AND c.Para1 LIKE '%,'+CAST(m.MissionId AS varchar(12))+',%' AND c.Para2 LIKE '%,1,%' WHERE m.Khoa=? ORDER BY m.Ai DESC, m.MissionId DESC", [$khoa]);
+        // chi lay bang CO DO (113 khai bao loai 5 nhung 17 bang rong, vd Vong Xoay Thuong/Kho/AH 10180-10188 = 0 mon)
+        $coDo = "EXISTS (SELECT 1 FROM Db_Tank.dbo.Drop_Item i WHERE i.DropId=c.DropID)";
+        $mem = $this->mem();
+        // 1-2. chinh ai boss: bang la bai (Para2 1), roi bang ruong boss (Para2 2)
+        $r = $mem->selectOne("SELECT TOP 1 c.DropID FROM Db_Tank.dbo.Drop_Condiction c WHERE c.CondictionType=5 AND c.Para1 LIKE ? AND $coDo
+            ORDER BY CASE WHEN c.Para2 LIKE '%,1,%' THEN 0 ELSE 1 END, c.DropID", ['%,' . $mission . ',%']);
+        // 3. ai khac cung pho ban (ai cao truoc)
+        if (!$r) $r = $mem->selectOne("SELECT TOP 1 c.DropID FROM Web_The_Man m JOIN Db_Tank.dbo.Drop_Condiction c
+            ON c.CondictionType=5 AND c.Para1 LIKE '%,'+CAST(m.MissionId AS varchar(12))+',%' WHERE m.Khoa=? AND $coDo
+            ORDER BY CASE WHEN c.Para2 LIKE '%,1,%' THEN 0 ELSE 1 END, m.Ai DESC, m.MissionId DESC", [$khoa]);
+        // 4. cung pho ban o do kho khac (vd "Vong Xoay Thoi Gian Thuong" -> bang boss "Vong Xoay Thoi Gian" de)
+        if (!$r) {
+            $goc = preg_replace('/\s+(dễ|thường|khó|anh hùng|ah|ác mộng)(\s+ải)?$/iu', '', trim($khoa));
+            if ($goc !== '' && $goc !== $khoa) {
+                $r = $mem->selectOne("SELECT TOP 1 c.DropID FROM Web_The_Man m JOIN Db_Tank.dbo.Drop_Condiction c
+                    ON c.CondictionType=5 AND c.Para1 LIKE '%,'+CAST(m.MissionId AS varchar(12))+',%' WHERE (m.Khoa=? OR m.Khoa LIKE ?) AND $coDo
+                    ORDER BY CASE WHEN c.Para2 LIKE '%,1,%' THEN 0 ELSE 1 END, m.Ai DESC, m.MissionId DESC", [$goc, $goc . ' %']);
+            }
+        }
         return $this->dropCache[$k] = $r ? (int)$r->DropID : 0;
     }
 
