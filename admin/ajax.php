@@ -14,11 +14,19 @@ if ($_GET['ajax'] === 'items') {
     else { $where[] = "(Name LIKE ? OR Description LIKE ?)"; $par[] = '%'.$q.'%'; $par[] = '%'.$q.'%'; }
   }
   if ($cat > 0) { $where[] = "CategoryID=?"; $par[] = $cat; }
+  // img: 'co' (mac dinh, an mon khong anh) | 'all' | 'khong' (chi mon client khong co anh, de test)
+  $img = $_GET['img'] ?? (!empty($_GET['all']) ? 'all' : 'co');
+  if (!$where && $img === 'khong') $where[] = '1=1';
   if (!$where) { echo json_encode(['items'=>[]]); exit; }
-  $rows = q($conn, "SELECT TOP 400 TemplateID,Name,CategoryID,Quality,NeedLevel,NeedSex,Pic,Attack,Defence,Agility,Luck,Description FROM Db_Tank.dbo.Shop_Goods WHERE ".implode(' AND ',$where)." ORDER BY CASE WHEN TemplateID=? THEN 0 WHEN Name LIKE ? THEN 1 ELSE 2 END, TemplateID", array_merge($par, [ctype_digit($q)?(int)$q:-1, '%'.$q.'%']));
+  $rows = q($conn, "SELECT TOP ".($img==='khong' ? 4000 : 400)." TemplateID,Name,CategoryID,Quality,NeedLevel,NeedSex,Pic,Attack,Defence,Agility,Luck,Description FROM Db_Tank.dbo.Shop_Goods WHERE ".implode(' AND ',$where)." ORDER BY CASE WHEN TemplateID=? THEN 0 WHEN Name LIKE ? THEN 1 ELSE 2 END, TemplateID", array_merge($par, [ctype_digit($q)?(int)$q:-1, '%'.$q.'%']));
   // mon ma client khong co file anh (vd do thu cung hat28/cloth28+ cua ban game moi hon) vao game cung vo hinh: mac dinh an
-  $all = !empty($_GET['all']); $hidden = 0; $kept = [];
-  foreach ($rows as $r) { $r['img'] = item_icon_file($r['CategoryID'],$r['Pic'],$r['NeedSex']) !== null; if (!$r['img'] && !$all) { $hidden++; continue; } if (count($kept) < 90) $kept[] = $r; }
+  $hidden = 0; $kept = [];
+  foreach ($rows as $r) {
+    $r['img'] = item_icon_file($r['CategoryID'],$r['Pic'],$r['NeedSex']) !== null;
+    if ($img === 'co' && !$r['img']) { $hidden++; continue; }
+    if ($img === 'khong' && $r['img']) continue;
+    if (count($kept) < 90) $kept[] = $r;
+  }
   $rows = $kept;
   // ruong: do ben trong (Shop_Goods_Box); vu khi/ao/non: dat vang duoc khong (GoldEquipTemplateLoad, xem WishBeadEquipHandler)
   $ids = array_map(fn($r)=>(int)$r['TemplateID'], $rows); $box = []; $gold = [];

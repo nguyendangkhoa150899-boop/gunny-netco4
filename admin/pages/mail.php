@@ -76,7 +76,8 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       <input id="q" placeholder="Nhập ID hoặc tên vật phẩm, vd: 7003 hoặc AK" autocomplete="off" style="flex:2">
       <select id="cat"><?php foreach($CATS as $k=>$v) echo '<option value="'.$k.'">'.h($v).'</option>'; ?></select>
     </div>
-    <label style="font-size:12px;display:block;margin-top:6px;color:var(--muted)"><input type="checkbox" id="showAll"> Hiện cả món client không có ảnh (vào game sẽ không thấy hình)</label>
+    <div class="row" style="margin-top:6px"><select id="imgMode" title="Món client không có file ảnh: vào game sẽ không thấy hình">
+      <option value="co">Chỉ món có ảnh (mặc định)</option><option value="all">Tất cả món</option><option value="khong">Chỉ món KHÔNG có ảnh (để test)</option></select></div>
     <div class="msgline muted" id="info">Gõ ID hoặc tên để tìm. Bấm vào ô để thêm vào ô quà.</div>
     <div class="res" id="res"></div>
   </div>
@@ -93,9 +94,9 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
 
   function search(){
     var q=qEl.value.trim(), cat=catEl.value, my=++seq;
-    if(!q && cat==='0'){ res.innerHTML=''; info.textContent='Gõ ID hoặc tên để tìm. Bấm vào ô để thêm vào ô quà.'; return; }
+    if(!q && cat==='0' && document.getElementById('imgMode').value!=='khong'){ res.innerHTML=''; info.textContent='Gõ ID hoặc tên để tìm. Bấm vào ô để thêm vào ô quà.'; return; }
     info.textContent='Đang tìm...';
-    fetch('?ajax=items&q='+encodeURIComponent(q)+'&cat='+cat+(document.getElementById('showAll').checked?'&all=1':''),{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
+    fetch('?ajax=items&q='+encodeURIComponent(q)+'&cat='+cat+'&img='+document.getElementById('imgMode').value,{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
       if(my!==seq) return;
       var items=(d&&d.items)||[]; info.textContent=items.length?('Tìm thấy '+items.length+(items.length>=90?' (hiện 90 đầu)':'')+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
       if(d&&d.hidden) info.textContent+=' Đã ẩn '+d.hidden+' món client không có ảnh.';
@@ -103,7 +104,7 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       res._items=items;
     }).catch(function(){ info.textContent='Lỗi khi tìm, thử lại.'; });
   }
-  document.getElementById('showAll').addEventListener('change',search);
+  document.getElementById('imgMode').addEventListener('change',search);
   qEl.addEventListener('input',function(){ clearTimeout(timer); timer=setTimeout(search,280); });
   catEl.addEventListener('change',search);
 
