@@ -276,3 +276,8 @@ Chỉnh giá/giới hạn ở admin, không cần sửa code. Mở thật nên *
 - Code: `MiniGameController::quaTestTim / quaTestGui`, bảng `_setup/sql/qua-test-web.sql` (`Web_QuaTest` nhật ký, cấu hình `quatest_mo`, `quatest_luot_ngay` = 50, `quatest_sl_max` = 999). Admin > Mini game có bảng nhật ký 15 lần gần nhất.
 - **Mở server thật: đặt `quatest_mo` = 0** (admin > Mini game > Cấu hình). Menu tự ẩn, API trả "đang tắt".
 - Test PowerShell lưu ý: PS 5.1 làm mất dấu `"` khi truyền JSON cho `curl.exe`. Gửi JSON bằng file (`--data-urlencode ds@file.json`).
+
+## 20. Lật thẻ y hệt game (bảng rơi đồ của game)
+- `lt_nguon = game` (`_setup/sql/lat-the-game.sql`): mỗi lá lật trên web quay giống `PVEGame.TakeCard` → `DropInventory.CopyDrop(mã màn, 1)`: `Drop_Condiction` (CondictionType 5, Para1 chứa `,mã màn,`, Para2 chứa `,1,`) → `Drop_Item`; ngưỡng = rand[0, Random lớn nhất), giữ món `Random ≥ ngưỡng`, chọn đều 1; số lượng rand[BeginData, EndData). `-100` vàng / `-200` xu game gửi thư game ngay; tiền tệ khác và món client không có ảnh thì quay lại.
+- Độ phủ (65 phó bản bật): **36** dùng bảng của ải boss, **1** dùng bảng ải khác cùng phó bản, **28** không có bảng nào trong DB (Thành Phố Trên Không, Xưởng Hơi Nước, Vịnh Cariga, Dracula, Xatara, Niên Thú...) nên dùng bộ quà web `Web_The_Qua` (trong game những phó bản này lật bài cũng không ra gì). Muốn có quà riêng: thêm ở admin > Mini game > Quà lật thẻ chọn phó bản đó.
+- `lt_solat` = 3 lá/lượt (game gốc: ải giữa 1, boss cuối 2). **Lưu ý:** trong game người chơi vẫn được lật bài như cũ; web là phần thưởng **thêm** (giới hạn `SoLanNgay` 3 lượt/phó bản/ngày).
