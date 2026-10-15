@@ -158,16 +158,24 @@
   #winpop.show{animation:winfloat 2.8s ease-out forwards}
   @@keyframes winfloat{0%{opacity:0;transform:translate(-50%,-30%) scale(.5)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.18)}25%{transform:translate(-50%,-52%) scale(1)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%) scale(.9)}}
   /* do min (theo TLBB) */
-  #mstage{display:grid;grid-template-columns:54px 1fr 54px;gap:8px;margin-top:6px}
-  .mside{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:12px;background:#0d1226;border:1px solid #2b3557;padding:8px 0}
-  .mside .ic{font-size:19px;line-height:1}.mside .n{font-size:20px;font-weight:900}
-  .mside.coinS .n{color:var(--gold)}.mside.bomb .n{color:#ff8a8a}
-  .mgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-width:420px;margin:0 auto;width:100%}
-  .mtile{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;user-select:none;
-    background:linear-gradient(180deg,#2f7fd6,#215aa8);border:1px solid #4b9ae8;border-bottom:4px solid #14346a;color:#bcdcff;cursor:pointer;transition:transform .08s}
+  /* ban min: thanh so lieu tren + luoi 5x5 vuong. KHONG dat class "coin" cho o (trung class dong xu tron 20px). */
+  #mboard{background:radial-gradient(ellipse at center,#16204a 0%,#0b1024 80%);border:1px solid #2b3557;border-radius:14px;padding:14px}
+  .mbar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .mbar div{background:#0b1024cc;border:1px solid #2b3557;border-radius:10px;padding:7px 10px;text-align:center}
+  .mbar span{display:block;font-size:11.5px;color:#8fa0c8}
+  .mbar b{font-size:18px;font-variant-numeric:tabular-nums} .mbar .g b{color:var(--gold)} .mbar .r b{color:#ff8a8a} .mbar .h b{color:#7dffb0}
+  .mbar .h small{font-size:12px;color:#8fa0c8;font-weight:600}
+  .mgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:440px;margin:0 auto}
+  .mtile{aspect-ratio:1;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;user-select:none;
+    background:linear-gradient(180deg,#2f7fd6,#215aa8);border:1px solid #4b9ae8;border-bottom:4px solid #14346a;color:#bcdcff;transition:transform .08s,filter .12s}
+  .mtile.idle{opacity:.38;cursor:default}
+  .mtile.can{cursor:pointer} .mtile.can:hover{filter:brightness(1.18);transform:translateY(-1px)}
   .mtile.can:active{transform:translateY(2px);border-bottom-width:2px}
   .mtile.dead{background:linear-gradient(180deg,#232a3d,#1a2030);border-color:#2c3450;border-bottom-color:#141824;color:#4a5372;cursor:default}
-  .mtile.coin{background:linear-gradient(180deg,#ffe9a8,#e8bf58);border-color:#a8842f;border-bottom-color:#7d5f1e;cursor:default;animation:coinPop .28s ease-out}
+  .mtile.safe{background:linear-gradient(180deg,#ffe9a8,#e8bf58);border-color:#a8842f;border-bottom-color:#7d5f1e;cursor:default;animation:coinPop .28s ease-out}
+  .mtile.safe .coin{width:46%;height:46%}
+  .mkq{margin-top:12px;text-align:center;font-weight:800;font-size:15px;min-height:22px}
+  .mkq.w{color:var(--ok)} .mkq.l{color:var(--err)} .mkq.i{color:#8fa0c8;font-weight:600;font-size:13.5px}
   .mtile.boom{background:linear-gradient(180deg,#e05555,#8e2020);border-color:#ff9a9a;border-bottom-color:#5d1414;color:#fff;cursor:default;animation:boomPop .32s ease-out}
   .mtile.shown{background:linear-gradient(180deg,#3a2030,#2a1622);border-color:#6b3a4a;border-bottom-color:#1e1017;color:#c46b7b;cursor:default}
   @@keyframes coinPop{0%{transform:scale(.55)}60%{transform:scale(1.14)}100%{transform:scale(1)}}
@@ -175,7 +183,6 @@
   .mins{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
   .mins button{flex:1;min-width:46px;background:#232735;border:1px solid var(--line);color:#fff;font-weight:800;padding:8px 0;border-radius:9px;cursor:pointer}
   .mins button.on{border-color:#ff8a8a;color:#ff8a8a}
-  .hsline{display:flex;justify-content:space-between;margin-top:10px;font-size:14px;color:var(--muted)} .hsline b{color:var(--gold)}
   /* lat the: 21 la Gunny (3 hang x 7), anh tach tu gameover.swf */
   .ltList{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
   .ltList button{background:#12141a;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;cursor:pointer;text-align:left;font-size:13px}
@@ -349,13 +356,16 @@
     <div class="row2">
       <div class="card">
         <h2>Dò mìn</h2>
-        <div id="mstage">
-          <div class="mside coinS"><div class="ic"><span class="coin s"></span></div><div class="n" id="mSafe">0</div></div>
+        <div id="mboard">
+          <div class="mbar">
+            <div class="g"><span>Ô an toàn</span><b id="mSafe">0</b></div>
+            <div class="r"><span>Số mìn</span><b id="mBomb">3</b></div>
+            <div class="h"><span>Hệ số</span><b id="mHs">x0</b> <small id="mHsN"></small></div>
+          </div>
           <div class="mgrid" id="mGrid"></div>
-          <div class="mside bomb"><div class="ic">💣</div><div class="n" id="mBomb">3</div></div>
+          <div class="mkq i" id="mKq">Chọn số mìn, tiền cược rồi bấm Bắt đầu</div>
         </div>
-        <div class="hsline"><span>Hệ số: <b id="mHs">x0</b></span><span>Ô tiếp: <b id="mHsN">-</b></span></div>
-        <button class="b gold" id="mRut" style="width:100%;margin-top:10px;display:none"></button>
+        <button class="b gold" id="mRut" style="width:100%;margin-top:12px;display:none"></button>
       </div>
       <div class="card" id="mSetup">
         <h2>Bắt đầu ván</h2>
@@ -668,18 +678,23 @@
     for(var i=0;i<25;i++){
       var cls='mtile', t='';
       if(v){ var mo=v.mo.indexOf(i)>=0, min=v.min&&v.min.indexOf(i)>=0;
-        if(mo){ cls+=' coin'; t='<span class="coin"></span>'; }
+        if(mo){ cls+=' safe'; t='<span class="coin"></span>'; }
         else if(no===i){ cls+=' boom'; t='💥'; }
         else if(min){ cls+=' shown'; t='💣'; }
         else if(v.trangThai===0) cls+=' can'; else cls+=' dead'; }
-      else cls+=' dead';
+      else cls+=' idle';
       h+='<div class="'+cls+'" data-o="'+i+'">'+t+'</div>';
     }
     g.innerHTML=h;
     g.querySelectorAll('.mtile.can').forEach(function(el){ el.onclick=function(){ mOpen(+el.dataset.o); }; });
     $('mSafe').textContent=v?v.mo.length:0; $('mBomb').textContent=v?v.soMin:MG.soMin;
     $('mHs').textContent='x'+(v?String(v.heSo).replace('.',','):'0');
-    $('mHsN').textContent=v&&v.trangThai===0&&v.heSoTiep?('x'+String(v.heSoTiep).replace('.',',')):'-';
+    $('mHsN').textContent=v&&v.trangThai===0&&v.heSoTiep?('→ x'+String(v.heSoTiep).replace('.',',')):'';
+    var kq=$('mKq');
+    if(!v){ kq.className='mkq i'; kq.textContent='Chọn số mìn, tiền cược rồi bấm Bắt đầu'; }
+    else if(v.trangThai===0){ kq.className='mkq i'; kq.textContent=v.mo.length?(v.heSo<1?'Hệ số dưới x1: rút lúc này sẽ lỗ, mở thêm ô để lên lời':'Mở tiếp hoặc bấm Nhận để rút tiền'):'Chọn 1 ô bất kỳ để mở'; }
+    else if(v.trangThai===2){ kq.className='mkq l'; kq.textContent='💥 Trúng mìn! Mất '+fmt(v.cuoc)+' xu web'; }
+    else { var net=v.nhan-v.cuoc; kq.className='mkq '+(net>=0?'w':'l'); kq.textContent='Đã rút '+fmt(v.nhan)+' xu web ('+(net>=0?'+':'')+fmt(net)+')'; }
     var rb=$('mRut'), playing=v&&v.trangThai===0;
     rb.style.display=playing?'':'none';
     if(playing){ rb.disabled=!v.mo.length; rb.innerHTML=v.mo.length?('NHẬN '+fmt(v.rut)+' <span class="coin s"></span>'):'MỞ 1 Ô ĐỂ BẮT ĐẦU ĂN'; }
