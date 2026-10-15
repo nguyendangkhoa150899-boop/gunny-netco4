@@ -54,7 +54,7 @@ class MiniGameController extends \App\Http\BaseController
         $mid = $this->mid();
         $ls = $this->mem()->select("SELECT TOP 40 Delta,SoDu,Loai,GhiChu,ThoiGian FROM Web_SoXu WHERE MemberID=? ORDER BY ID DESC", [$mid]);
         $nv = $this->nhanVat();
-        $sv = $this->mem()->selectOne("SELECT TOP 1 ID FROM Server_List ORDER BY ID");
+        $sv = $this->mem()->selectOne("SELECT TOP 1 ServerID ID FROM Server_List ORDER BY ServerID");
         return $this->success('ok', [
             'soDu' => XuWeb::soDu($mid),
             'lichSu' => array_map(function ($x) {

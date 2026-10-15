@@ -54,6 +54,7 @@ _install/
 # --- Tai lieu HDSD video ---
 *.png
 !**/src/**/*.png
+!website_backend/public/img/*.png
 
 # NuGet restore (khong len git)
 packages/
