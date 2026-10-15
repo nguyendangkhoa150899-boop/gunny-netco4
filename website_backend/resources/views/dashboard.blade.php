@@ -232,10 +232,26 @@
   .mins button{flex:1;min-width:46px;background:#232735;border:1px solid var(--line);color:#fff;font-weight:800;padding:8px 0;border-radius:9px;cursor:pointer}
   .mins button.on{border-color:#ff8a8a;color:#ff8a8a}
   /* lat the: 21 la Gunny (3 hang x 7), anh tach tu gameover.swf */
-  .ltList{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-  .ltList button{background:#12141a;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:9px 12px;cursor:pointer;text-align:left;font-size:13px}
-  .ltList button b{display:block;font-size:14px} .ltList button span{color:var(--muted);font-size:12px}
-  .ltList button.on{border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c66}
+  /* danh sach luot (trai, cuon rieng) + ban bai (phai) */
+  .ltwrap{display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px;align-items:start}
+  .ltside{background:#12141a;border:1px solid var(--line);border-radius:14px;padding:10px;position:sticky;top:14px}
+  .ltside .in{font-size:14px;padding:9px 11px}
+  .ltcount{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin:9px 2px 6px}
+  .ltcount b{color:var(--gold)}
+  .ltcount button{background:none;border:0;color:#7db4ff;font-size:12px;cursor:pointer;padding:0}
+  .ltList{display:flex;flex-direction:column;gap:4px;max-height:560px;overflow-y:auto;padding-right:3px}
+  .ltList::-webkit-scrollbar{width:6px} .ltList::-webkit-scrollbar-thumb{background:#2f3547;border-radius:3px}
+  .ltList button{display:flex;align-items:center;gap:8px;width:100%;background:transparent;border:1px solid transparent;color:var(--text);border-radius:9px;padding:7px 8px;cursor:pointer;text-align:left}
+  .ltList button:hover{background:#1b1f2b}
+  .ltList button.on{background:linear-gradient(180deg,#2b3346,#222839);border-color:var(--gold)}
+  .ltList .nm{flex:1;min-width:0} .ltList .nm b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ltList .nm span{font-size:11px;color:var(--muted)}
+  .dk{flex:none;font-size:10.5px;font-weight:800;border-radius:6px;padding:2px 7px;border:1px solid}
+  .dk.de{color:#7dffb0;border-color:#2f7a52;background:#123122} .dk.th{color:#7db4ff;border-color:#2c4f80;background:#12233d}
+  .dk.kh{color:#ffb35c;border-color:#7a5122;background:#33230f} .dk.ah{color:#ff8a8a;border-color:#7a2a2a;background:#341414}
+  .dk.am{color:#d6b4ff;border-color:#5b3a9a;background:#22163a}
+  .ltempty2{color:var(--muted);font-size:13px;text-align:center;padding:16px 4px}
+  @@media (max-width:900px){ .ltwrap{grid-template-columns:1fr} .ltside{position:static} .ltList{max-height:230px} }
   .board{position:relative;border-radius:14px;padding:16px;background:radial-gradient(ellipse at center,#3a2a14 0%,#1a120a 75%);border:2px solid #6b4a1e;box-shadow:inset 0 0 40px #000a}
   .bhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
   .bhd b{font-size:18px;color:#ffe2a0} .bhd .luot{background:#2a1d0c;border:1px solid #a8842f;color:var(--gold);border-radius:999px;padding:4px 14px;font-weight:900}
@@ -376,8 +392,14 @@
     <div class="card">
       <h2>Lật thẻ sau phó bản</h2>
       <div class="muted" id="ltInfo" style="margin-bottom:12px">Đánh xong <b>boss ải cuối</b> của phó bản trong game là có 1 lượt lật ở đây. Mỗi lượt lật <b>3 lá</b>, quà vào <b>Rương web</b> hoặc ví xu.</div>
-      <div class="ltList" id="ltList"></div>
-      <div id="ltBoard"></div>
+      <div class="ltwrap">
+        <div class="ltside">
+          <input class="in" id="ltFind" placeholder="Tìm phó bản..." autocomplete="off">
+          <div class="ltcount"><span>Đang chờ: <b id="ltCnt">0</b> lượt</span><button type="button" id="ltNext">Lượt kế tiếp →</button></div>
+          <div class="ltList" id="ltList"></div>
+        </div>
+        <div id="ltBoard"></div>
+      </div>
     </div>
   </section>
 
@@ -660,10 +682,31 @@
       ltRenderList(); ltRenderBoard();
     });
   }
-  function ltRenderList(){
-    $('ltList').innerHTML=LT.ds.map(function(x){ return '<button data-id="'+x.id+'" class="'+(x.id===LT.cur?'on':'')+'"><b>'+esc(x.phoBan)+'</b><span>Thắng lúc '+esc(x.tg.slice(11))+' · đã lật '+Object.keys(x.daLat).length+'/'+LT.soLat+'</span></button>'; }).join('');
-    $('ltList').querySelectorAll('button').forEach(function(b){ b.onclick=function(){ LT.cur=+b.dataset.id; ltRenderList(); ltRenderBoard(); }; });
+  // tach do kho o cuoi ten pho ban -> nhan mau; sap xep theo ten goc roi do kho
+  var DK=[['ác mộng','am','Ác mộng',5],['anh hùng','ah','Anh hùng',4],['ah','ah','Anh hùng',4],['khó','kh','Khó',3],['thường','th','Thường',2],['dễ','de','Dễ',1]];
+  function tachDk(ten){
+    var t=String(ten).trim().replace(/\s+ải$/i,''), lo=t.toLowerCase();
+    for(var i=0;i<DK.length;i++){ var k=DK[i][0]; if(lo===k||lo.slice(-(k.length+1))===' '+k) return {goc:t.slice(0,t.length-k.length).trim(),dk:DK[i]}; }
+    return {goc:t,dk:null};
   }
+  function ltRenderList(){
+    var q=($('ltFind').value||'').trim().toLowerCase();
+    var ds=LT.ds.map(function(x){ var d=tachDk(x.phoBan); return {x:x,goc:d.goc,dk:d.dk}; })
+      .filter(function(r){ return !q||r.x.phoBan.toLowerCase().indexOf(q)>=0; })
+      .sort(function(a,b){ return a.goc.localeCompare(b.goc,'vi')||((a.dk?a.dk[3]:0)-(b.dk?b.dk[3]:0))||(a.x.id-b.x.id); });
+    LT.thuTu=ds.map(function(r){ return r.x.id; });
+    $('ltCnt').textContent=LT.ds.length;
+    $('ltList').innerHTML=ds.length?ds.map(function(r){ var x=r.x, n=Object.keys(x.daLat).length;
+      return '<button data-id="'+x.id+'" class="'+(x.id===LT.cur?'on':'')+'"><span class="nm"><b>'+esc(r.goc)+'</b><span>'+esc(x.tg.slice(11))+' · đã lật '+n+'/'+LT.soLat+'</span></span>'
+        +(r.dk?'<span class="dk '+r.dk[1]+'">'+r.dk[2]+'</span>':'')+'</button>'; }).join('')
+      :'<div class="ltempty2">'+(LT.ds.length?'Không thấy phó bản nào.':'Chưa có lượt nào.')+'</div>';
+    $('ltList').querySelectorAll('button').forEach(function(b){ b.onclick=function(){ LT.cur=+b.dataset.id; ltRenderList(); ltRenderBoard(); }; });
+    var on=$('ltList').querySelector('button.on'); if(on&&on.scrollIntoView) on.scrollIntoView({block:'nearest'});
+  }
+  $('ltFind').addEventListener('input',ltRenderList);
+  $('ltNext').addEventListener('click',function(){
+    var t=LT.thuTu||[]; if(!t.length) return; var i=t.indexOf(LT.cur); LT.cur=t[(i+1)%t.length]; ltRenderList(); ltRenderBoard();
+  });
   function faceHtml(c){
     var ic=c.hinh?'<img src="'+esc(c.hinh)+'" alt="" style="border:2px solid '+esc(c.mau)+'">':'<div class="xu"></div>';
     return '<div class="f fr'+(c.hiem?' vip':'')+'">'+ic+(c.han?'<div class="h">'+esc(c.han)+'</div>':'')+'<div class="t">'+esc(c.ten)+'</div></div>';
@@ -681,7 +724,7 @@
     }
     h+='</div><div class="ltNote">'+(xongData?'Đã lật đủ '+LT.soLat+' lá. Các lá mờ là quà bạn đã bỏ lỡ. <button class="b gold" id="ltDone" style="margin-left:8px;padding:7px 14px">Xong</button>':'Chọn '+con+' lá bất kỳ để lật')+'</div></div>';
     b.innerHTML=h;
-    if(xongData){ $('ltDone').onclick=function(){ ltLoad(); }; return; }
+    if(xongData){ $('ltDone').onclick=function(){ var t=LT.thuTu||[], i=t.indexOf(LT.cur); LT.cur=t.length>1?t[(i+1)%t.length]:null; ltLoad(); }; return; }
     b.querySelectorAll('.cd:not(.up):not(.lock)').forEach(function(el){ el.onclick=function(){ ltFlip(sess,+el.dataset.o,el); }; });
   }
   function ltFlip(sess,o,el){
