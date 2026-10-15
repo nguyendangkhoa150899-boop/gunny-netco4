@@ -14,7 +14,7 @@ $now = date('Y-m-d H:i:s');
 $maxStr = max_strength($conn);
 ?>
 <style>
-  .lbl{display:flex;flex-direction:column;gap:4px;flex:1;font-size:12px;color:var(--muted)}
+  .lbl{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;font-size:12px;color:var(--muted)} .lbl > span{white-space:nowrap}
   .opt{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-top:8px;cursor:pointer;font-size:14px}
   .opt:has(input:checked){border-color:#2563eb;background:rgba(37,99,235,.12)}
   .opt small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
@@ -50,7 +50,7 @@ $maxStr = max_strength($conn);
       <button class="btn sm blue mt">Tạo code</button></form>
     <form method="post" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px"><?= csrf() ?><input type="hidden" name="act" value="gc_award_add"><input type="hidden" name="aid" value="<?= $sel ?>">
       <h3>Thêm quà</h3>
-      <div class="row"><label class="lbl">ID vật phẩm (<a href="?page=mail" target="_blank">tìm ID</a>)<input name="tid" type="number" placeholder="vd: 71963"></label>
+      <div class="row"><label class="lbl"><span>ID vật phẩm · <a href="?page=mail" target="_blank">tìm ID</a></span><input name="tid" type="number" placeholder="vd: 71963"></label>
         <label class="lbl">Số lượng<input name="cnt" type="number" min="1" value="1"></label>
         <label class="lbl">Hạn ngày (0 = vĩnh viễn)<input name="day" type="number" min="0" value="0"></label></div>
       <div class="row"><label class="lbl">Cường hóa (0 đến <?= $maxStr ?>)<input name="str" type="number" min="0" max="<?= $maxStr ?>" value="0"></label>
