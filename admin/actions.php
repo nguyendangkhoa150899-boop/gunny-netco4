@@ -85,15 +85,28 @@ function run_action($conn,$act,$P){
     return 'Đã đổi ngày kết thúc. Nhớ Xuất bản dữ liệu.';
 
   case 'gc_codes':
-    $aid=(int)($P['aid']??0); $num=min(500,max(1,(int)($P['num']??10)));
-    $prefix=(string)scalar($conn,"SELECT ISNULL(CodePrefix,'') FROM Db_Tank.dbo.Active WHERE ActiveID=?",[$aid]);
-    $codes=[]; $abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    for($i=0;$i<$num;$i++){
-      $c=$prefix; while(strlen($c)<strlen($prefix)+12) $c.=$abc[random_int(0,strlen($abc)-1)];
-      if(exec_sql($conn,"INSERT INTO Db_Tank41.dbo.Active_Number(AwardID,ActiveID,PullDown,GetDate,UserID,Mark,Creator) VALUES(?,?,0,GETDATE(),0,0,0)",[$c,$aid])===true) $codes[]=$c;
+    // Creator=-1: code dung chung (moi nguoi nhap 1 lan, can _setup/sql/giftcode-dung-chung.sql). 0: code thuong, dung 1 lan.
+    $aid=(int)($P['aid']??0); $shared=!empty($P['shared']); $creator=$shared?-1:0;
+    $ins="INSERT INTO Db_Tank41.dbo.Active_Number(AwardID,ActiveID,PullDown,GetDate,UserID,Mark,Creator) VALUES(?,?,0,GETDATE(),0,0,?)";
+    $codes=[]; $skip=[];
+    $custom=array_filter(preg_split('/[\s,;]+/', strtoupper(trim($P['custom']??''))));
+    if($custom){
+      foreach($custom as $c){
+        if(!preg_match('/^[A-Z0-9_\-]{3,30}$/',$c)){ $skip[]=$c.' (chỉ chữ, số, _ -, 3 đến 30 ký tự)'; continue; }
+        if(scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Active_Number WHERE AwardID=?",[$c])){ $skip[]=$c.' (đã tồn tại)'; continue; }
+        if(exec_sql($conn,$ins,[$c,$aid,$creator])===true) $codes[]=$c;
+      }
+    } else {
+      $num=min(500,max(1,(int)($P['num']??10)));
+      $prefix=(string)scalar($conn,"SELECT ISNULL(CodePrefix,'') FROM Db_Tank.dbo.Active WHERE ActiveID=?",[$aid]);
+      $abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      for($i=0;$i<$num;$i++){
+        $c=$prefix; while(strlen($c)<strlen($prefix)+12) $c.=$abc[random_int(0,strlen($abc)-1)];
+        if(exec_sql($conn,$ins,[$c,$aid,$creator])===true) $codes[]=$c;
+      }
     }
     $_SESSION['gc_codes']=$codes;
-    return 'Đã tạo '.count($codes).' code cho sự kiện #'.$aid.'.';
+    return 'Đã tạo '.count($codes).' code '.($shared?'dùng chung (mỗi người nhập 1 lần)':'dùng 1 lần').' cho sự kiện #'.$aid.'.'.($skip?' Bỏ qua: '.h(implode(', ',$skip)).'.':'');
 
   /* ---------- he thong ---------- */
   case 'rate_add':

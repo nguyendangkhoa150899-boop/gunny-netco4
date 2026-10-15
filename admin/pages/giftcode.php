@@ -29,8 +29,15 @@ $now = date('Y-m-d H:i:s');
       <div class="row"><input name="tid" type="number" placeholder="TemplateID vật phẩm"><input name="cnt" type="number" min="1" value="1" title="Số lượng"><input name="day" type="number" min="0" value="0" title="Hạn ngày (0 = vĩnh viễn)"></div>
       <div class="row"><input name="str" type="number" min="0" max="<?= max_strength($conn) ?>" value="0" title="Cường hóa (0 đến <?= max_strength($conn) ?>)"><input name="gold" type="number" min="0" placeholder="Vàng"><input name="money" type="number" min="0" placeholder="Xu"></div>
       <button class="btn sm mt">Thêm quà</button> <a class="muted" href="?page=mail" target="_blank">Tìm TemplateID</a></form>
-    <form method="post" class="row"><?= csrf() ?><input type="hidden" name="act" value="gc_codes"><input type="hidden" name="aid" value="<?= $sel ?>">
-      <input name="num" type="number" min="1" max="500" value="10" title="Số code"><button class="btn sm blue" style="flex:0;white-space:nowrap">Tạo code</button></form>
+    <form method="post" style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"><?= csrf() ?><input type="hidden" name="act" value="gc_codes"><input type="hidden" name="aid" value="<?= $sel ?>">
+      <h3>Tạo code</h3>
+      <input name="custom" placeholder="Tên code tự đặt, vd: BIABIA2026 (nhiều tên cách nhau dấu phẩy). Bỏ trống = sinh ngẫu nhiên">
+      <div class="row">
+        <input name="num" type="number" min="1" max="500" value="10" title="Số code ngẫu nhiên (khi bỏ trống tên)">
+        <label style="flex:2;font-size:13px"><input type="checkbox" name="shared" value="1"> Dùng chung (nhiều người cùng nhập, mỗi người 1 lần)</label>
+        <button class="btn sm blue" style="flex:0;white-space:nowrap">Tạo code</button>
+      </div>
+      <div class="muted">Không tích "Dùng chung": mỗi code chỉ 1 người dùng được 1 lần.</div></form>
     <form method="post" class="row"><?= csrf() ?><input type="hidden" name="act" value="gc_end"><input type="hidden" name="aid" value="<?= $sel ?>">
       <input name="end" type="date" value="<?= date('Y-m-d',strtotime('+30 days')) ?>"><button class="btn sm" style="flex:0;white-space:nowrap">Đổi hạn</button></form>
   </div>
