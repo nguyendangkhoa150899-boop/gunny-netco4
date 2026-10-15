@@ -49,13 +49,50 @@ class MiniGameController extends \App\Http\BaseController
 
     /* ======================= VI ======================= */
 
+    /**
+     * Rut xu game ra web: nguoi choi GUI THU KEM XU cho nhan vat rut_ten (NganHang) trong game. Game tu tru xu (an toan ca khi online).
+     * Ham nay quet thu gui toi NganHang cua nhan vat nay: xoa thu (1 lan duy nhat) -> ghi Web_RutXu -> cong xu web theo rut_tile.
+     * Vuot rut_tran_ngay thi thu de nguyen, sang ngay sau tu xu ly tiep. Goi moi khi mo Vi (trang tu goi lai moi 10 giay).
+     */
+    private function nhanXuNganHang(int $mid, $nv): array
+    {
+        $kq = ['nhan' => [], 'cho' => 0, 'choXu' => 0, 'daRutHomNay' => 0];
+        if (!$nv || CauHinh::int('rut_mo', 1) !== 1) return $kq;
+        $bank = $this->mem()->selectOne("SELECT UserID FROM Db_Tank41.dbo.Sys_Users_Detail WHERE NickName=?", [CauHinh::get('rut_ten', 'NganHang')]);
+        if (!$bank) return $kq;
+        $tile = max(1, CauHinh::float('rut_tile', 1));
+        $tran = CauHinh::int('rut_tran_ngay', 2000000);
+        $gid = (int)$nv->UserID;
+        $this->mem()->transaction(function () use ($mid, $gid, $bank, $tile, $tran, &$kq) {
+            $da = (int)$this->mem()->selectOne("SELECT ISNULL(SUM(XuGame),0) n FROM Web_RutXu WITH (UPDLOCK,HOLDLOCK) WHERE MemberID=? AND ThoiGian>=CAST(GETDATE() AS date)", [$mid])->n;
+            $thu = $this->mem()->select("SELECT ID, Money FROM Db_Tank41.dbo.User_Messages WITH (UPDLOCK,ROWLOCK)
+                WHERE ReceiverID=? AND SenderID=? AND Type=1 AND Money>0 AND ISNULL(Annex1,'')='' AND ISNULL(Annex2,'')='' AND ISNULL(Annex3,'')=''
+                  AND ISNULL(Annex4,'')='' AND ISNULL(Annex5,'')='' ORDER BY ID", [(int)$bank->UserID, $gid]);
+            foreach ($thu as $t) {
+                $xu = (int)$t->Money;
+                if ($da + $xu > $tran) { $kq['cho']++; $kq['choXu'] += $xu; continue; }
+                if ($this->mem()->delete("DELETE FROM Db_Tank41.dbo.User_Messages WHERE ID=?", [(int)$t->ID]) !== 1) continue;
+                $web = (int)floor($xu / $tile);
+                $this->mem()->insert("INSERT INTO Web_RutXu(MemberID,GameUserID,MailID,XuGame,XuWeb) VALUES(?,?,?,?,?)", [$mid, $gid, (int)$t->ID, $xu, $web]);
+                if ($web > 0) XuWeb::doi($mid, $web, 'rutxu', 'Rút ' . number_format($xu, 0, ',', '.') . ' xu từ game');
+                $da += $xu;
+                $kq['nhan'][] = ['xuGame' => $xu, 'xuWeb' => $web];
+            }
+            $kq['daRutHomNay'] = $da;
+        });
+        return $kq;
+    }
+
     public function vi()
     {
         $mid = $this->mid();
-        $ls = $this->mem()->select("SELECT TOP 40 Delta,SoDu,Loai,GhiChu,ThoiGian FROM Web_SoXu WHERE MemberID=? ORDER BY ID DESC", [$mid]);
         $nv = $this->nhanVat();
+        $rut = $this->nhanXuNganHang($mid, $nv);
+        $ls = $this->mem()->select("SELECT TOP 40 Delta,SoDu,Loai,GhiChu,ThoiGian FROM Web_SoXu WHERE MemberID=? ORDER BY ID DESC", [$mid]);
         $sv = $this->mem()->selectOne("SELECT TOP 1 ServerID ID FROM Server_List ORDER BY ServerID");
         return $this->success('ok', [
+            'rut' => $rut + ['mo' => CauHinh::int('rut_mo', 1), 'ten' => CauHinh::get('rut_ten', 'NganHang'),
+                'tile' => CauHinh::float('rut_tile', 1), 'tran' => CauHinh::int('rut_tran_ngay', 2000000)],
             'soDu' => XuWeb::soDu($mid),
             'lichSu' => array_map(function ($x) {
                 return ['d' => (int)$x->Delta, 'sd' => (int)$x->SoDu, 'loai' => $x->Loai, 'gc' => $x->GhiChu, 'tg' => substr((string)$x->ThoiGian, 0, 16)];

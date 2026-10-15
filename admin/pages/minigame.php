@@ -11,7 +11,9 @@ $tk = q($conn,"SELECT
   (SELECT ISNULL(SUM(CAST(Nhan AS bigint)),0) FROM Db_Member.dbo.Web_DoMin WHERE ThoiGian>=CAST(GETDATE() AS date) AND TrangThai<>0) dmTra,
   (SELECT COUNT(*) FROM Db_Member.dbo.Web_DoMin WHERE ThoiGian>=CAST(GETDATE() AS date)) dmVan,
   (SELECT COUNT(*) FROM Db_Member.dbo.Web_The_Luot WHERE Ngay=CAST(GETDATE() AS date)) ltLuot,
-  (SELECT COUNT(*) FROM Db_Member.dbo.Web_Ruong) rgMon")[0];
+  (SELECT COUNT(*) FROM Db_Member.dbo.Web_Ruong) rgMon,
+  (SELECT ISNULL(SUM(CAST(XuGame AS bigint)),0) FROM Db_Member.dbo.Web_RutXu WHERE ThoiGian>=CAST(GETDATE() AS date)) rutXu,
+  (SELECT COUNT(DISTINCT MemberID) FROM Db_Member.dbo.Web_RutXu WHERE ThoiGian>=CAST(GETDATE() AS date)) rutNguoi")[0];
 $top = q($conn,"SELECT TOP 10 Email,Money FROM Db_Member.dbo.Mem_Account WHERE Money>0 ORDER BY Money DESC");
 $pbs = q($conn,"SELECT p.Khoa,p.ManCuoi,p.SoLanNgay,p.BatTat,(SELECT COUNT(*) FROM Db_Member.dbo.Web_The_Qua q WHERE q.Khoa=p.Khoa) soQua FROM Db_Member.dbo.Web_The_PhoBan p ORDER BY p.BatTat DESC,p.ManCuoi");
 $selPb = (string)($_GET['pb'] ?? '');
@@ -31,6 +33,7 @@ $soLan = (int)scalar($conn,"SELECT GiaTri FROM Db_Member.dbo.Web_CauHinh WHERE K
       <tr><td>Tài xỉu</td><td><?= n($tk['txVan']) ?></td><td><?= n($tk['txCuoc']) ?></td><td><?= n($tk['txTra']) ?></td><td><?= n($tk['txCuoc']-$tk['txTra']) ?></td></tr>
       <tr><td>Dò mìn</td><td><?= n($tk['dmVan']) ?></td><td><?= n($tk['dmCuoc']) ?></td><td><?= n($tk['dmTra']) ?></td><td><?= n($tk['dmCuoc']-$tk['dmTra']) ?></td></tr></table>
     <div class="mt">Lượt lật thẻ hôm nay: <b><?= n($tk['ltLuot']) ?></b> · Món đang nằm trong rương web: <b><?= n($tk['rgMon']) ?></b></div>
+    <div class="mt">Rút xu từ game (thư gửi nhân vật NganHang) hôm nay: <b><?= n($tk['rutXu']) ?></b> xu game, <b><?= n($tk['rutNguoi']) ?></b> người</div>
     <h3 class="mt">Nhiều xu web nhất</h3>
     <table><?php foreach($top as $t): ?><tr><td><?= h($t['Email']) ?></td><td><?= n($t['Money']) ?></td></tr><?php endforeach; if(!$top) echo '<tr><td class="muted">Chưa ai có xu web.</td></tr>'; ?></table>
   </div>

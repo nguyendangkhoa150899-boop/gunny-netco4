@@ -112,6 +112,13 @@
   .b.sm2{padding:8px 12px;font-size:13px;border-radius:9px}
   .fr2{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
   .fr2 span{color:var(--muted)} .fr2 b{font-size:16px;font-variant-numeric:tabular-nums}
+  /* rut xu tu game */
+  .steps2{margin:0 0 12px;padding-left:20px;line-height:1.9;font-size:14px;color:#c9cede}
+  .steps2 b{color:var(--text)}
+  .code2{font-family:Consolas,monospace;color:var(--gold);background:#12141a;border:1px solid #6b5520;border-radius:6px;padding:1px 8px}
+  .rutInfo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .rutInfo div{background:#12141a;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+  .rutInfo span{display:block;color:var(--muted);font-size:12px} .rutInfo b{font-size:15px}
   /* bang lich su */
   .ls{width:100%;border-collapse:collapse;font-size:13.5px}
   .ls td{padding:8px 4px;border-bottom:1px solid var(--line)}
@@ -273,8 +280,21 @@
         <button class="b go" id="viBtn">ĐỔI SANG XU GAME</button>
         <div class="msg" id="viMsg"></div>
       </div>
-      <div class="card"><h2>Lịch sử xu web</h2><table class="ls" id="viLs"></table></div>
+      <!-- rut xu game ra web: gui thu kem xu cho nhan vat NganHang trong game (MiniGameController::nhanXuNganHang) -->
+      <div class="card" id="rutCard">
+        <h2>Rút xu từ game ra web</h2>
+        <ol class="steps2">
+          <li>Trong game mở <b>Thư</b> → <b>Gửi thư</b>.</li>
+          <li>Người nhận: <b class="code2" id="rutTen">NganHang</b> <button class="b gray sm2" id="rutCopy">Chép tên</button></li>
+          <li>Nhập <b>số xu</b> muốn rút, <b>không kèm đồ</b>, bấm Gửi (phí gửi thư 100 vàng).</li>
+          <li>Mở lại trang này: xu web tự cộng, đang online vẫn rút được.</li>
+        </ol>
+        <div class="rutInfo"><div><span>Tỉ lệ</span><b id="rutTile">1 xu game = 1 xu web</b></div><div><span>Hôm nay còn rút được</span><b id="rutCon">-</b></div></div>
+        <div class="msg" id="rutMsg"></div>
+        <div class="muted" style="margin-top:8px">Trang tự kiểm tra thư mới mỗi 10 giây khi đang mở mục Ví.</div>
+      </div>
     </div>
+    <div class="card"><h2>Lịch sử xu web</h2><table class="ls" id="viLs"></table></div>
   </section>
 
   <!-- ================= DIEM DANH ================= -->
@@ -419,6 +439,9 @@
     var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad}[sec];
     if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||!loaded[sec])){ loaded[sec]=1; f(); }
     window.scrollTo(0,0);
+    // dang mo Vi: 10 giay kiem tra thu rut xu 1 lan
+    clearInterval(window._viPoll);
+    if(sec==='vi') window._viPoll=setInterval(function(){ if(!document.hidden) loadVi(); },10000);
   }
   document.querySelectorAll('[data-grp]').forEach(function(a){ a.addEventListener('click',function(){ go(NHOM[a.dataset.grp][0]); }); });
   document.querySelectorAll('[data-go]').forEach(function(a){ a.addEventListener('click',function(){ go(a.dataset.go); }); });
@@ -459,16 +482,30 @@
 
   // ---------- vi ----------
   var VI={};
-  var LOAI={taixiu:'Tài xỉu',domin:'Dò mìn',latthe:'Lật thẻ',diemdanh:'Điểm danh',admin:'Admin',doixu:'Đổi sang game'};
+  var LOAI={taixiu:'Tài xỉu',domin:'Dò mìn',latthe:'Lật thẻ',diemdanh:'Điểm danh',admin:'Admin',doixu:'Đổi sang game',rutxu:'Rút từ game'};
   function loadVi(){
     api('/api/vi').then(function(d){
       if(!d||!d.success) return;
       VI=d.data; setBal(d.data.soDu);
+      var r=d.data.rut||{};
+      if(r.ten) $('rutTen').textContent=r.ten;
+      $('rutTile').textContent=(r.tile>1?String(r.tile).replace('.',',')+' xu game':'1 xu game')+' = 1 xu web';
+      $('rutCon').textContent=fmt(Math.max(0,(r.tran||0)-(r.daRutHomNay||0)))+' xu game';
+      $('rutCard').style.opacity=r.mo?1:.5;
+      var m=$('rutMsg');
+      if(r.nhan&&r.nhan.length){ var tong=r.nhan.reduce(function(s,x){ return s+x.xuWeb; },0);
+        m.className='msg ok'; m.textContent='Đã nhận '+r.nhan.length+' thư rút xu: +'+fmt(tong)+' xu web!'; winpop(tong); toast('+'+fmt(tong)+' xu web từ game'); }
+      else if(r.cho){ m.className='msg err'; m.textContent=r.cho+' thư ('+fmt(r.choXu)+' xu game) vượt hạn mức hôm nay, sẽ tự cộng vào ngày mai.'; }
+      else if(!r.mo){ m.className='msg err'; m.textContent='Rút xu đang tạm tắt.'; }
       var ls=d.data.lichSu||[];
       $('viLs').innerHTML=ls.length?ls.map(function(x){ return '<tr><td class="t">'+esc(x.tg.slice(5))+'</td><td>'+esc(LOAI[x.loai]||x.loai)+'<div class="muted">'+esc(x.gc||'')+'</div></td><td class="'+(x.d>=0?'p':'m')+'">'+(x.d>=0?'+':'')+fmt(x.d)+'</td></tr>'; }).join('')
         :'<tr><td class="empty">Chưa có giao dịch.</td></tr>';
     });
   }
+  $('rutCopy').addEventListener('click',function(){
+    var t=$('rutTen').textContent, b=this, done=function(){ b.textContent='Đã chép'; setTimeout(function(){ b.textContent='Chép tên'; },1500); };
+    if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(t).then(done); else done();
+  });
   $('viBtn').addEventListener('click',function(){
     var n=parseInt($('viCoin').value,10)||0, m=$('viMsg');
     if(n<600||n>1000000){ m.className='msg err'; m.textContent='Đổi từ 600 đến 1.000.000 xu.'; return; }
