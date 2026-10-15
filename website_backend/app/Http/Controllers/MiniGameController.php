@@ -500,7 +500,7 @@ class MiniGameController extends \App\Http\BaseController
         $nv = $this->nhanVat();
         if (!$nv) return $this->error('Tài khoản chưa có nhân vật.');
         $this->quetPhoBan($mid, (int)$nv->UserID);
-        $rows = $this->mem()->select("SELECT TOP 20 ID,Khoa,ThoiGian,DaLat,Bai FROM Web_The_Luot WHERE MemberID=? AND Xong=0 ORDER BY ID", [$mid]);
+        $rows = $this->mem()->select("SELECT TOP 100 ID,Khoa,ThoiGian,DaLat,Bai FROM Web_The_Luot WHERE MemberID=? AND Xong=0 ORDER BY ID", [$mid]);
         $ds = array_map(function ($x) {
             $lat = $x->DaLat === '' ? [] : array_map('intval', explode(',', $x->DaLat));
             $bai = $this->moTaBai(array_replace(array_fill(0, self::SO_LA, null), json_decode($x->Bai, true) ?: []));
