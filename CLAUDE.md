@@ -1,6 +1,7 @@
 # GunnyNetco4: quy tắc cho Claude
 
 Đọc `README.md` trước (hiện trạng, kiến trúc, lỗi đã gặp). File này chỉ là luật làm việc.
+**Dựng lại server trên máy mới: `docs/MO-LAI-SERVER.md`.** Xóa trắng dữ liệu người chơi: `_setup/sql/lam-trang.sql` (KHÔNG dùng `wipe-ve-trang.sql` cũ, nó xóa cả bảng cấu hình).
 
 ## Quy trình bắt buộc
 - Sửa code → `git commit` → `./_setup/deploy.sh` (tự push GitHub rồi đẩy file đổi lên VPS). **Không sửa tay trên VPS** những file có trong git, lần deploy sau sẽ đè.

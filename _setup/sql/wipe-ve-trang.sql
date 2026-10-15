@@ -1,3 +1,4 @@
+-- CU, DUNG DUNG (15/10/2026): xoa ca bang cau hinh moi (Rate, Web_DiemDanh_Qua, Active_Number, Web_*...). Dung lam-trang.sql.
 SET NOCOUNT ON;
 USE Db_Tank41;
 EXEC sp_MSforeachtable 'ALTER TABLE ? NOCHECK CONSTRAINT all';

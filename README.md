@@ -10,6 +10,8 @@ Mật khẩu, key SSH, cách kết nối VPS **không nằm trong repo**: chủ 
 | VPS | Windows Server, `171.244.39.225`, thư mục chạy `C:\Gunny92` |
 | Repo | https://github.com/nguyendangkhoa150899-boop/gunny-netco4 (riêng tư) |
 
+**Mở lại server trên máy mới (gói bản trắng): `docs/MO-LAI-SERVER.md`** · tạo gói: `_setup/dong-goi.ps1`.
+
 **Đọc nhanh:** bẫy và kinh nghiệm ở **mục 21**, cấu hình web **mục 22**, dựng lại web **mục 23**, việc cần làm khi mở thật **mục 24**. Web người chơi: điểm danh (13), dashboard (14), mini game (15), rút xu (16), shop (18), gửi quà test (19), lật thẻ (20).
 
 ---
