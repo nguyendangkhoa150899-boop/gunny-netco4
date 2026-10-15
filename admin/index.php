@@ -11,6 +11,8 @@ define('ADMIN_PASS', envv($__env,'ADMIN_PANEL_PASS',''));   // đặt ADMIN_PANE
 $DB_HOST = envv($__env,'DB_HOST','localhost');
 $DB_UID  = envv($__env,'DB_USERNAME','sa');
 $DB_PWD  = envv($__env,'DB_PASSWORD','');
+$CHARGE_KEY = envv($__env,'CHARGE_KEY','');   // phải trùng ChargeKey của Request (appsettings.secret.config)
+date_default_timezone_set('Asia/Ho_Chi_Minh');
 
 function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
@@ -36,7 +38,8 @@ function q($conn,$sql,$params=[]){
   $rows=[]; while($r=sqlsrv_fetch_array($st,SQLSRV_FETCH_ASSOC)){ $rows[]=$r; }
   return $rows;
 }
-function scalar($conn,$sql){ $r=q($conn,$sql); return $r ? array_values($r[0])[0] : 0; }
+function scalar($conn,$sql,$params=[]){ $r=q($conn,$sql,$params); return $r ? array_values($r[0])[0] : 0; }
+function ts($t){ return is_numeric($t) && $t>0 ? date('Y-m-d H:i',(int)$t) : (string)$t; }   // TimeCreate luu dang Unix time
 
 // ---- actions (POST, require csrf) ----
 $flash = '';
@@ -45,10 +48,46 @@ if ($authed && isset($_POST['act'])) {
   else {
     $conn = db($DB_HOST,$DB_UID,$DB_PWD);
     if ($conn){
-      if ($_POST['act']==='ban' || $_POST['act']==='unban') {
-        $val = $_POST['act']==='ban' ? 1 : 0;
+      $act  = $_POST['act'];
+      $user = strtolower(trim($_POST['user'] ?? ''));
+      $amt  = (int)($_POST['amount'] ?? 0);
+      $hasChar = function($u) use ($conn){ return $u!=='' && scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Sys_Users_Detail WHERE UserName=?",[$u]) > 0; };
+      $MAXLV = "CROSS JOIN (SELECT TOP 1 Grade,GP FROM Db_Tank.dbo.LevelInfo ORDER BY Grade DESC) l";
+      if ($act==='ban' || $act==='unban') {
+        $val = $act==='ban' ? 1 : 0;
         sqlsrv_query($conn,"UPDATE Db_Member.dbo.Mem_Account SET IsBan=? WHERE Email=?",[$val,$_POST['email']]);
         $flash = ($val? 'Đã khóa ':'Đã mở khóa ').h($_POST['email']);
+      }
+      elseif ($act==='addxu') {
+        // Qua ChargeMoney.aspx của Request (chỉ nhận từ 127.0.0.1): ghi Charge_Money + báo Center, người đang online nhận ngay.
+        if (!$hasChar($user)) $flash = 'Không thấy nhân vật của tài khoản '.h($user).' (phải vào game tạo nhân vật trước).';
+        elseif ($amt<=0 || $amt>100000000) $flash = 'Số xu không hợp lệ (1 đến 100.000.000).';
+        elseif ($CHARGE_KEY==='') $flash = 'Thiếu CHARGE_KEY trong .env.';
+        else {
+          $cid = 'adm'.date('YmdHis').mt_rand(100,999);
+          $sig = md5($cid.$user.$amt.'admin'.'0'.$CHARGE_KEY);
+          $res = trim((string)@file_get_contents('http://127.0.0.1/ChargeMoney.aspx?content='.rawurlencode("$cid|$user|$amt|admin|0|$sig")));
+          $flash = $res==='0' ? 'Đã cộng '.number_format($amt).' xu cho '.h($user).'.' : 'Cộng xu lỗi (mã '.h($res).').';
+        }
+      }
+      elseif ($act==='addgold') {
+        if (!$hasChar($user)) $flash = 'Không thấy nhân vật của tài khoản '.h($user).'.';
+        else {
+          sqlsrv_query($conn,"UPDATE Db_Tank41.dbo.Sys_Users_Detail SET Gold=CASE WHEN CAST(Gold AS bigint)+?>2000000000 THEN 2000000000 ELSE Gold+? END WHERE UserName=?",[$amt,$amt,$user]);
+          $flash = 'Đã cộng '.number_format($amt).' vàng cho '.h($user).' (nhân vật phải đang offline; nếu đang online, lúc thoát server sẽ ghi đè lại).';
+        }
+      }
+      elseif ($act==='maxlv') {
+        if (!$hasChar($user)) $flash = 'Không thấy nhân vật của tài khoản '.h($user).'.';
+        else {
+          sqlsrv_query($conn,"UPDATE d SET GP=l.GP, Grade=l.Grade FROM Db_Tank41.dbo.Sys_Users_Detail d $MAXLV WHERE d.UserName=?",[$user]);
+          $flash = 'Đã đưa '.h($user).' lên cấp tối đa (nhân vật phải đang offline; nếu đang online, lúc thoát server sẽ ghi đè lại).';
+        }
+      }
+      elseif ($act==='buffall') {
+        $g=(int)($_POST['gold']??0); $x=(int)($_POST['xu']??0);
+        sqlsrv_query($conn,"UPDATE d SET GP=l.GP, Grade=l.Grade, Gold=CASE WHEN Gold<? THEN ? ELSE Gold END, Money=CASE WHEN Money<? THEN ? ELSE Money END, MoneyLock=CASE WHEN MoneyLock<? THEN ? ELSE MoneyLock END FROM Db_Tank41.dbo.Sys_Users_Detail d $MAXLV",[$g,$g,$x,$x,$x,$x]);
+        $flash = 'Đã buff toàn server: cấp tối đa, vàng ít nhất '.number_format($g).', xu và xu khóa ít nhất '.number_format($x).'. Người đang online không được áp dụng (lúc thoát server ghi đè lại), cho họ thoát rồi bấm lại.';
       }
       sqlsrv_close($conn);
     }
@@ -87,6 +126,8 @@ $page = $_GET['page'] ?? 'dash';
   .tag{font-size:12px;padding:2px 8px;border-radius:999px} .tag.ok{background:rgba(54,208,127,.15);color:var(--ok)} .tag.ban{background:rgba(255,93,108,.15);color:var(--err)}
   .flash{background:rgba(54,208,127,.12);border:1px solid var(--ok);color:var(--ok);padding:10px 13px;border-radius:10px;margin-bottom:16px;font-size:14px}
   h2{font-size:18px;margin:0 0 12px} .soon{opacity:.6}
+  .note{background:#0e1829;border-left:3px solid var(--accent);padding:11px 14px;border-radius:8px;color:var(--muted);font-size:13px}
+  .feat form.f input{margin-top:8px}
   .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
   .feat .f{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:16px} .feat .f b{display:block;margin-bottom:3px} .feat .f span{color:var(--muted);font-size:13px}
   @media(max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}.feat{grid-template-columns:1fr}}
@@ -119,7 +160,7 @@ $page = $_GET['page'] ?? 'dash';
       <div class="flash" style="border-color:var(--err);color:var(--err);background:rgba(255,93,108,.12)">Không kết nối được SQL.</div>
     <?php elseif($page==='dash'):
       $acc = scalar($conn,"SELECT COUNT(*) FROM Db_Member.dbo.Mem_Account");
-      $accToday = scalar($conn,"SELECT COUNT(*) FROM Db_Member.dbo.Mem_Account WHERE CAST(TimeCreate AS DATE)=CAST(GETDATE() AS DATE)");
+      $accToday = scalar($conn,"SELECT COUNT(*) FROM Db_Member.dbo.Mem_Account WHERE TimeCreate>=?",[strtotime('today')]);
       $chars = scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Sys_Users_Detail");
       $banned = scalar($conn,"SELECT COUNT(*) FROM Db_Member.dbo.Mem_Account WHERE IsBan=1");
       $online = scalar($conn,"SELECT ISNULL(SUM(Online),0) FROM Db_Tank41.dbo.Server_List");
@@ -149,7 +190,7 @@ $page = $_GET['page'] ?? 'dash';
             <td><?= (int)$r['Point'] ?></td>
             <td><?= (int)$r['VIPLevel'] ?></td>
             <td><?= $r['IsBan'] ? '<span class="tag ban">Khóa</span>' : '<span class="tag ok">OK</span>' ?></td>
-            <td><?= h(substr((string)$r['TimeCreate'],0,16)) ?></td>
+            <td><?= h(ts($r['TimeCreate'])) ?></td>
             <td>
               <form method="post" style="margin:0">
                 <input type="hidden" name="csrf" value="<?= h($csrf) ?>">
@@ -162,18 +203,19 @@ $page = $_GET['page'] ?? 'dash';
         <?php endforeach; ?>
       </table>
     <?php elseif($page==='chars'):
-      $rows = q($conn,"SELECT TOP 80 UserName,NickName,Grade,Gold,Money,Win,Total,LastDate FROM Db_Tank41.dbo.Sys_Users_Detail ORDER BY LastDate DESC");
+      $rows = q($conn,"SELECT TOP 80 UserName,NickName,Grade,Gold,Money,MoneyLock,Win,Total,LastDate FROM Db_Tank41.dbo.Sys_Users_Detail ORDER BY LastDate DESC");
     ?>
       <h2>Nhân vật (80 hoạt động gần nhất)</h2>
       <table>
-        <tr><th>Tài khoản</th><th>Nhân vật</th><th>Cấp</th><th>Vàng</th><th>Xu</th><th>Thắng/Tổng</th><th>Lần cuối</th></tr>
+        <tr><th>Tài khoản</th><th>Nhân vật</th><th>Cấp</th><th>Vàng</th><th>Xu</th><th>Xu khóa</th><th>Thắng/Tổng</th><th>Lần cuối</th></tr>
         <?php foreach($rows as $r): ?>
           <tr>
             <td><?= h($r['UserName']) ?></td>
             <td><?= h($r['NickName']) ?></td>
             <td><?= (int)$r['Grade'] ?></td>
-            <td><?= (int)$r['Gold'] ?></td>
-            <td><?= (int)$r['Money'] ?></td>
+            <td><?= number_format((int)$r['Gold']) ?></td>
+            <td><?= number_format((int)$r['Money']) ?></td>
+            <td><?= number_format((int)$r['MoneyLock']) ?></td>
             <td><?= (int)$r['Win'] ?>/<?= (int)$r['Total'] ?></td>
             <td><?= h(substr((string)$r['LastDate'],0,16)) ?></td>
           </tr>
@@ -181,8 +223,27 @@ $page = $_GET['page'] ?? 'dash';
       </table>
     <?php elseif($page==='tools'): ?>
       <h2>Công cụ quản trị</h2>
+      <?php $maxLv = q($conn,"SELECT TOP 1 Grade FROM Db_Tank.dbo.LevelInfo ORDER BY Grade DESC"); $maxLv = $maxLv ? (int)$maxLv[0]['Grade'] : 0; ?>
+      <div class="note" style="margin-bottom:14px">Tài khoản = tên đăng nhập (chữ thường). <b>Cộng xu</b> áp dụng ngay kể cả khi đang online. <b>Cộng vàng, lên cấp, buff</b> ghi thẳng DB: người chơi phải <b>thoát game trước</b>, nếu không lúc thoát server sẽ ghi đè lại. Cấp tối đa hiện tại: <b><?= $maxLv ?></b>.</div>
+      <div class="feat" style="margin-bottom:22px">
+        <form class="f" method="post"><b>Cộng xu</b><span>Qua kênh nạp nội bộ, online nhận ngay</span>
+          <input type="hidden" name="csrf" value="<?= h($csrf) ?>"><input type="hidden" name="act" value="addxu">
+          <input name="user" placeholder="Tài khoản"><input name="amount" type="number" min="1" value="1000000">
+          <button class="btn sm" style="margin-top:10px">Cộng xu</button></form>
+        <form class="f" method="post"><b>Cộng vàng</b><span>Nhân vật phải offline</span>
+          <input type="hidden" name="csrf" value="<?= h($csrf) ?>"><input type="hidden" name="act" value="addgold">
+          <input name="user" placeholder="Tài khoản"><input name="amount" type="number" min="1" value="10000000">
+          <button class="btn sm" style="margin-top:10px">Cộng vàng</button></form>
+        <form class="f" method="post"><b>Lên cấp tối đa</b><span>Nhân vật phải offline</span>
+          <input type="hidden" name="csrf" value="<?= h($csrf) ?>"><input type="hidden" name="act" value="maxlv">
+          <input name="user" placeholder="Tài khoản">
+          <button class="btn sm" style="margin-top:10px">Lên cấp <?= $maxLv ?></button></form>
+        <form class="f" method="post"><b>Buff toàn server</b><span>Mọi nhân vật: cấp tối đa + vàng/xu tối thiểu</span>
+          <input type="hidden" name="csrf" value="<?= h($csrf) ?>"><input type="hidden" name="act" value="buffall">
+          <input name="gold" type="number" min="0" value="50000000" title="Vàng tối thiểu"><input name="xu" type="number" min="0" value="10000000" title="Xu và xu khóa tối thiểu">
+          <button class="btn sm danger" style="margin-top:10px">Buff tất cả</button></form>
+      </div>
       <div class="feat">
-        <div class="f soon"><b>Cộng xu / vàng</b><span>Cộng xu cho tài khoản bất kỳ</span><br><span style="color:var(--accent)">sắp custom</span></div>
         <div class="f soon"><b>Giftcode</b><span>Tạo và phát code quà</span><br><span style="color:var(--accent)">sắp custom</span></div>
         <div class="f soon"><b>Gửi thư / vật phẩm</b><span>Gửi item qua hộp thư</span><br><span style="color:var(--accent)">sắp custom</span></div>
         <div class="f soon"><b>Sự kiện</b><span>Bật/tắt event, đua top</span><br><span style="color:var(--accent)">sắp custom</span></div>

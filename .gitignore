@@ -59,3 +59,6 @@ _install/
 packages/
 **/packages/
 *.nupkg
+
+# bi mat Request (LoginKey/ChargeKey), chi nam tren VPS
+Request/appsettings.secret.config
