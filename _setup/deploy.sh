@@ -28,7 +28,7 @@ DIRS='^(website_backend|Request|admin|_setup)/'
 SSHO=(-i "$KEY" -o StrictHostKeyChecking=no -o BatchMode=yes -o ConnectTimeout=20 -q)
 
 rps(){ ssh "${SSHO[@]}" "$VPS" "\$ProgressPreference='SilentlyContinue'; $1" 2>/dev/null; }
-win(){ printf '%s' "$1" | sed 's#/#\#g'; }   # C:/a/b -> C:\a\b
+win(){ printf '%s' "$1" | tr '/' '\\'; }   # C:/a/b -> C:\a\b
 
 cd "$(git rev-parse --show-toplevel)"
 
