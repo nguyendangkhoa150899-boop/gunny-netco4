@@ -176,6 +176,10 @@ Admin mới (mục 4) đã gom các chức năng đáng dùng: gửi quà, cộn
 
 Hệ quả: server (đọc DB) chỉ biết 179 nhiệm vụ trong khi client hiện 1.115. **Không chạy `CreateAllXml.ashx`** (dựng lại tất cả sẽ làm client mất nhiệm vụ); admin chỉ cho xuất bản từng file. XML gốc nằm trong git (`Request/*.xml`) và bản sao `C:\inst2\xml-backup-20261015` trên VPS. Hướng sửa tốt nhất: nạp ngược nhiệm vụ/NPC/shop từ XML gốc vào DB như đã làm với LevelInfo (`Item`/`Item_Condiction`/`Item_Good` của QuestList ↔ `Quest`/`Quest_Condiction`/`Quest_Goods`).
 
+**Đã khôi phục (15/10)** bằng `_setup/restore-from-xml.ps1` (chỉ thêm dòng thiếu, sao lưu `Db_Tank.dbo.bak20261015_*`): +1.013 nhiệm vụ (1.241 điều kiện, 1.822 phần thưởng; bỏ 15 phần thưởng trỏ vật phẩm không tồn tại), +250 quái (129 con khung va chạm mặc định), +164 hàng shop.
+
+**Phó bản:** tab "Phó bản cao cấp" chỉ có 4 phó bản (ô còn lại là ô trống, client vẽ ổ khóa, chữ "LC đề cử" trên ô trống là chữ sót từ tab trước). Tab "Phó bản đặc biệt" (loại 6, phòng sư đồ, server không bắt buộc cặp sư đồ) vốn trống vì `Ordering=0`; đã mở 4 phó bản Gamazon/Xatara/Daucula/Cariga bằng `_setup/sql/mo-pho-ban-dac-biet.sql` + sửa `Request/LoadPVEItems.xml` (chỉ độ khó Thường). Client chỉ hiện phó bản có `Ordering >= 1`.
+
 IIS (IIS_IUSRS) được cấp quyền sửa **riêng các file `Request/*.xml` và `Request/logs`** (không phải cả thư mục) để `.ashx` ghi được XML và log.
 
 ---
