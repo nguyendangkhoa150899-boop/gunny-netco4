@@ -63,3 +63,7 @@ packages/
 
 # bi mat Request (LoginKey/ChargeKey), chi nam tren VPS
 Request/appsettings.secret.config
+
+# build cong cu va bot
+_setup/botpatch/**/bin/
+_setup/botpatch/**/obj/

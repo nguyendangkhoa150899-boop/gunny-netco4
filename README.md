@@ -374,3 +374,13 @@ Mọi file đều chạy lại an toàn, trừ `lat-the-can-bang.sql` (ghi đè 
 4. Xóa 2 món hiếm test trong bộ quà lật thẻ chung (Thánh Kiếm Theia 71963, Vòng Tay 12 Tuổi 85204) nếu không muốn giữ.
 5. Xem lại giá shop sau 1 đến 2 tuần dữ liệu thật (admin > Shop web: đã bán, ai nhiều điểm).
 6. Cân nhắc wipe dữ liệu test (`_setup/sql/wipe-ve-trang.sql`, giữ cấu hình) và đổi mật khẩu sa (README mục 5).
+
+## 25. Bot ghép trận PvP (đã cân bằng 15/10/2026)
+**Game có sẵn bot, bật cứng:** vào Ghép trận (`eRoomType.Match`) 40 giây không có người (`Fighting ProxyRoomMgr.PickUpRooms`, hằng 40) thì Road tạo bot copy từ chính người chơi (`RingStationMgr.CreateAutoBot`); nhân vật cấp ≤ 3 gặp bot ngay (`GetAutoBot`). `robot.json` / `robotRoom.json` chỉ là người chơi và phòng giả ở sảnh, không đánh. Bot bắn bằng `Game.Logic.Cmd.BotCommand` (lệnh 143): server tự giải đường đạn, nhắm thẳng tọa độ đối thủ.
+**Bản gốc lệch:** chỉ số /3 nhưng sát thương gốc, giáp, máu copy 100%; bắn **không sai số**; lệnh 143 **không kiểm tra người gửi** (người thật gửi gói này được server bắn trúng hộ + đạo cụ free).
+**Đã vá (không build lại game, dùng Mono.Cecil):** `_setup/botpatch/` (BotTuning = logic; Patcher = chèn IL).
+- `Game.Server.dll` (đặt ở `C:\Gunny92\Server\road\`): `CreateAutoBot` `/3` → `BotTuning.Bot.SucManh`, hằng `0.0` → `KGoc/KMau`; `GetAutoBot` `/2`, `/2.0`, `/1.65` → theo `BotPowerPercent`. Bot = **90%** người chơi.
+- `Game.Logic.dll` (đặt ở `C:\Gunny92\Server\fight\`): trước `ShootPoint` chèn `x = Bot.Lech(x, player.X)` (lệch theo khoảng cách, thỉnh thoảng trượt hẳn); đầu `HandleCommand` chèn `if (!PlayerCharacter.IsAutoBot) return;` (chặn lỗ hổng).
+- `BotTuning.dll` ở cả 2 thư mục. Tham số trong `Road.Service.exe.config` / `Fighting.Service.exe.config` (`.bak-bot` là bản trước khi thêm): `BotPowerPercent` 90, `BotAimErrorBase` 6, `BotAimErrorPer1000` 30, `BotAimErrorMax` 45, `BotAimMissPercent` 5 (mục tiêu trúng ~70-80%). Sửa tham số → restart Road + Fighting, không cần vá lại.
+- CLR nạp DLL rời cạnh exe trước bản Costura nhúng (DLL game không ký strong-name). **Hoàn tác:** xóa `Game.Server.dll`, `Game.Logic.dll`, `BotTuning.dll` trong 2 thư mục rồi restart.
+- Vá lại (khi đổi exe game): tách DLL từ exe (README mục 21) → `dotnet run --project _setup/botpatch/Patcher -- <road-dll> <fight-dll> <BotTuning.dll> <ra>`. Patcher tự dừng nếu mẫu IL không khớp. Đã ép JIT thử các hàm vá (`RuntimeHelpers.PrepareMethod`) trước khi đưa lên.
