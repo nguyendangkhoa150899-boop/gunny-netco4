@@ -85,6 +85,8 @@ function item_icon_file($cat,$pic,$sex){
 function item_icon_url($cat,$pic,$sex){ return 'icon.php?c='.(int)$cat.'&p='.rawurlencode((string)$pic).'&s='.(int)$sex; }
 // Mau vien theo pham chat (Shop_Goods.Quality)
 function quality_color($q){ return [0=>'#6b7a90',1=>'#9aa7b8',2=>'#3fbf6f',3=>'#3b8cff',4=>'#a35bff',5=>'#ff9a1f',6=>'#ff4d5e'][(int)$q] ?? '#6b7a90'; }
+// Cap cuong hoa toi da (Server_Config.MaxStrengthLevel, hien 12)
+function max_strength($conn){ $v=(int)scalar($conn,"SELECT TOP 1 CAST(Value AS nvarchar(20)) FROM Db_Tank41.dbo.Server_Config WHERE Name='MaxStrengthLevel'"); return $v>0?$v:12; }
 function max_level($conn){ return (int)scalar($conn,"SELECT TOP 1 Grade FROM Db_Tank.dbo.LevelInfo ORDER BY Grade DESC"); }
 
 /* Goi endpoint quan tri cua Request (chi nhan tu 127.0.0.1: AdminIP/ChargeIP). Tra ve chuoi ket qua da trim.

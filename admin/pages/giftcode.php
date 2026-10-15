@@ -27,7 +27,7 @@ $now = date('Y-m-d H:i:s');
   <div class="box"><h3>Sự kiện #<?= $sel ?>: thêm quà</h3>
     <form method="post"><?= csrf() ?><input type="hidden" name="act" value="gc_award_add"><input type="hidden" name="aid" value="<?= $sel ?>">
       <div class="row"><input name="tid" type="number" placeholder="TemplateID vật phẩm"><input name="cnt" type="number" min="1" value="1" title="Số lượng"><input name="day" type="number" min="0" value="0" title="Hạn ngày (0 = vĩnh viễn)"></div>
-      <div class="row"><input name="str" type="number" min="0" max="15" value="0" title="Cường hóa"><input name="gold" type="number" min="0" placeholder="Vàng"><input name="money" type="number" min="0" placeholder="Xu"></div>
+      <div class="row"><input name="str" type="number" min="0" max="<?= max_strength($conn) ?>" value="0" title="Cường hóa (0 đến <?= max_strength($conn) ?>)"><input name="gold" type="number" min="0" placeholder="Vàng"><input name="money" type="number" min="0" placeholder="Xu"></div>
       <button class="btn sm mt">Thêm quà</button> <a class="muted" href="?page=mail" target="_blank">Tìm TemplateID</a></form>
     <form method="post" class="row"><?= csrf() ?><input type="hidden" name="act" value="gc_codes"><input type="hidden" name="aid" value="<?= $sel ?>">
       <input name="num" type="number" min="1" max="500" value="10" title="Số code"><button class="btn sm blue" style="flex:0;white-space:nowrap">Tạo code</button></form>

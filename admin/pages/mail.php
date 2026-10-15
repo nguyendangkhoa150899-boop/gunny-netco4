@@ -1,4 +1,5 @@
 <?php if (!defined('GN_ADMIN')) exit;
+$MAXSTR = max_strength($conn);
 // Loai vat pham (Shop_Goods.CategoryID) hay dung, theo EquipType cua client
 $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'Hiệu ứng mắt',5=>'Áo',6=>'Mặt',8=>'Vòng tay',9=>'Nhẫn',13=>'Bộ trang phục',
   14=>'Dây chuyền',15=>'Cánh',17=>'Vũ khí phụ',11=>'Đạo cụ',24=>'Đạo cụ khác',25=>'Hộp quà',26=>'Thẻ',18=>'Hộp thẻ',35=>'Trứng thú cưng',34=>'Thức ăn thú',
@@ -41,7 +42,7 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
   <form class="box" method="post" id="mailForm"><?= csrf() ?><input type="hidden" name="act" value="mail">
     <h3>Ô quà</h3>
     <div class="slots" id="slots">
-      <div class="slab"><div class="h64"></div><div class="h28"></div><div class="h30">Số lượng</div><div class="h30">Hạn (ngày)</div><div class="h30">Cường hóa</div><div class="h20">Khóa</div></div>
+      <div class="slab"><div class="h64"></div><div class="h28"></div><div class="h30">Số lượng</div><div class="h30">Hạn (ngày)</div><div class="h30">Cường hóa +</div><div class="h20">Khóa</div></div>
       <?php for($i=0;$i<5;$i++): ?>
       <div class="slot" data-i="<?= $i ?>">
         <div class="cell empty" data-i="<?= $i ?>">+<button type="button" class="x" title="Gỡ">×</button></div>
@@ -49,12 +50,12 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
         <input type="hidden" name="tid[]" value="">
         <input name="cnt[]" type="number" min="1" value="1" title="Số lượng">
         <input name="day[]" type="number" min="0" value="0" title="Hạn (ngày, 0 = vĩnh viễn)">
-        <input name="str[]" type="number" min="0" max="15" value="0" title="Cường hóa">
+        <input name="str[]" type="number" min="0" max="<?= $MAXSTR ?>" value="0" title="Cường hóa (0 đến <?= $MAXSTR ?>)">
         <label><input name="bind[<?= $i ?>]" type="checkbox" value="1" title="Khóa (không giao dịch được)"></label>
       </div>
       <?php endfor; ?>
     </div>
-    <div class="muted" style="margin-top:6px">Hạn 0 là vĩnh viễn. Cường hóa từ 0 đến 15. Khóa: vật phẩm không giao dịch được.</div>
+    <div class="muted" style="margin-top:6px">Hạn 0 là vĩnh viễn. Cường hóa từ 0 đến <?= $MAXSTR ?> (giới hạn của server). Khóa: vật phẩm không giao dịch được.</div>
 
     <h3 style="margin-top:16px">Người nhận</h3>
     <div class="row" style="flex-wrap:wrap">

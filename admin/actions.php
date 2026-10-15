@@ -44,7 +44,7 @@ function run_action($conn,$act,$P){
     $items=[];
     for($i=0;$i<5;$i++){
       $tid=(int)($P['tid'][$i]??0); if($tid<=0) continue;
-      $cnt=max(1,(int)($P['cnt'][$i]??1)); $day=max(0,(int)($P['day'][$i]??0)); $str=min(15,max(0,(int)($P['str'][$i]??0)));
+      $cnt=max(1,(int)($P['cnt'][$i]??1)); $day=max(0,(int)($P['day'][$i]??0)); $str=min(max_strength($conn),max(0,(int)($P['str'][$i]??0)));
       $bind=!empty($P['bind'][$i]) ? 'true' : 'false';
       // TemplateID,Count,ValidDate(ngay, 0=vinh vien),StrengthenLevel,AttackCompose,DefendCompose,AgilityCompose,LuckCompose,IsBind
       $items[] = "$tid,$cnt,$day,$str,0,0,0,0,$bind";
@@ -72,7 +72,7 @@ function run_action($conn,$act,$P){
     $aid=(int)($P['aid']??0); $tid=(int)($P['tid']??0);
     if(!$aid || (!$tid && empty($P['gold']) && empty($P['money']))) return 'Thiếu sự kiện hoặc vật phẩm.';
     $ok=exec_sql($conn,"INSERT INTO Db_Tank.dbo.Active_Award(ActiveID,ItemID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,LuckCompose,AgilityCompose,Gold,Money,Sex,Mark) VALUES(?,?,?,?,?,0,0,0,0,?,?,0,0)",
-      [$aid,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(15,max(0,(int)($P['str']??0))),max(0,(int)($P['gold']??0)),max(0,(int)($P['money']??0))]);
+      [$aid,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),max(0,(int)($P['gold']??0)),max(0,(int)($P['money']??0))]);
     return $ok===true ? 'Đã thêm phần thưởng.' : 'Lỗi: '.h($ok);
 
   case 'gc_award_del':
