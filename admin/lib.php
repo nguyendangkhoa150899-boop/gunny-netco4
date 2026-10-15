@@ -46,5 +46,8 @@ function req($path,$params=[]){
   $url = 'http://127.0.0.1/'.$path.($params ? '?'.http_build_query($params,'','&',PHP_QUERY_RFC3986) : '');
   $ctx = stream_context_create(['http'=>['timeout'=>40,'ignore_errors'=>true]]);
   $r = @file_get_contents($url,false,$ctx);
-  return $r===false ? 'khong goi duoc' : trim($r);
+  if ($r===false) return 'khong goi duoc';
+  // vai trang .aspx (vd ExperienceRate) in ma ket qua roi in luon HTML cua trang: chi lay so dau
+  if (preg_match('/^\s*(-?\d+)\s*(<|$)/s',$r,$m)) return $m[1];
+  return trim($r);
 }
