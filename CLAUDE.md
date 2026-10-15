@@ -35,3 +35,17 @@
 
 ## Mục tiêu chủ server
 Server **test**: tắt nạp tiền thật; nhân vật mới cấp tối đa (60) + nhiều tài nguyên; admin can thiệp được (gửi quà, cộng xu, giftcode, tỉ lệ, GM). Cho bạn bè (~20 người) tải client ở https://gunny.netco4.click và chơi.
+
+## Bẫy công cụ (chi tiết ở README mục 21)
+- **Bash tool nuốt dấu `\`** trong `node -e` / heredoc: script có namespace PHP, đường dẫn Windows hay regex thì viết file `.js` bằng Write (`String.raw`), sửa nhỏ dùng Edit.
+- `deploy.sh` từ chối khi còn file chưa commit: `git stash push -u -- <file>`, deploy, `git stash pop`.
+- `*.png` bị gitignore (trừ `website_backend/public/img/*.png`). IIS nhớ 404 file tĩnh mới: link kèm `?v=`.
+- PS 5.1: JSON truyền cho `curl.exe` mất dấu `"` (gửi bằng file); POST rỗng bị 411 (gửi `--data z=0`); không đặt biến `$home`/`$host`.
+- sqlcmd: chữ Việt thì `-f 65001`, cần đọc kết quả thì `-o file -u` rồi `scp` về (đọc UTF-16).
+
+## Web người chơi (`/dashboard`) và tiền tệ
+- Xu web = `Db_Member.Mem_Account.Money` (đổi 1:1 với xu game cả 2 chiều). Chỉ cộng/trừ qua `App\Support\XuWeb::doi()` (không âm, có sổ cái `Web_SoXu`). Điểm hoạt động: `App\Support\Diem` (`Web_Diem`, không đổi từ xu).
+- Đồ cho người chơi: vào `Web_Ruong` bằng `MiniGameController::vaoRuong()` (cộng dồn theo `MaxCount`), rút ra thư bằng `App\Support\GameMail`. Đừng INSERT thẳng `Web_Ruong`.
+- Chỉ đưa ra đồ **client có ảnh** (`VatPham::file()`); đồ admin cũ tự chế client không có.
+- Cấu hình chỉnh được nằm ở `Web_CauHinh` (README mục 22). Thay đổi ảnh hưởng kinh tế phải hỏi chủ server.
+- Test thay đổi web bằng tài khoản tạm (`zz...`) đăng ký qua API rồi **xóa sạch** sau khi test.

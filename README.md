@@ -10,6 +10,8 @@ Mật khẩu, key SSH, cách kết nối VPS **không nằm trong repo**: chủ 
 | VPS | Windows Server, `171.244.39.225`, thư mục chạy `C:\Gunny92` |
 | Repo | https://github.com/nguyendangkhoa150899-boop/gunny-netco4 (riêng tư) |
 
+**Đọc nhanh:** bẫy và kinh nghiệm ở **mục 21**, cấu hình web **mục 22**, dựng lại web **mục 23**, việc cần làm khi mở thật **mục 24**. Web người chơi: điểm danh (13), dashboard (14), mini game (15), rút xu (16), shop (18), gửi quà test (19), lật thẻ (20).
+
 ---
 
 ## 1. Kiến trúc
@@ -281,3 +283,94 @@ Chỉnh giá/giới hạn ở admin, không cần sửa code. Mở thật nên *
 - `lt_nguon = game` (`_setup/sql/lat-the-game.sql`): mỗi lá lật trên web quay giống `PVEGame.TakeCard` → `DropInventory.CopyDrop(mã màn, 1)`: `Drop_Condiction` (CondictionType 5, Para1 chứa `,mã màn,`, Para2 chứa `,1,`) → `Drop_Item`; ngưỡng = rand[0, Random lớn nhất), giữ món `Random ≥ ngưỡng`, chọn đều 1; số lượng rand[BeginData, EndData). `-100` vàng / `-200` xu game gửi thư game ngay; tiền tệ khác và món client không có ảnh thì quay lại.
 - Chọn bảng (`dropIdCua`), **chỉ bảng có đồ** (113 khai báo loại 5 nhưng 17 bảng rỗng, vd Vòng Xoáy Thường/Khó/AH 10180 đến 10188 = 0 món): (1) bảng lá bài ải boss → (2) bảng rương boss Para2=2 → (3) ải khác cùng phó bản → (4) **cùng phó bản độ khó khác** (bỏ đuôi Dễ/Thường/Khó/Anh hùng/AH/Ác mộng: Vòng Xoáy Thường/Khó/AH dùng bảng boss Vòng Xoáy dễ 10081, 68 món) → (5) bộ quà web. Phó bản không có bảng nào trong DB (Thành Phố Trên Không, Xưởng Hơi Nước, Xatara, Cariga, Dracula, Niên Thú...) dùng bộ quà web (xu web + đồ), cân theo giá shop ở `_setup/sql/lat-the-can-bang.sql`. Vàng (-100) / xu (-200) trong bảng game quy thành xu web (`lt_vang_xuweb`).
 - `lt_solat` = 3 lá/lượt (game gốc: ải giữa 1, boss cuối 2). **Lưu ý:** trong game người chơi vẫn được lật bài như cũ; web là phần thưởng **thêm** (giới hạn `SoLanNgay` 3 lượt/phó bản/ngày).
+
+
+---
+
+## 21. Kinh nghiệm và bẫy đã gặp (ĐỌC TRƯỚC KHI SỬA)
+Mỗi dòng dưới đây từng làm mất thời gian ít nhất 1 lần.
+
+**Công cụ trên máy dev (Windows + Git Bash)**
+- **Bash tool nuốt dấu `\`** trong `node -e '...'` và heredoc: namespace PHP (`App\Support\X`), đường dẫn `C:\...`, regex `\s` bị hỏng, phép thay chuỗi báo "MISS" hoặc âm thầm sai. Cách làm: viết script `.js` bằng công cụ Write (dùng `String.raw` cho namespace) rồi `node file.js`; sửa file nhỏ dùng công cụ Edit.
+- Không nối `&&` một bước sửa có thể lỗi rồi để dòng sau chạy vô điều kiện (đã từng: routes chỉ được ghi một nửa).
+- `curl` **không ghi được file vào đường dẫn có dấu tiếng Việt** (thư mục scratchpad `Thiên Long...`): dùng `curl ... | node -e` (đọc stdin) hoặc lưu ở `C:\inst2` trên VPS rồi `scp`.
+- Kiểm tra nhanh JS của trang: `curl -s https://gunny.netco4.click/dashboard | node -e '<tách <script>>' && node --check file.js`.
+
+**PowerShell 5.1 trên VPS**
+- Không có `&&`, `??`, `?.`. `$home`, `$host` là biến hệ thống, không đặt tên biến như vậy.
+- Truyền JSON cho `curl.exe` thì PS 5.1 **làm mất dấu `"`**: ghi JSON ra file rồi `--data-urlencode ds@file.json`.
+- POST không có body thì IIS trả **411**: luôn gửi `--data z=0`.
+- Script test dài: viết `.ps1` ở máy dev, `scp` lên `C:\inst2\`, chạy `powershell -File ... *> out.txt`, `scp` kết quả về. Output là UTF-16 (đọc bằng `toString('utf16le')`).
+
+**sqlcmd / SQL Server**
+- `-f 65001` khi chạy file `.sql` có chữ Việt. `-h -1` và `-y 0` không đi cùng nhau; `-W` và `-y` cũng vậy.
+- Kết quả có chữ Việt: `-f 65001 -o C:\inst2\x.txt -u` (file Unicode) rồi `scp` về, in trên console sẽ ra dấu `?`.
+- `PRINT` không nhận truy vấn con (gán vào biến trước). `SUM(CASE WHEN EXISTS(...))` lỗi 130: bọc bằng CTE.
+- Từ khóa trùng tên cột (`Escape`) phải để trong `[ ]`.
+- SP mã hóa: `OBJECT_DEFINITION` trả NULL; muốn biết nó ghi vào đâu thì gọi thử trong `BEGIN TRAN ... ROLLBACK`.
+
+**IIS / Laravel / deploy**
+- `deploy.sh` **từ chối chạy khi còn file chưa commit** (kể cả file mới). Đang làm dở thì `git stash push -u -- <file>` → deploy → `git stash pop`.
+- `.gitignore` chặn `*.png`. Ảnh của web phải nằm trong `website_backend/public/img/` (đã mở ngoại lệ), nếu không sẽ không lên git và không được deploy.
+- IIS **nhớ 404** của file tĩnh vừa thêm một lúc: link ảnh mới kèm `?v=`.
+- Blade: `@media` / `@keyframes` phải viết `@@`. Nút và ô nhập **không kế thừa phông** của trang: đã có `button,input,select,textarea{font-family:inherit}` trong `portal.css` (lỗi cũ "BẮT ĐẦU" vỡ dấu).
+- Đặt tên class CSS cẩn thận: ô dò mìn từng dùng class `coin` trùng với đồng xu tròn 20px nên ô co thành viên vàng.
+- PSR-4 của Laravel tự nhận class mới trong `app/` (không cần `composer dump-autoload`); `deploy.sh` xóa cache route/view/config sau mỗi lần đẩy.
+
+**VPS / vận hành**
+- Windows Update tự cài bản vá SQL Server: **SQL tắt vài phút** rồi chờ reboot (15/10 15:27). Reboot lúc vắng người; `GunnyServers` (onstart) + `GunnyWatchdog` (5 phút) tự bật Center → Fighting → Road.
+- `sshd` từng để Manual nên reboot xong mất SSH; đã đặt Automatic. Mất SSH: dùng bảng điều khiển QEMU trên web nhà cung cấp VPS (đã ở sẵn trong máy, **không** mở Remote Desktop bên trong nó), PowerShell Run as administrator.
+- Đếm người đang chơi: `Sys_Users_Detail.State=1`, hoặc kết nối Established tới cổng 9200.
+
+**Dữ liệu / logic của game (đã kiểm IL bản đang chạy, không chỉ đọc `gameSrc`)**
+- Lấy DLL thật để kiểm: các DLL được Costura nhúng trong `Road.Service.exe`. Tách bằng `[Reflection.Assembly]::Load` + `GetManifestResourceStream('costura.<ten>.dll.compressed')` + `DeflateStream`, rồi đọc IL (`GetMethodBody().GetILAsByteArray()`, tìm `ldstr` 0x72 và `call` 0x28/0x6F).
+- **Điểm danh trong game bị khóa cứng** trong DLL (`SignAwardHandler` chỉ báo "Tính năng bị khóa!"). Vì vậy làm điểm danh trên web.
+- **Mỗi màn thắng, server tự ghi** `Db_Tank41.Sys_Users_Log` (`Type='WinMission'`, `Content`=Mission_Info.Id) qua `SP_Insert_UsersLog`. Lật thẻ trên web dựa vào bảng này, không cần sửa game.
+- Tên ải mã hóa phó bản: "Gà Dễ S1", "Vòng Xoáy Thời Gian Thường S4", "Đấu trường gà thường ải 4". Bỏ đuôi `S4` / `ải 4` là ra phó bản, ải số lớn nhất là boss.
+- Bảng rơi đồ lật bài (`Drop_Condiction` loại 5 → `Drop_Item`): **113 khai báo nhưng 17 bảng rỗng** (vd Vòng Xoáy Thường/Khó/AH). Luôn kiểm `EXISTS Drop_Item`.
+- Thuật toán rơi đồ của game: ngưỡng = rand[0, Random lớn nhất), giữ món `Random ≥ ngưỡng`, chọn đều 1 món. Món trọng số 10.000 ra khoảng 7,5%, món 6.000 khoảng 0,9% (không phải tỉ lệ thuận trọng số).
+- **Gửi thư kèm xu trong game** (`UserSendMailHandler`): server tự `RemoveMoney` + tạo thư `Type=1` + `SaveIntoDatabase` ngay. Đây là đường rút xu an toàn khi online (nhân vật `NganHang`). Đồ **khóa** không gửi thư được.
+- Lúc thoát game: `State=0` và xu được lưu trong **cùng một lần** `SaveIntoDatabase`.
+- **Cộng dồn đồ** theo `Shop_Goods.MaxCount` (1 = không chồng: châu báu, trang bị; đá 99.999; rương 999). Đồ khóa và không khóa không chồng.
+- Danh sách vật phẩm client: `Request/TemplateAlllist.xml` (**nén zlib**, 13.047 món), DB có 19.122. Món DB có mà client không có thì vào game thành ô vô hình. Admin cũ tạo nhiều đồ "1000/1000/1000/1000" (ID 1300xxxxxx, 2222xxxxx, 3222xxxxx, "Bậc Max", "( VIP n )"), client đều không có. Kiểm có ảnh bằng `VatPham::file()` / `item_icon_file()`.
+- Đồ thú cưng `hat28`, `cloth28` trở lên: client không có ảnh, mặc định ẩn ở admin Gửi quà.
+- Tên DB và tên client có thể khác: DB ghi "VIP-Boomerang" nhưng client hiện "SUPER-Boomerang" (cùng ID 7024).
+- Tiến hóa vũ khí (`Item_Strengthen_Goods`): +10/+11 lên bậc 1, +12 lên bậc 2. Dát vàng (`GoldEquipTemplateLoad`, đá 11560, `WishBeadRate` 5000/100.000 = 5%, giữ 30 ngày) chỉ áp cho bản **chưa** vàng (71964 là bản vàng của 71962/71963).
+
+---
+
+## 22. Cấu hình web (`Db_Member.dbo.Web_CauHinh`, sửa ở admin > Mini game > Cấu hình)
+| Khóa | Hiện tại | Ý nghĩa |
+|---|---|---|
+| `tx_min` / `tx_max` / `tx_heso` | 100 / 1.000.000 / 1,95 | Tài xỉu: cược, thắng nhận x (bão = thua) |
+| `dm_min` / `dm_max` / `dm_rtp` / `dm_tran` | 100 / 1.000.000 / 0,95 / 50 | Dò mìn |
+| `lt_mo` / `lt_nguon` / `lt_solan` / `lt_solat` / `lt_vang_xuweb` | 1 / game / 3 / 3 / 1 | Lật thẻ: bật, nguồn quà (game/web), lượt/phó bản/ngày, số lá lật, quy vàng → xu web |
+| `diem_diemdanh` / `diem_moc` / `diem_phoban` / `diem_phoban_tran` | 10 / 20 / 5 / 50 | Điểm hoạt động |
+| `rut_mo` / `rut_ten` / `rut_tile` / `rut_tran_ngay` | 1 / NganHang / 1 / 2.000.000 | Rút xu game ra web |
+| `shop_mo` | 1 | Shop web |
+| `quatest_mo` / `quatest_luot_ngay` / `quatest_sl_max` | 1 / 50 / 999 | Gửi quà test (**mở thật đặt 0**) |
+
+Ngoài ra: `DB_Admin.dbo.settings` `he-so-doi-coin` = **1** (nạp xu web → xu game 1:1, phải bằng `rut_tile`). `Server_Config`: `MaxStrengthLevel` 12, `MAXLevel` 60, `WishBeadRate` (Road .config) 5000.
+
+---
+
+## 23. Dựng lại phần web từ đầu (thứ tự chạy SQL trên VPS)
+`sqlcmd -S localhost -E -C -b -f 65001 -i C:\Gunny92\_setup\sql\<file>` theo thứ tự:
+1. `tao-nhan-vat-max.sql`, `levelinfo-60.sql`, `mo-pho-ban-dac-biet.sql` (cấu hình test)
+2. `giftcode-dung-chung.sql` → `giftcode-nhieu-lan.sql` (thứ tự bắt buộc), `giftcode-vip-test.sql`
+3. `diem-danh-web.sql` → `minigame-web.sql` (tạo bảng + tách 80 phó bản từ Mission_Info)
+4. `rut-xu-ngan-hang.sql` (tạo nhân vật NganHang, đặt tỉ lệ 1:1)
+5. `shop-web.sql`, `qua-test-web.sql`, `lat-the-game.sql`, `lat-the-can-bang.sql`
+6. `ruong-gop-chong.sql` (gộp rương, chạy lại lúc nào cũng được)
+
+Mọi file đều chạy lại an toàn, trừ `lat-the-can-bang.sql` (ghi đè các dòng xu web của bộ quà chung).
+
+---
+
+## 24. Việc cần làm khi MỞ SERVER THẬT
+1. Admin > Mini game > Cấu hình: `quatest_mo` = **0** (tắt gửi quà test).
+2. Tắt / xóa code **NETCO4VIP** (admin > Giftcode, sự kiện #61), vì nó cho thẳng Thánh Kiếm vàng vĩnh viễn.
+3. Bỏ **10 triệu xu tặng sẵn** cho nhân vật mới (`Request/Web.config` DefaultGold/DefaultMoney, `SP_Users_Active`).
+4. Xóa 2 món hiếm test trong bộ quà lật thẻ chung (Thánh Kiếm Theia 71963, Vòng Tay 12 Tuổi 85204) nếu không muốn giữ.
+5. Xem lại giá shop sau 1 đến 2 tuần dữ liệu thật (admin > Shop web: đã bán, ai nhiều điểm).
+6. Cân nhắc wipe dữ liệu test (`_setup/sql/wipe-ve-trang.sql`, giữ cấu hình) và đổi mật khẩu sa (README mục 5).
