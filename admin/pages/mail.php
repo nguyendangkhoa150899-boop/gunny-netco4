@@ -76,6 +76,7 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       <input id="q" placeholder="Nhập ID hoặc tên vật phẩm, vd: 7003 hoặc AK" autocomplete="off" style="flex:2">
       <select id="cat"><?php foreach($CATS as $k=>$v) echo '<option value="'.$k.'">'.h($v).'</option>'; ?></select>
     </div>
+    <label style="font-size:12px;display:block;margin-top:6px;color:var(--muted)"><input type="checkbox" id="showAll"> Hiện cả món client không có ảnh (vào game sẽ không thấy hình)</label>
     <div class="msgline muted" id="info">Gõ ID hoặc tên để tìm. Bấm vào ô để thêm vào ô quà.</div>
     <div class="res" id="res"></div>
   </div>
@@ -94,13 +95,15 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
     var q=qEl.value.trim(), cat=catEl.value, my=++seq;
     if(!q && cat==='0'){ res.innerHTML=''; info.textContent='Gõ ID hoặc tên để tìm. Bấm vào ô để thêm vào ô quà.'; return; }
     info.textContent='Đang tìm...';
-    fetch('?ajax=items&q='+encodeURIComponent(q)+'&cat='+cat,{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
+    fetch('?ajax=items&q='+encodeURIComponent(q)+'&cat='+cat+(document.getElementById('showAll').checked?'&all=1':''),{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){
       if(my!==seq) return;
       var items=(d&&d.items)||[]; info.textContent=items.length?('Tìm thấy '+items.length+(items.length>=90?' (hiện 90 đầu)':'')+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
+      if(d&&d.hidden) info.textContent+=' Đã ẩn '+d.hidden+' món client không có ảnh.';
       res.innerHTML=items.map(function(it,i){ return '<div class="ri"><div class="cell" data-k="'+i+'" style="border-color:'+it.color+'">'+cellHtml(it)+'</div><div class="nm">'+esc(it.name)+'</div></div>'; }).join('');
       res._items=items;
     }).catch(function(){ info.textContent='Lỗi khi tìm, thử lại.'; });
   }
+  document.getElementById('showAll').addEventListener('change',search);
   qEl.addEventListener('input',function(){ clearTimeout(timer); timer=setTimeout(search,280); });
   catEl.addEventListener('change',search);
 
@@ -116,6 +119,7 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       +(it.agi?'<div class="r"><span>Nhanh nhẹn</span><span>'+it.agi+'</span></div>':'')
       +(it.luck?'<div class="r"><span>May mắn</span><span>'+it.luck+'</span></div>':'')
       +(it.desc?'<div class="d">'+esc(it.desc)+'</div>':'')
+      +(it.img===false?'<div class="d" style="color:#ff5d6c">Client không có ảnh món này: vào game sẽ không thấy hình, không nên gửi.</div>':'')
       +(it.gold?'<div class="d" style="color:#ffd76a">Vũ khí này dát vàng được: cường hóa +12 rồi dùng Châu báu chúc phúc công kích (11560)</div>':'')
       +(it.box?'<div class="d" style="color:var(--text)"><b style="font-size:12px;margin:2px 0">Mở ra nhận</b>'+it.box.map(function(b){
           return '<div class="r"><span>'+esc(b.name||('ID '+b.id))+(b.cnt>1?' x'+b.cnt:'')+(b.str?' +'+b.str:'')+(b.days?' ('+b.days+' ngày)':'')+' <span style="color:#6f86a8">#'+b.id+'</span></span><span>'+(b.rate>=100?'chắc chắn':b.rate+'%')+'</span></div>';
