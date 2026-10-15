@@ -4,7 +4,7 @@
 
 ## Quy trình bắt buộc
 - Sửa code → `git commit` → `./_setup/deploy.sh` (tự push GitHub rồi đẩy file đổi lên VPS). **Không sửa tay trên VPS** những file có trong git, lần deploy sau sẽ đè.
-- SQL thay đổi DB: viết thành file trong `_setup/sql/`, commit, deploy, rồi chạy `sqlcmd -S localhost -E -C -b -i C:\Gunny92\_setup\sql\<file>.sql` trên VPS.
+- SQL thay đổi DB: viết thành file trong `_setup/sql/`, commit, deploy, rồi chạy `sqlcmd -S localhost -E -C -b -f 65001 -i C:\Gunny92\_setup\sql\<file>.sql` trên VPS (**`-f 65001` bắt buộc**: file UTF-8, thiếu là chữ tiếng Việt trong DB bị vỡ thành `phÃ³`).
 - Kết thúc mỗi thay đổi: test thật (curl/Invoke-WebRequest qua domain, đăng nhập admin, xem log), báo kết quả cụ thể.
 - Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên.
 

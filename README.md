@@ -90,8 +90,8 @@ Cấu trúc: `index.php` (đăng nhập, menu, điều phối POST có CSRF rồ
 | Dashboard | online (`Sys_Users_Detail.State=1`), tài khoản, nhân vật, đăng ký hôm nay (`Mem_Account.TimeCreate` là Unix time), bị khóa, tỉ lệ đang chạy | đọc DB |
 | Tài khoản | tìm, Khóa / Mở khóa đăng nhập launcher | `Mem_Account.IsBan` |
 | Nhân vật | tìm, online/offline; **Cộng xu** (online nhận ngay); Lên cấp tối đa, Buff mọi nhân vật offline | `ChargeMoney.aspx?content=chargeID\|user\|xu\|admin\|0\|md5(5 trường+ChargeKey)&nickname=<UserID số>`; còn lại ghi DB |
-| Gửi quà | thư kèm ≤5 vật phẩm + vàng + xu, gửi 1 tài khoản / người online (-10) / tất cả (-9), tìm vật phẩm theo tên | `SendMailAndItem.aspx?title&content&user_id&gold&money&str=tid,count,ngày,cường hóa,0,0,0,0,true\|...` → `SP_Admin_SendAllItem` + Center `MailNotice`. Vật phẩm và vàng/xu về 2 thư riêng |
-| Giftcode | danh sách sự kiện (`Db_Tank.Active`), tạo sự kiện mới (chép cờ từ sự kiện code mẫu Type=1), thêm/xóa quà (`Active_Award`), đổi hạn, sinh code (`Db_Tank41.Active_Number`) | người chơi nhập code trong game → `ActivePullDown.ashx` → quà về thư. Đổi sự kiện xong xuất bản `ActiveList` |
+| Gửi quà | 5 ô quà kiểu ô vật phẩm (ảnh, viền màu phẩm chất, ID), tìm theo **ID hoặc tên** gõ tới đâu ra tới đó (`?ajax=items`), lọc loại, tooltip chỉ số; số lượng / hạn ngày / cường hóa (tối đa `Server_Config.MaxStrengthLevel` = 12) / khóa; gửi 1 tài khoản / người online (-10) / tất cả (-9) | `SendMailAndItem.aspx?title&content&user_id&gold&money&str=tid,count,ngày,cường hóa,0,0,0,0,true\|...` → `SP_Admin_SendAllItem` + Center `MailNotice`. Vật phẩm và vàng/xu về 2 thư riêng |
+| Giftcode | danh sách sự kiện (`Db_Tank.Active`), tạo sự kiện mới (chép cờ từ sự kiện code mẫu Type=1), thêm/xóa quà có ảnh (`Active_Award`), đổi hạn, sinh code ngẫu nhiên **hoặc đặt tên tự chọn**, **code dùng chung** (mục 11) | người chơi nhập code trong game → `ActivePullDown.ashx` → quà về thư. Đổi sự kiện xong xuất bản `ActiveList` |
 | Hệ thống | tỉ lệ EXP/vàng/công hiến (`Db_Tank41.Rate`, áp dụng ngay `ExperienceRate.aspx`); thông báo toàn server (`SystemNotice.aspx`); xuất bản XML **từng file** + nạp lại server (`NoticeServerUpdate.aspx type=8 item,9 quest,14 shop,12 rate...`); bảo trì (`KitoffUser.aspx`, đếm ngược 6 phút rồi đá hết); GM trong game (`Game_Commands`); sửa `Db_Tank41.Server_Config` | |
 
 Mã kết quả: ChargeMoney 0 ok/2 không thấy user/5 sai IP/7 sai chữ ký; SendMailAndItem 1 ok/5 sai IP/999 lỗi; SystemNotice 0 ok; ExperienceRate, NoticeServerUpdate 0 ok (`ExperienceRate.aspx` in kèm HTML trang sau con số, `req()` chỉ lấy số đầu); KitoffUser 1 ok.
@@ -146,6 +146,8 @@ Khác TLBB, phần lớn dữ liệu hiển thị lấy từ server nên sửa �
 | Vào game 99% "kết nối thất bại" | Road/Fight bind `127.0.0.1`; `Server_List.IP=127.0.0.1`; Center chưa restart | config `IP=0.0.0.0`; IP = IP public; restart Center |
 | Server game chết khi đóng SSH | `Start-Process` gắn với phiên SSH | bật qua WMI |
 | sqlcmd lỗi SSL | ODBC 18 | thêm `-C` |
+| Chữ tiếng Việt trong DB bị vỡ (`phÃ³`) sau khi chạy file .sql | `sqlcmd -i` đọc file UTF-8 theo bảng mã Windows | **luôn thêm `-f 65001`** khi file .sql có chữ có dấu |
+| Phó bản đặc biệt vào 1 người là thua / lỗi | kịch bản sư đồ cần ≥ 2 người (`player_1`) | đi 2 người; kịch bản biên dịch sẵn trong exe Road, `ScriptsPVE` không được dùng (mục 9) |
 | Cộng xu lỗi mã 2 | thiếu `nickname=<UserID>` | truyền UserID |
 | ServerList trả rỗng khi test | thiếu tham số `rnd` | gọi `ServerList.ashx?rnd=0.123` |
 | deploy.sh lỗi trên VPS | shell SSH là PowerShell | lệnh từ xa viết cú pháp PowerShell |
@@ -187,3 +189,27 @@ IIS (IIS_IUSRS) được cấp quyền sửa **riêng các file `Request/*.xml` 
 ## 10. Dựng lại từ đầu (VPS mới)
 Xem `_setup/run.txt` và các script `_setup/B1-sql.ps1` (SQL + restore 5 DB), `B2-config.ps1` (config), `B3-iis-php.ps1` (IIS/PHP), `2-go-backdoor-nap.ps1`, `sql/wipe-ve-trang.sql` (xóa dữ liệu người chơi cũ, giữ cấu hình), `sql/links-localhost.sql`, `sql/tao-nhan-vat-max.sql`, `runtime/config.xml` (config.xml của Flash). Sau đó đặt lại các bước trong mục 8 (php.ini, quyền Temp, bind 0.0.0.0, IIS bindings, SSL win-acme, file bí mật).
 Bộ chạy nặng (Server binary, 5 `.bak`, Flash, Resource.Server, launcher_base) tải riêng (TeraBox/Drive) → `C:\Gunny92`.
+
+---
+
+## 11. Giftcode (code quà)
+
+**Cách game xử lý** (`Db_Tank41.SP_Active_PullDown`, gọi từ `ActivePullDown.ashx`): sự kiện `Db_Tank.Active` có `HasKey=1` thì client hiện ô nhập code trong bảng Hoạt động/Lịch; code là dòng `Db_Tank41.Active_Number`; quà là các dòng `Db_Tank.Active_Award` của sự kiện, lọc `Sex = giới tính nhân vật hoặc 0` và `Mark` = Mark của code; quà gửi qua thư, **mỗi thư 5 món** (nhiều món thì nhiều thư). `IsOnly=1`: mỗi người nhận 1 lần mỗi sự kiện. Mã trả về: 0 ok, 4 code sai, 5 đã dùng, 6 đã nhận sự kiện này, 7 chưa tới ngày, 8 hết hạn, 1 không có sự kiện.
+
+**Code dùng chung** (`_setup/sql/giftcode-dung-chung.sql`, đã áp): bản gốc đánh dấu đã dùng bằng `UPDATE ... WHERE AwardID=@AwardID` nên 1 tên code chỉ dùng 1 lần toàn server. Bản vá: dòng code có `Creator = -1` là dùng chung, dòng gốc (`UserID=0`) không bị khóa, mỗi người nhận thì thêm 1 dòng `(AwardID, UserID)`, nhập lại trả 5. Code thường giữ nguyên. SP gốc sao lưu `SP_Active_PullDown_goc`. Đã test trong transaction: dùng chung (người 1 ok, nhập lại 5, người 2 ok), code thường (người 1 ok, người 2 → 5). Code không phân biệt hoa thường.
+
+**Code đặt tên**: admin > Giftcode > chọn sự kiện > ô "Tên code tự đặt" (chữ, số, `_ -`, 3 đến 30 ký tự, nhiều tên cách dấu phẩy) + ô "Dùng chung".
+
+**Code VIP test phó bản** (`_setup/sql/giftcode-vip-test.sql`, sự kiện **#61**, hạn 90 ngày, code dùng chung **`NETCO4VIP`**): mỗi ô trang bị lấy món mạnh nhất trong các món (1) có trong client gốc, (2) có nguồn kiếm hợp lệ (Shop, Drop_Item, Shop_Goods_Box, Item_Fusion, tiến hóa Item_Strengthen_Goods, Quest_Goods), (3) không có tên đánh dấu tự chế. Món cường hóa được (vũ khí, vũ khí phụ, mũ, áo) là +12. 15 món mỗi nhân vật (nam/nữ theo giới tính):
+| Ô | Món |
+|---|---|
+| Vũ khí | 71964 LEGEND-Thánh Kiếm Theia +12 (A888 D168 N898 M228, sát thương 288) |
+| Vũ khí phụ | 17017 LEGEND-Thiên Sứ Ban Phúc +12 |
+| Nhẫn ×2 / Vòng tay ×2 | 95354 Nhẫn 12 Tuổi +10 / 85204 Vòng Tay 12 Tuổi +10 |
+| Dây chuyền / Cánh / Bộ | 14045 S-Côn Con Dục Thần / 15137 Cánh Huyền Diệu / 13890 Khắc Tên Top 2 |
+| Mũ +12 / Kính / Áo +12 | 1757 / 1858 Khải Hoàn Khôi; 2310 / 2407 Hoàng Long Khôi; 60000042 Sulan / 60000101 Minotaure [Cao Cấp] |
+| Mặt / Tóc / Hiệu ứng mắt | 6352 / 6410; 3533 / 3671; 4360 / 4627 |
+Đã test nhận code trong transaction: mã 0, 3 thư, 15 món đúng giới tính, đúng +12. Đổi sự kiện/quà xong: admin > Hệ thống > xuất bản `ActiveList`, client phải tắt mở lại launcher.
+
+## 12. Ảnh vật phẩm (admin)
+`admin/lib.php` `item_icon_rel()` chép công thức `PathManager.solveGoodsPath` của client (theo `CategoryID` + `Pic` + `NeedSex`, bảng `EquipType.TYPES`); không có thì thử `image/unfrightprop|prop|error/<pic>/icon.png`. `admin/icon.php` đọc file từ `C:\Gunny92\Resource.Server` và trả ảnh (chỉ admin đã đăng nhập), vì `res.netco4.click` không có HTTPS. Thử mẫu: 1.313/1.919 mẫu có ảnh, trang bị/vũ khí gần đủ; các loại client 3.0 không có (10, 37, 61, 62, 71, 74, 82 đến 91) hiện ô "?". DB có 19.122 vật phẩm nhưng client chỉ biết 13.047.
