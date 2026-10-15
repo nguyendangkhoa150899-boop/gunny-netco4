@@ -393,3 +393,8 @@ Mọi hộp thoại xác nhận dùng `com.pickgliss.ui.controls.alert.BaseAlerF
 - Lớp có trong **`Flash/2.png`** (game chính) và **`Flash/1.png`**: vá cả hai. Sau giải nén mỗi file chỉ khác 8 byte (`sosanh.js`). Muốn kiểm file nào chứa lớp nào: `swfinfo.js`.
 - md5: gốc 1.png `7a4a3f50…`, 2.png `240987fd…`; đã vá 1.png `8f18b66c…`, 2.png `6b76732f…`. Bản gốc trên VPS: `C:\inst2\flash-goc-20261015\`.
 - Người chơi phải tắt hẳn launcher rồi mở lại (launcher tạo thư mục dữ liệu mới mỗi lần mở, nên không còn cache cũ).
+- **Đợt 2 (15/10 tối):**
+  - `vacp.js`: vá nhánh `customPos` cùng độ dài. Lệnh [C] đổi đích thành `_submitButton`; lệnh [D] thay bằng `jump` tới đoạn "đặt Hủy vào cp" có sẵn, phần thừa lấp `nop`. Có 2 nút thì Hủy ở vị trí `cp`, Xác nhận nằm bên phải. Chỉ có 1 nút thì giữ như cũ. Áp cho các khung nông trại, thú cưng, nạp đồ shop, tân thủ, league.
+  - `quetnut.js` + `doixml.js`: tìm các khung tự đặt nút trong XML, theo tên biến hoặc chữ trên nút (`ok`/`cancel`), rồi đổi `x` của 14 cặp trong `Flash/ui/spain/xml/xml.png`. Đó là bán đồ, khóa túi, kết hôn, tạo/rời/chuyển/nâng cấp bang, thuế bang, nhận thành viên, mua ruộng. File zip được ghi lại: entry không sửa giữ nguyên byte, entry sửa thì nén lại và cập nhật CRC.
+  - md5 sau đợt 2: 1.png `f942a1c8…`, 2.png `41b2ace9…`, xml.png `15908ed9…`. Bản gốc của cả 3 nằm trong `C:\inst2\flash-goc-20261015\`.
+  - **Còn sót:** khung tự đặt `.x` trong code (`quetnut.js` đánh dấu `+code`), và khung có nút vẽ sẵn trong swf. Gặp khung nào thì sửa riêng khung đó.
