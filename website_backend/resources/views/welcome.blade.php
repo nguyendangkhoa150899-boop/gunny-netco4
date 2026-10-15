@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GunnyNetco4 | Chơi miễn phí</title>
-<link rel="stylesheet" href="/css/portal.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="/css/portal.css?v=3">
 <style>
   .hero{text-align:center; margin:44px 0 6px}
   .hero h1{font-size:42px; margin:0 0 10px; line-height:1.14}

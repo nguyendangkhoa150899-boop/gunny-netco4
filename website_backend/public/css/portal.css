@@ -7,10 +7,13 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
-  font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--text);
+  /* Be Vietnam Pro (Google Fonts, nap o tung trang): dau tieng Viet chuan o moi do dam */
+  font-family:"Be Vietnam Pro","Segoe UI",system-ui,Arial,sans-serif; color:var(--text);
   background:radial-gradient(1000px 560px at 50% -12%, #22345a, var(--bg)) fixed;
   min-height:100vh; line-height:1.55;
 }
+/* nut / o nhap mac dinh KHONG ke thua phong cua trang -> chu co dau bi ve bang phong khac (loi "BẮT ĐẦU" vo dau) */
+button,input,select,textarea{font-family:inherit}
 a{color:var(--accent)}
 .wrap{max-width:960px; margin:0 auto; padding:34px 20px 70px}
 header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}

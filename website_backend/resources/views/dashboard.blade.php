@@ -4,13 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Trang cá nhân | GunnyNetco4</title>
-<link rel="stylesheet" href="/css/portal.css?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="/css/portal.css?v=3">
 <style>
   /* Giao dien theo bo TLBB (play.netco4.click): nen toi trung tinh, the #1b1e27, diem nhan vang.
-     Them muc moi = them 1 nut <button data-sec="x"> o #nav va 1 <section id="sec-x">. */
+     Menu trai = NHOM (data-grp), moi nhom co tab con (NHOM trong JS). Them muc moi: them 1 <section id="sec-x">
+     + ten vao NHOM/TEN trong JS. */
   :root{--bg:#12141a;--bg2:#161922;--card:#1b1e27;--line:#2a2e3b;--text:#e8eaf0;--muted:#8a90a3;--ok:#3ddc84;--err:#ff5d5d;--blue:#4da3ff;--gold:#ffcf5c;--accent:#ffcf5c;--accent2:#ffa53a}
   body{background:var(--bg)}
-  .wrap{max-width:1040px;padding:18px 16px 60px}
+  .wrap{max-width:1180px;padding:18px 16px 60px}
   .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:none}
   .card + .card{margin-top:14px}
   .card h2{font-size:17px;margin:0 0 10px}
@@ -24,12 +27,20 @@
   .chip2 .av{width:26px;height:26px;border-radius:50%;font-size:13px}
   .lk{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:6px 10px;border-radius:8px;cursor:pointer}
   .lk:hover{color:var(--text);background:var(--card)}
-  #nav{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-bottom:14px}
-  #nav button{position:relative;background:var(--card);border:1px solid var(--line);color:var(--muted);font-size:13.5px;font-weight:800;padding:11px 2px;border-radius:10px;cursor:pointer}
-  #nav button:hover{color:var(--text)}
-  #nav button.on{background:linear-gradient(180deg,#2b3346,#222839);color:var(--text);border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c55}
-  #nav button .n{position:absolute;top:-6px;right:-4px;background:var(--err);color:#fff;border-radius:9px;font-size:11px;font-weight:900;padding:0 6px;line-height:1.6}
-  #nav button .s2{display:block;font-size:10px;color:var(--gold);font-weight:700;margin-top:1px}
+  /* menu trai (nhom) + tab con (kieu #navGrp TLBB) */
+  .layout{display:grid;grid-template-columns:210px 1fr;gap:16px;align-items:start}
+  #side{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;position:sticky;top:14px}
+  #side button{position:relative;display:flex;align-items:center;gap:10px;background:transparent;border:1px solid transparent;color:var(--muted);font-size:15px;font-weight:700;padding:12px 12px;border-radius:10px;cursor:pointer;text-align:left}
+  #side button .ic{width:22px;text-align:center;font-size:17px}
+  #side button:hover{color:var(--text);background:#232735}
+  #side button.on{background:linear-gradient(180deg,#2b3346,#222839);color:var(--text);border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c55}
+  #side .n{margin-left:auto;background:var(--err);color:#fff;border-radius:9px;font-size:11px;font-weight:800;padding:0 7px;line-height:1.7}
+  #subnav{display:flex;gap:6px;margin-bottom:12px}
+  #subnav:empty{display:none}
+  #subnav button{flex:1;background:#1a1f2d;border:1px solid var(--line);color:var(--muted);font-size:14px;font-weight:700;padding:11px 4px;border-radius:10px;cursor:pointer}
+  #subnav button:hover{color:var(--text)}
+  #subnav button.on{background:linear-gradient(180deg,#33405c,#252c40);color:var(--text);border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c55}
+  #subnav button small{font-size:11px;color:var(--gold);font-weight:600;margin-left:4px}
   section{display:none} section.on{display:block}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
   .muted{color:var(--muted);font-size:13px}
@@ -67,6 +78,40 @@
   .tile{background:#12141a;border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:left;color:var(--text)}
   .tile:hover{border-color:var(--gold)}
   .tile b{display:block;font-size:15px} .tile span{color:var(--muted);font-size:12.5px}
+  /* ho so: the nhan vat */
+  .hero{background:linear-gradient(135deg,#232838 0%,#1b1e27 55%,#211d12 100%);border-color:#3a3420}
+  .hv{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .hav{position:relative;width:78px;height:78px;border-radius:20px;flex:none;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#2a1c00;background:linear-gradient(135deg,#ffe08a,#ffa53a);box-shadow:0 6px 20px #ffa53a33}
+  .hav i{position:absolute;right:-4px;bottom:-4px;width:18px;height:18px;border-radius:50%;background:#56688a;border:3px solid var(--card)}
+  .hav i.on{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+  .hinfo{flex:1;min-width:220px}
+  .hnm{font-size:26px;font-weight:900;line-height:1.15}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .tg{font-size:12px;font-weight:700;color:#c9cede;background:#12141a;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+  .tg.lvl{color:#2a1c00;background:linear-gradient(180deg,#ffe08a,#f2c14e);border-color:#a8842f}
+  .tg.live{color:var(--ok);border-color:#2f7a52}
+  .hsub{color:var(--muted);font-size:13px;margin-top:8px} .hsub b{color:var(--text)}
+  .hlc{text-align:right;background:#12141a;border:1px solid #4a3c18;border-radius:14px;padding:10px 18px}
+  .hlc span{display:block;color:var(--muted);font-size:12px} .hlc b{font-size:28px;color:var(--gold);font-variant-numeric:tabular-nums}
+  /* o viec can lam */
+  .quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+  .q{position:relative;display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;color:var(--text);text-align:left}
+  .q:hover{border-color:#4a5168;transform:translateY(-1px)}
+  .q .qi{width:42px;height:42px;border-radius:12px;background:#12141a;display:flex;align-items:center;justify-content:center;font-size:21px;flex:none}
+  .q .qt b{display:block;font-size:15px} .q .qt span{color:var(--muted);font-size:12.5px}
+  .q.hot{border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c55,0 0 18px #ffcf5c22}
+  .q.hot .qt span{color:var(--gold);font-weight:700}
+  .q.hot::after{content:"";position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--err);box-shadow:0 0 0 0 #ff5d5d88;animation:pulse 1.6s infinite}
+  @@keyframes pulse{0%{box-shadow:0 0 0 0 #ff5d5d88}70%{box-shadow:0 0 0 8px #ff5d5d00}100%{box-shadow:0 0 0 0 #ff5d5d00}}
+  /* tai san / chien dau */
+  .money{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:#12141a;border:1px solid var(--line);margin-bottom:8px}
+  .money .coin{width:26px;height:26px}
+  .money .coin.lock{filter:grayscale(.6) brightness(.85)} .money .coin.gold2{background:radial-gradient(circle at 35% 30%,#fffbe0,#f5d76e 45%,#c49a1c)}
+  .money div{flex:1} .money div span{display:block;color:var(--muted);font-size:12px} .money div b{font-size:19px;font-variant-numeric:tabular-nums}
+  .money.hi{border-color:#6b5520;background:#1d1a10} .money.hi b{color:var(--gold)}
+  .b.sm2{padding:8px 12px;font-size:13px;border-radius:9px}
+  .fr2{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .fr2 span{color:var(--muted)} .fr2 b{font-size:16px;font-variant-numeric:tabular-nums}
   /* bang lich su */
   .ls{width:100%;border-collapse:collapse;font-size:13.5px}
   .ls td{padding:8px 4px;border-bottom:1px solid var(--line)}
@@ -171,8 +216,8 @@
   #toast.show{opacity:1} #toast.err{background:#3a0f14;border-color:#e5484d;color:#ffd6d9;font-weight:700}
   .msg{margin-top:12px}
   @@media (max-width:900px){
-    #nav{grid-template-columns:repeat(4,1fr)} .row2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .kv{grid-template-columns:1fr}
-    .tiles{grid-template-columns:1fr 1fr} .cards{gap:6px} .cd .fr .t{font-size:9px}
+    .layout{grid-template-columns:1fr} #side{position:static;flex-direction:row;overflow-x:auto} #side button{white-space:nowrap;padding:10px 12px} .row2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .kv{grid-template-columns:1fr}
+    .tiles{grid-template-columns:1fr 1fr} .quick{grid-template-columns:1fr 1fr} .hlc{text-align:left} .cards{gap:6px} .cd .fr .t{font-size:9px}
   }
   @@media (max-width:560px){ .cards{grid-template-columns:repeat(4,1fr)} }
 </style>
@@ -189,30 +234,30 @@
     </div>
   </div>
 
-  <div id="nav">
-    <button data-sec="hoso" class="on">Hồ sơ</button>
-    <button data-sec="vi">Ví xu</button>
-    <button data-sec="diemdanh">Điểm danh</button>
-    <button data-sec="latthe">Lật thẻ<span class="n" id="ltN" style="display:none"></span></button>
-    <button data-sec="taixiu">Tài xỉu</button>
-    <button data-sec="domin">Dò mìn</button>
-    <button data-sec="ruong">Rương<span class="n" id="rgN" style="display:none"></span></button>
-    <button data-sec="ghep">Ghép đồ<span class="s2">sắp có</span></button>
+  <div class="layout">
+  <div id="side">
+    <button data-grp="hoso" class="on"><span class="ic">👤</span>Hồ sơ</button>
+    <button data-grp="latthe"><span class="ic">🃏</span>Lật thẻ<span class="n" id="ltN" style="display:none"></span></button>
+    <button data-grp="minigame"><span class="ic">🎲</span>Mini game</button>
+    <button data-grp="ruong"><span class="ic">🎁</span>Rương<span class="n" id="rgN" style="display:none"></span></button>
   </div>
+  <div>
+  <div id="subnav"></div>
 
   <!-- ================= HO SO ================= -->
   <section id="sec-hoso" class="on">
-    <div class="card" id="profCard"><div class="muted">Đang tải hồ sơ...</div></div>
-    <div class="card">
-      <h2>Hôm nay chơi gì?</h2>
-      <div class="tiles">
-        <button class="tile" data-go="diemdanh"><b>Điểm danh</b><span id="tDd">Nhận quà mỗi ngày</span></button>
-        <button class="tile" data-go="latthe"><b>Lật thẻ phó bản</b><span id="tLt">Đánh xong boss trong game là có lượt</span></button>
-        <button class="tile" data-go="ruong"><b>Rương web</b><span id="tRg">Đồ lật thẻ, rút vào game</span></button>
-        <button class="tile" data-go="taixiu"><b>Tài xỉu</b><span>Cược xu web, thắng x<span id="tHs">1,95</span></span></button>
-        <button class="tile" data-go="domin"><b>Dò mìn</b><span>Mở ô an toàn, rút tiền bất cứ lúc nào</span></button>
-        <button class="tile" data-go="vi"><b>Ví xu</b><span>Đổi xu web sang xu game</span></button>
-      </div>
+    <!-- the nhan vat: ten, cap, trang thai, luc chien -->
+    <div class="card hero" id="profCard"><div class="muted">Đang tải hồ sơ...</div></div>
+    <!-- viec can lam hom nay: o nao co viec dang cho thi sang vien vang (.hot) -->
+    <div class="quick">
+      <button class="q" id="qDd" data-go="diemdanh"><span class="qi">📅</span><span class="qt"><b>Điểm danh</b><span id="tDd">Nhận quà mỗi ngày</span></span></button>
+      <button class="q" id="qLt" data-go="latthe"><span class="qi">🃏</span><span class="qt"><b>Lật thẻ</b><span id="tLt">Đánh boss là có lượt</span></span></button>
+      <button class="q" id="qRg" data-go="ruong"><span class="qi">🎁</span><span class="qt"><b>Rương web</b><span id="tRg">Đồ chờ rút vào game</span></span></button>
+      <button class="q" data-go="taixiu"><span class="qi">🎲</span><span class="qt"><b>Mini game</b><span>Tài xỉu x<span id="tHs">1,95</span> · Dò mìn</span></span></button>
+    </div>
+    <div class="row2">
+      <div class="card" id="cTaiSan"><h2>Tài sản</h2><div class="muted">...</div></div>
+      <div class="card" id="cChienDau"><h2>Chiến đấu</h2><div class="muted">...</div></div>
     </div>
   </section>
 
@@ -318,6 +363,8 @@
   </section>
 
   <section id="sec-ghep"><div class="card empty"><b>Ghép đồ</b>Ghép nhiều món trong rương thành món xịn hơn. Tính năng đang phát triển.</div></section>
+  </div>
+  </div>
 
   <div class="foot">gunny.netco4.click &middot; server test</div>
 </div>
@@ -353,17 +400,28 @@
   function winpop(n){ var e=$('winpop'); e.textContent=(n>=0?'+':'')+fmt(n); e.style.color=n>0?'#3ddc84':'#ff5d5d'; e.className=''; void e.offsetWidth; e.className='show'; }
 
   // ---------- dieu huong ----------
+  // menu trai = nhom, moi nhom gom cac muc (tab con). Hash: #vi, #taixiu, ... (ten muc)
+  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],ruong:['ruong','ghep']};
+  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
+  function nhomCua(sec){ for(var g in NHOM) if(NHOM[g].indexOf(sec)>=0) return g; return 'hoso'; }
   var loaded={};
   function go(sec){
+    if(NHOM[sec] && !$('sec-'+sec)) sec=NHOM[sec][0];
+    if(sec==='minigame') sec='taixiu';
     if(!$('sec-'+sec)) sec='hoso';
+    var g=nhomCua(sec);
     document.querySelectorAll('section').forEach(function(s){ s.classList.toggle('on', s.id==='sec-'+sec); });
-    document.querySelectorAll('#nav button').forEach(function(a){ a.classList.toggle('on', a.dataset.sec===sec); });
+    document.querySelectorAll('#side button').forEach(function(a){ a.classList.toggle('on', a.dataset.grp===g); });
+    var sn=$('subnav');
+    sn.innerHTML=NHOM[g].length>1?NHOM[g].map(function(x){ return '<button data-sub="'+x+'" class="'+(x===sec?'on':'')+'">'+TEN[x]+'</button>'; }).join(''):'';
+    sn.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.dataset.sub); }; });
     if(location.hash!=='#'+sec) history.replaceState(null,'','#'+sec);
     var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad}[sec];
     if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||!loaded[sec])){ loaded[sec]=1; f(); }
     window.scrollTo(0,0);
   }
-  document.querySelectorAll('[data-sec],[data-go]').forEach(function(a){ a.addEventListener('click',function(){ go(a.dataset.sec||a.dataset.go); }); });
+  document.querySelectorAll('[data-grp]').forEach(function(a){ a.addEventListener('click',function(){ go(NHOM[a.dataset.grp][0]); }); });
+  document.querySelectorAll('[data-go]').forEach(function(a){ a.addEventListener('click',function(){ go(a.dataset.go); }); });
 
   // ---------- ho so ----------
   api('/api/hoso').then(function(d){
@@ -373,16 +431,31 @@
     var c=d.data.nhanVat, acc=d.data.taiKhoan;
     if(!c){ box.innerHTML='<div class="empty"><b>Chưa có nhân vật</b>Tài khoản '+esc(acc)+' chưa tạo nhân vật. Tải game ở trang chủ, đăng nhập và tạo nhân vật rồi quay lại.</div>'; return; }
     var rate=c.tran?Math.round(100*c.thang/c.tran):0, max=c.cap>=c.capToiDa;
-    box.innerHTML='<div class="prof"><div class="av">'+esc((c.ten[0]||'G').toUpperCase())+'</div><div><div class="nm">'+esc(c.ten)+'</div>'
-      +'<div class="sub">Tài khoản '+esc(acc)+' · '+esc(c.gioiTinh)+' · <span class="dot'+(c.online?'':' off')+'"></span>'+(c.online?'Đang trong game':'Ngoại tuyến')+'</div></div></div>'
-      +'<div class="lv"><div class="r"><span>Cấp <b>'+c.cap+'</b> / '+c.capToiDa+'</span><span>'+(max?'Đã max cấp':c.phanTramCap+'% lên cấp '+(c.cap+1))+'</span></div><div class="bar"><i style="width:'+(max?100:c.phanTramCap)+'%"></i></div></div>'
-      +'<div class="stats"><div class="stat"><span>Lực chiến</span><b class="g">'+fmt(c.lucChien)+'</b></div><div class="stat"><span>Vàng</span><b>'+fmt(c.vang)+'</b></div>'
-      +'<div class="stat"><span>Xu game</span><b>'+fmt(c.xu)+'</b></div><div class="stat"><span>Xu khóa</span><b>'+fmt(c.xuKhoa)+'</b></div><div class="stat"><span>Xu web</span><b class="g">'+fmt(d.data.xuWeb)+'</b></div></div>'
-      +'<div class="kv"><div><span>Trận thắng</span><b>'+fmt(c.thang)+' / '+fmt(c.tran)+' ('+rate+'%)</b></div><div><span>Bang hội</span><b>'+esc(c.bang||'Chưa vào bang')+'</b></div>'
-      +'<div><span>Công hiến</span><b>'+fmt(c.congHien)+'</b></div><div><span>Điểm thành tích</span><b>'+fmt(c.thanhTich)+'</b></div>'
-      +'<div><span>Ngày tạo nhân vật</span><b>'+esc(c.ngayTao)+'</b></div><div><span>Vào game lần cuối</span><b>'+esc(c.lanCuoi)+'</b></div></div>'
-      +(c.online?'<div class="note">Đang trong game: vàng, xu game ở đây có thể chậm vài phút so với trong game.</div>':'');
+    // the nhan vat
+    box.innerHTML='<div class="hv"><div class="hav">'+esc((c.ten[0]||'G').toUpperCase())+'<i class="'+(c.online?'on':'')+'"></i></div>'
+      +'<div class="hinfo"><div class="hnm">'+esc(c.ten)+'</div>'
+      +'<div class="tags"><span class="tg lvl">Cấp '+c.cap+(max?' · MAX':'')+'</span><span class="tg">'+esc(c.gioiTinh)+'</span>'
+      +'<span class="tg">'+esc(c.bang||'Chưa vào bang')+'</span><span class="tg '+(c.online?'live':'')+'">'+(c.online?'● Đang trong game':'Ngoại tuyến')+'</span></div>'
+      +'<div class="hsub">Tài khoản <b>'+esc(acc)+'</b> · tạo ngày '+esc(c.ngayTao)+' · vào game lần cuối '+esc(c.lanCuoi)+'</div></div>'
+      +'<div class="hlc"><span>Lực chiến</span><b>'+fmt(c.lucChien)+'</b></div></div>'
+      +'<div class="lv"><div class="r"><span>Kinh nghiệm cấp '+c.cap+'</span><span>'+(max?'Đã đạt cấp tối đa '+c.capToiDa:c.phanTramCap+'% lên cấp '+(c.cap+1))+'</span></div><div class="bar"><i style="width:'+(max?100:c.phanTramCap)+'%"></i></div></div>';
+    // tai san
+    $('cTaiSan').innerHTML='<h2>Tài sản</h2>'
+      +'<div class="money hi"><span class="coin"></span><div><span>Xu web</span><b>'+fmt(d.data.xuWeb)+'</b></div><button class="b gold sm2" data-go="vi">Đổi sang game</button></div>'
+      +'<div class="money"><span class="coin"></span><div><span>Xu game</span><b>'+fmt(c.xu)+'</b></div></div>'
+      +'<div class="money"><span class="coin lock"></span><div><span>Xu khóa</span><b>'+fmt(c.xuKhoa)+'</b></div></div>'
+      +'<div class="money"><span class="coin gold2"></span><div><span>Vàng</span><b>'+fmt(c.vang)+'</b></div></div>'
+      +(c.online?'<div class="muted" style="margin-top:8px">Bạn đang trong game: xu game và vàng ở đây có thể chậm vài phút.</div>':'');
+    // chien dau
+    $('cChienDau').innerHTML='<h2>Chiến đấu</h2>'
+      +'<div class="fr2"><span>Trận thắng / tổng trận</span><b>'+fmt(c.thang)+' / '+fmt(c.tran)+'</b></div>'
+      +'<div class="fr2"><span>Tỉ lệ thắng</span><b>'+rate+'%</b></div><div class="bar" style="margin:2px 0 10px"><i style="width:'+rate+'%;background:linear-gradient(90deg,#3ddc84,#2fbf71)"></i></div>'
+      +'<div class="fr2"><span>Công hiến</span><b>'+fmt(c.congHien)+'</b></div>'
+      +'<div class="fr2"><span>Điểm thành tích</span><b>'+fmt(c.thanhTich)+'</b></div>'
+      +'<div class="fr2"><span>Số lần vào game</span><b>'+fmt(c.soLanDangNhap)+'</b></div>';
+    document.querySelectorAll('#cTaiSan [data-go]').forEach(function(a){ a.onclick=function(){ go(a.dataset.go); }; });
   });
+  function hot(id,on){ var e=$(id); if(e) e.classList.toggle('hot',!!on); }
 
   // ---------- vi ----------
   var VI={};
@@ -422,7 +495,7 @@
       $('dd_daily').innerHTML=d.quangay?'Mỗi ngày: <b>'+esc(d.quangay)+'</b>':'';
       $('dd_moc').innerHTML=(d.moc||[]).map(function(x){ return '<div class="'+(x.dat?'ok':'')+'"><span>'+(x.dat?'✓ ':'')+'Đủ '+x.moc+' ngày</span><span>'+esc(x.qua)+'</span></div>'; }).join('');
       ddBtn.disabled=!!d.dadiemdanh; ddBtn.textContent=d.dadiemdanh?'HÔM NAY ĐÃ ĐIỂM DANH':'ĐIỂM DANH HÔM NAY';
-      $('tDd').textContent=d.dadiemdanh?('Đã điểm danh, tháng này '+d.ngay.length+' ngày'):'Chưa điểm danh hôm nay';
+      $('tDd').textContent=d.dadiemdanh?('✓ Đã điểm danh · tháng này '+d.ngay.length+' ngày'):'Chưa điểm danh hôm nay!'; hot('qDd',!d.dadiemdanh);
     });
   }
   ddBtn.addEventListener('click',function(){
@@ -442,7 +515,7 @@
       if(!r||!r.success){ $('ltList').innerHTML=''; $('ltBoard').innerHTML='<div class="empty">'+esc((r&&r.message)||'Không tải được.')+'</div>'; return; }
       LT.ds=r.data.ds; LT.soLa=r.data.soLa||21; LT.soLat=r.data.soLat||3;
       var n=LT.ds.length; $('ltN').style.display=n?'':'none'; $('ltN').textContent=n;
-      $('tLt').textContent=n?('Có '+n+' lượt lật đang chờ!'):'Đánh xong boss trong game là có lượt';
+      $('tLt').textContent=n?('Có '+n+' lượt lật đang chờ!'):'Đánh boss là có lượt'; hot('qLt',n);
       $('ltInfo').innerHTML='Đánh xong <b>boss ải cuối</b> của phó bản trong game là có 1 lượt lật (mỗi phó bản <b>'+r.data.soLan+' lượt/ngày</b>). Mỗi lượt lật <b>'+LT.soLat+' lá</b>, đồ vào <b>Rương web</b>, xu vào ví.'+(r.data.mo?'':' <b style="color:#ff8a8a">Lật thẻ đang tạm tắt.</b>');
       if(!LT.cur || !LT.ds.some(function(x){ return x.id===LT.cur; })) LT.cur=n?LT.ds[0].id:null;
       ltRenderList(); ltRenderBoard();
@@ -607,12 +680,12 @@
 
   // ---------- ruong ----------
   var RG={ds:[],sel:[]};
-  function rgCount(){ api('/api/ruong').then(function(r){ if(r&&r.success){ var n=r.data.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n; $('tRg').textContent=n?('Đang có '+n+' món chờ rút'):'Đồ lật thẻ, rút vào game'; } }); }
+  function rgCount(){ api('/api/ruong').then(function(r){ if(r&&r.success){ var n=r.data.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n; $('tRg').textContent=n?(n+' món chờ rút vào game'):'Rương trống'; hot('qRg',n); } }); }
   function rgLoad(){
     api('/api/ruong').then(function(r){
       if(!r||!r.success) return;
       RG.ds=r.data.ds; RG.sel=RG.sel.filter(function(id){ return RG.ds.some(function(x){ return x.id===id; }); });
-      var n=RG.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n;
+      var n=RG.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n; $('tRg').textContent=n?(n+' món chờ rút vào game'):'Rương trống'; hot('qRg',n);
       $('rgGrid').innerHTML=n?RG.ds.map(function(x){
         return '<div class="ri'+(RG.sel.indexOf(x.id)>=0?' on':'')+'" data-id="'+x.id+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="">'+(x.sl>1?'<b>'+x.sl+'</b>':'')+'</div>'
           +'<div><div class="tn">'+esc(x.ten)+(x.cuong?' +'+x.cuong:'')+'</div><div class="sn">'+(x.han?x.han+' ngày':'Vĩnh viễn')+(x.khoa?' · khóa':'')+'</div><div class="sn">'+esc(x.nguon||'')+'</div></div><span class="ck"></span></div>'; }).join('')
@@ -634,7 +707,7 @@
 
   // nap so lieu nho cho trang chu ho so + nhan so tren menu
   refreshBal(); rgCount(); ddLoad(); loaded.diemdanh=1;
-  api('/api/latthe').then(function(r){ if(r&&r.success){ var n=r.data.ds.length; $('ltN').style.display=n?'':'none'; $('ltN').textContent=n; $('tLt').textContent=n?('Có '+n+' lượt lật đang chờ!'):'Đánh xong boss trong game là có lượt'; } });
+  api('/api/latthe').then(function(r){ if(r&&r.success){ var n=r.data.ds.length; $('ltN').style.display=n?'':'none'; $('ltN').textContent=n; $('tLt').textContent=n?('Có '+n+' lượt lật đang chờ!'):'Đánh boss là có lượt'; hot('qLt',n); } });
   go((location.hash||'#hoso').slice(1));
 })();
 </script>
