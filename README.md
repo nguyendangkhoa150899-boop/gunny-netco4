@@ -240,3 +240,10 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 - **Ảnh vật phẩm công khai:** `GET /hinh/{TemplateID}` (đọc Resource.Server, client không có ảnh thì trả ô "?").
 - **Không có công cụ ép kết quả** (khác bản TLBB). Đã test đầu cuối bằng tài khoản tạm rồi xóa sạch: chặn cược sai, số dư khớp sổ cái, dò mìn không lộ mìn, lượt lật chỉ tạo khi thắng ải cuối, giới hạn 3/ngày, lá thứ 4 bị chặn, rút rương ra thư thật, đổi xu tạo lệnh chờ nhận.
 - IIS nhớ 404 của file tĩnh mới thêm một lúc: link ảnh mới nên kèm `?v=`.
+
+## 16. Rút xu game ra web (thư gửi nhân vật NganHang)
+- `_setup/sql/rut-xu-ngan-hang.sql`: bảng `Db_Member.Web_RutXu` (unique MailID), cấu hình `rut_mo / rut_ten / rut_tile / rut_tran_ngay`, tạo nhân vật **NganHang** (UserID 241, UserName `zz_nganhang_web`, **không có Mem_Account nên không ai đăng nhập được**), và đặt `DB_Admin.settings he-so-doi-coin = 1` (nạp xu web→game 1:1; trước là 2).
+- Người chơi trong game gửi **thư kèm xu, không kèm đồ** cho `NganHang`. Game gốc (`UserSendMailHandler`, đã kiểm IL bản đang chạy) tự `RemoveMoney` + tạo thư `Type=1, Money>0` + `SaveIntoDatabase` ngay, nên **an toàn cả khi đang online**.
+- `MiniGameController::nhanXuNganHang` chạy mỗi lần gọi `/api/vi` (mục Ví tự gọi 10 giây/lần): `DELETE` từng thư (chỉ 1 lần) → `Web_RutXu` → cộng xu web `floor(xu / rut_tile)`. Vượt `rut_tran_ngay` thì thư nằm chờ sang ngày. Thư kèm đồ / thư thu tiền (Type 2) bỏ qua, nằm lại ở NganHang.
+- **Giữ `rut_tile` = `he-so-doi-coin`**, lệch nhau là người chơi quay vòng nạp/rút để in xu.
+- Đã test (thư giả lập đúng như game tạo): 1,5 triệu → 1,5 triệu xu web; 800 nghìn vượt trần → chờ; kèm đồ / thu tiền bỏ qua; gọi lại không cộng trùng; sổ cái khớp.
