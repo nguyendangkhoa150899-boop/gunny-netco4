@@ -117,10 +117,15 @@ function run_action($conn,$act,$P){
     return $r==='0' ? 'Đã phát thông báo toàn server.' : 'Phát thông báo lỗi (mã '.h($r).').';
 
   case 'publish':
-    $r=req('CreateAllXml.ashx');
+    // Dung lai TUNG file XML qua <ten>.ashx (moi .ashx tu ghi file cua no). KHONG dung CreateAllXml.ashx:
+    // DB (tank.bak) thieu du lieu so voi XML goc (QuestList 179/1115, NPCInfoList 1033/1274...), dung lai het se lam client mat nhiem vu.
+    $allow = array_keys(publish_files());
+    $files = array_values(array_intersect((array)($P['files']??[]), $allow)); $out=[];
+    foreach($files as $f){ $r=req($f.'.ashx'); $out[] = $f.': '.(stripos($r,'Success')!==false ? 'OK' : 'lỗi'); }
     $types=array_map('intval',(array)($P['reload']??[])); $res=[];
     foreach($types as $t){ $res[]=$t.':'.req('NoticeServerUpdate.aspx',['serverID'=>SERVER_ID,'type'=>$t]); }
-    return 'Đã tạo lại XML cho client ('.h(mb_substr(strip_tags($r),0,120)).').'.($res?' Nạp lại server: '.h(implode(', ',$res)).' (0 là thành công).':'');
+    if(!$files && !$types) return 'Chưa chọn file hay phần nào.';
+    return ($files?'Dựng lại XML: '.h(implode(', ',$out)).'. ':'').($res?'Nạp lại server: '.h(implode(', ',$res)).' (0 là thành công).':'');
 
   case 'maintenance':
     if(empty($P['sure'])) return 'Phải tích ô xác nhận trước khi bảo trì.';

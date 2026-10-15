@@ -29,10 +29,16 @@ $RELOAD = [8=>'Vật phẩm (template)',14=>'Shop',9=>'Nhiệm vụ',12=>'Tỉ l
     <form method="post"><?= csrf() ?><input type="hidden" name="act" value="notice">
       <textarea name="msg" rows="2" placeholder="Nội dung hiện cho mọi người đang online"></textarea><button class="btn sm mt">Phát thông báo</button></form>
     <h3 class="mt" style="margin-top:18px">Xuất bản dữ liệu</h3>
-    <div class="muted">Sau khi sửa vật phẩm, shop, sự kiện, giftcode, nhiệm vụ: tạo lại XML cho client (<code>CreateAllXml.ashx</code>) và chọn phần server cần nạp lại. Rơi đồ, sự kiện GM, Server_Config không nạp lại từ xa được, phải khởi động lại Road.</div>
+    <div class="muted">Dựng lại XML cho client từ DB, <b>chỉ chọn file vừa sửa</b>. DB đang thiếu dữ liệu so với client gốc ở các mục đánh dấu đỏ, dựng lại sẽ làm client mất nội dung. Rơi đồ, sự kiện GM, Server_Config không nạp lại từ xa được, phải khởi động lại Road.</div>
     <form method="post"><?= csrf() ?><input type="hidden" name="act" value="publish">
+      <div style="margin-top:8px">
+        <?php foreach(publish_files() as $k=>[$v,$lv]): $col=[0=>'var(--ok)',1=>'var(--accent)',2=>'var(--err)'][$lv]; ?>
+          <label style="display:block;font-size:13px;margin:3px 0"><input type="checkbox" name="files[]" value="<?= h($k) ?>" <?= $k==='ActiveList'?'checked':'' ?>> <b style="color:<?= $col ?>"><?= h($k) ?></b> <span class="muted"><?= h($v) ?></span></label>
+        <?php endforeach; ?>
+      </div>
+      <div class="muted mt">Nạp lại phần server:</div>
       <div class="row" style="flex-wrap:wrap;gap:4px 14px">
-        <?php foreach($RELOAD as $k=>$v): ?><label style="flex:0 0 auto;font-size:13px"><input type="checkbox" name="reload[]" value="<?= $k ?>" <?= in_array($k,[8,14,9])?'checked':'' ?>> <?= h($v) ?></label><?php endforeach; ?>
+        <?php foreach($RELOAD as $k=>$v): ?><label style="flex:0 0 auto;font-size:13px"><input type="checkbox" name="reload[]" value="<?= $k ?>" > <?= h($v) ?></label><?php endforeach; ?>
       </div><button class="btn sm blue mt">Xuất bản</button></form>
     <h3 style="margin-top:18px">Bảo trì</h3>
     <form method="post"><?= csrf() ?><input type="hidden" name="act" value="maintenance">

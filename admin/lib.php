@@ -33,6 +33,18 @@ function exec_sql($conn,$sql,$params=[]){ $st=sqlsrv_query($conn,$sql,$params); 
 
 // UserID nhan vat theo ten tai khoan (Sys_Users_Detail.UserName = ten dang nhap, chu thuong)
 function user_id($conn,$user){ return (int)scalar($conn,"SELECT UserID FROM Db_Tank41.dbo.Sys_Users_Detail WHERE UserName=?",[strtolower(trim($user))]); }
+/* XML client duoc phep dung lai tu admin: ten .ashx => [mo ta, muc canh bao 0 an toan / 1 can than / 2 nguy hiem].
+   So lieu 15/10/2026: XML goc vs dung tu DB hien tai. Ban goc nam trong git (Request/*.xml) va C:\inst2\xml-backup-20261015. */
+function publish_files(){ return [
+  'ActiveList'         => ['Sự kiện / giftcode', 0],
+  'eventrewarditemlist'=> ['Quà sự kiện', 0],
+  'LoadItemsCategory'  => ['Danh mục vật phẩm', 0],
+  'ShopItemList'       => ['Giá shop', 1],
+  'TemplateAllList'    => ['Vật phẩm (tên, chỉ số tooltip): DB có 19.122, client gốc 13.080', 1],
+  'ShopGoodsShowList'  => ['Hàng hiển thị shop: DB 1.258, client gốc 1.372', 2],
+  'NPCInfoList'        => ['NPC: DB 1.033, client gốc 1.274', 2],
+  'QuestList'          => ['Nhiệm vụ: DB chỉ 179, client gốc 1.115, ĐỪNG dựng lại', 2],
+]; }
 function max_level($conn){ return (int)scalar($conn,"SELECT TOP 1 Grade FROM Db_Tank.dbo.LevelInfo ORDER BY Grade DESC"); }
 
 /* Goi endpoint quan tri cua Request (chi nhan tu 127.0.0.1: AdminIP/ChargeIP). Tra ve chuoi ket qua da trim.
