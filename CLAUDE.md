@@ -1,33 +1,37 @@
-# Gunny NetCo4 — repo phát triển server
+# GunnyNetco4: quy tắc cho Claude
 
-Repo này chứa **mã nguồn + config + script** để phát triển một server Gunny (DDTank) riêng, chơi với bạn bè (~20 người). Phần chạy nặng (binary, database `.bak`, Flash, launcher) **không nằm ở đây** — tải riêng qua Drive (xem `docs/BAN-GIAO.md`).
+Đọc `README.md` trước (hiện trạng, kiến trúc, lỗi đã gặp). File này chỉ là luật làm việc.
 
-> Dành cho Claude phiên sau: đọc `docs/BAN-GIAO.md` trước. Đó là kết quả soát toàn bộ bộ Gunny (server, web, client, database) + checklist dựng + các lỗ hổng phải vá.
+## Quy trình bắt buộc
+- Sửa code → `git commit` → `./_setup/deploy.sh` (tự push GitHub rồi đẩy file đổi lên VPS). **Không sửa tay trên VPS** những file có trong git, lần deploy sau sẽ đè.
+- SQL thay đổi DB: viết thành file trong `_setup/sql/`, commit, deploy, rồi chạy `sqlcmd -S localhost -E -C -b -i C:\Gunny92\_setup\sql\<file>.sql` trên VPS.
+- Kết thúc mỗi thay đổi: test thật (curl/Invoke-WebRequest qua domain, đăng nhập admin, xem log), báo kết quả cụ thể.
+- Commit kết thúc bằng dòng `Co-Authored-By` theo hướng dẫn của phiên.
 
-## Có gì trong repo
-| Thư mục | Là gì |
-|---|---|
-| `gameSrc/` | Mã nguồn **server game** (C#, .NET Framework 4.8): Center, Fighting, Road, Request. Đây là phần chính để phát triển gameplay |
-| `flashbaseSrc/` | Mã nguồn **client** (ActionScript 3, build bằng Flex/AIR SDK ra `library.swf`) |
-| `Request/` | Mã nguồn API web cho client (ASP.NET: đăng nhập, danh sách server) — không gồm `bin/` |
-| `website_backend/` | Laravel — API launcher dùng (đăng nhập, đăng ký). Không gồm `vendor/`, `.env`, `storage/` |
-| `_setup/` | Script dựng server tự động (SQL, config, IIS/PHP, tường lửa, hosts) |
-| `docs/` | Bàn giao + nhật ký |
+## Bí mật
+- Không commit mật khẩu, khóa, chuỗi kết nối. Chúng nằm ở `C:\Gunny92\website_backend\.env` và `C:\Gunny92\Request\appsettings.secret.config` (gitignore). Chủ server giữ bản sao + key SSH ở thư mục `GunnyNetco4-BAO-MAT` trên Desktop.
+- Code đọc bí mật từ `.env` lúc chạy (xem `admin/lib.php`). `LoginKey`=`KEY_REQUEST`, `ChargeKey`=`CHARGE_KEY` phải khớp giữa Request và website_backend.
+- Lệnh SSH chứa mật khẩu dễ bị chặn: sinh/đọc bí mật ngay trên VPS thay vì truyền qua lệnh.
 
-## KHÔNG nằm trong repo (tải qua Drive)
-Binary đã build (`Server/*.exe`, `*.dll`), database `.bak` (5 cái), `Flash/`, `Resource.Server/`, `launcher_base/`, `GM/`, các web trùng (`Website/`, `Website1/`, `newweb/`), `HelperV1.1/`. Lý do: nặng, là binary, chứa secret/dữ liệu người chơi cũ, có bản quyền.
+## VPS (Windows, SSH key, shell PowerShell 5.1)
+- Không có `&&`. Lệnh phức tạp: base64 UTF-16LE + `powershell -EncodedCommand`. File lớn dùng `scp`.
+- Bật server game bằng WMI (`_setup/start-servers.ps1`), không `Start-Process` (chết theo phiên SSH).
+- Tạo scheduled task / sửa quyền hệ thống có thể bị chặn: đưa lệnh cho chủ server tự chạy.
 
-## Quy tắc
-- Mật khẩu / IP / domain thật **không commit**. Dùng `127.0.0.1` + mật khẩu test trong script; bản thật đặt riêng.
-- File chạy (`.exe`) của bộ là **chưa tin được** — quét VirusTotal trước khi chạy. Có `._cache_FuckNewPng.exe` dấu vết nghi sâu Xred.
-- **3 cửa sau bắt buộc gỡ** trước khi mở ra internet (xem `docs/BAN-GIAO.md` + `_setup/2-go-backdoor-nap.ps1`).
-- Mục tiêu chủ server: **tắt hết web nạp, chỉ giữ game + đăng nhập launcher; xu lấy trong game (điểm danh / boss); đăng ký về trắng.**
+## Bẫy của game (đọc kỹ)
+- Dữ liệu người đang online nằm trong RAM Road: **không UPDATE trực tiếp** vàng/xu/cấp của người online. Dùng `ChargeMoney.aspx` (xu) hoặc `SendMailAndItem.aspx` (thư).
+- Center chỉ đọc `Server_List` lúc khởi động. Đổi Server_List / LevelInfo / Server_Config / Game_Commands / Drop_Item → restart (Road hoặc cả 3).
+- `Game_Commands` phải luôn có ≥ 1 dòng, rỗng thì Road tự tắt.
+- **Không chạy `CreateAllXml.ashx`**: DB thiếu nhiệm vụ so với XML client gốc (179 so với 1.115). Chỉ dựng lại từng file `.ashx` khi chắc chắn; XML gốc ở git + `C:\inst2\xml-backup-20261015`.
+- `.cs` trong `Request/` là bản cũ không khớp DLL; nguồn thật là `gameSrc/Tank.Request/`. Sửa phải build lại `Tank.Request.dll`.
+- Launcher Mac: sửa zip Electron tại chỗ bằng 7-Zip, không giải nén trên Windows (mất symlink).
 
-## Dựng server (tóm tắt, chi tiết ở `_setup/run.txt`)
-1. Windows Server 2019 + SQL Server 2022 (Developer, Default instance).
-2. Tải bộ chạy từ Drive về `C:\Gunny92`.
-3. `_setup/B1-sql.ps1` (mixed mode + mật khẩu sa + khôi phục 5 DB).
-4. `_setup/B2-config.ps1` (config → localhost, tường lửa, hosts).
-5. `_setup/B3-iis-php.ps1` (IIS + URL Rewrite + PHP).
-6. Bật: SQL → IIS → Center → Fighting → Road. Mở launcher, đăng ký, test.
-7. Trước khi cho bạn bè vào: `_setup/2-go-backdoor-nap.ps1` + xóa account cũ trong DB.
+## Giao diện (portal + admin)
+- Giữ đủ dấu tiếng Việt. **Không dùng dấu gạch ngang dài "—"** trong chữ hiển thị.
+- Màu chữ luôn tương phản nền; các lựa chọn đặt cạnh nhau mỗi cái một màu riêng (ví dụ nút Windows cam, MacBook xanh).
+- Không dùng `confirm()/alert()/prompt()`: dùng ô xác nhận / thông báo trong trang.
+- Ưu tiên giao diện PC, mobile chỉ cần CSS responsive nhẹ.
+- `welcome.blade.php` là Blade: CSS `@media` phải viết `@@media`, tránh `{{` và `@` lẻ.
+
+## Mục tiêu chủ server
+Server **test**: tắt nạp tiền thật; nhân vật mới cấp tối đa (60) + nhiều tài nguyên; admin can thiệp được (gửi quà, cộng xu, giftcode, tỉ lệ, GM). Cho bạn bè (~20 người) tải client ở https://gunny.netco4.click và chơi.
