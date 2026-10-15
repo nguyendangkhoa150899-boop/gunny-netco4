@@ -222,3 +222,10 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 - `website_backend/app/Http/Controllers/DiemDanhController.php`: `POST /api/diemdanh/info`, `POST /api/diemdanh` (bearer token của portal). Ngày lấy theo `GETDATE()` của SQL Server (giờ VN). Quà gửi qua `SendMailAndItem.aspx` (an toàn cả khi online); gửi lỗi thì xóa dòng điểm danh để bấm lại.
 - Portal: khung "Điểm danh tháng" trong bảng tài khoản (lịch tháng, quà mỗi ngày, các mốc). Admin > **Điểm danh**: thêm/xóa quà, thống kê, danh sách điểm danh gần đây.
 - Đã test đầu cuối bằng tài khoản tạm (đăng ký → tạo nhân vật → đăng nhập → điểm danh → lần 2 bị chặn → thư có vật phẩm → token sai bị 403) rồi xóa sạch.
+
+## 14. Portal: trang chủ + trang cá nhân `/dashboard`
+- **CSS chung** `website_backend/public/css/portal.css` (màu, nút, ô nhập, điểm danh). Sửa giao diện ở đây; mỗi trang chỉ thêm CSS riêng của nó.
+- **Trang chủ** (`welcome.blade.php`): tải client + khung **Đăng nhập hiện trước**, link "Đăng ký ngay" mới mở form đăng ký (đăng ký xong tự quay về đăng nhập, điền sẵn tên). Đăng nhập xong chuyển `/dashboard`. Token lưu `localStorage.gn_token` (bearer của `/api/login131`).
+- **Trang cá nhân** (`dashboard.blade.php`, route `/dashboard`): menu trái (`#hoso`, `#diemdanh`, các mục "sắp có": rương đồ, đổi mật khẩu, lịch sử). Thêm mục mới = thêm 1 `<a data-sec="x">` + 1 `<section id="sec-x">`. Không có token → về `/`; token hết hạn (403) → đăng xuất.
+- **API hồ sơ** `POST /api/hoso` (`HoSoController`): tài khoản + nhân vật (cấp, % lên cấp, lực chiến, vàng, xu, xu khóa, thắng/trận, bang, công hiến, thành tích, ngày tạo, lần cuối). Nhân vật đang online thì số trong DB có thể chậm vài phút so với game.
+- Admin > Gửi quà: mặc định **ẩn món client không có file ảnh** (vd đồ thú cưng `hat28`, `cloth28` trở lên của bản game mới hơn: vào game cũng vô hình). Ô chọn "Chỉ món KHÔNG có ảnh (để test)" để xem riêng các món này.
