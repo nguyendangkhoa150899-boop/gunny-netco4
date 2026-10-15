@@ -1,13 +1,13 @@
 <?php if (!defined('GN_ADMIN')) exit;
 $acts = q($conn,"SELECT a.ActiveID,a.Title,a.Type,a.HasKey,a.StartDate,a.EndDate,ISNULL(a.CodePrefix,'') CodePrefix,
   (SELECT COUNT(DISTINCT n.AwardID) FROM Db_Tank41.dbo.Active_Number n WHERE n.ActiveID=a.ActiveID) codes,
-  (SELECT COUNT(*) FROM Db_Tank41.dbo.Active_Number n WHERE n.ActiveID=a.ActiveID AND n.UserID<>0) used
+  (SELECT ISNULL(SUM(IIF(n.Creator>0,n.Creator,1)),0) FROM Db_Tank41.dbo.Active_Number n WHERE n.ActiveID=a.ActiveID AND n.UserID<>0) used
   FROM Db_Tank.dbo.Active a ORDER BY a.ActiveID DESC");
 $sel = (int)($_GET['aid'] ?? 0);
 $awards = $sel ? q($conn,"SELECT w.ID,w.ItemID,w.Count,w.ValidDate,w.StrengthenLevel,w.Gold,w.Money,ISNULL(g.Name,'') Name,ISNULL(g.CategoryID,0) Cat,ISNULL(g.Pic,'') Pic,ISNULL(g.NeedSex,0) Sex,ISNULL(g.Quality,0) Q FROM Db_Tank.dbo.Active_Award w LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=w.ItemID WHERE w.ActiveID=? ORDER BY w.ID",[$sel]) : [];
 // moi code 1 dong: dong goc (UserID=0) cho biet kieu (Creator), cac dong UserID<>0 la luot da nhan
 $codeRows = $sel ? q($conn,"SELECT AwardID, MAX(CASE WHEN UserID=0 THEN Creator END) Creator, MAX(CASE WHEN UserID=0 THEN 1 ELSE 0 END) Alive,
-  SUM(CASE WHEN UserID<>0 THEN 1 ELSE 0 END) Used, COUNT(DISTINCT CASE WHEN UserID<>0 THEN UserID END) People
+  SUM(CASE WHEN UserID<>0 THEN IIF(Creator>0,Creator,1) ELSE 0 END) Used, COUNT(DISTINCT CASE WHEN UserID<>0 THEN UserID END) People
   FROM Db_Tank41.dbo.Active_Number WHERE ActiveID=? GROUP BY AwardID ORDER BY MIN(GetDate) DESC",[$sel]) : [];
 $newCode = $_SESSION['gc_new_code'] ?? ''; unset($_SESSION['gc_new_code']);
 $now = date('Y-m-d H:i:s');

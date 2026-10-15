@@ -4,7 +4,9 @@
 --   0        code 1 lan (ban goc game): nguoi dau nhap xong la het
 --   -1       moi nguoi 1 lan, khong gioi han so nguoi (giftcode-dung-chung.sql)
 --   < -1     nhieu lan: tong so luot = -Creator - 1 (vd -51 = 50 luot), mot nguoi nhap lai duoc, bo qua IsOnly cua su kien
--- Moi lan nhan (kieu -1 va < -1) ghi them 1 dong (AwardID, UserID nguoi nhan, PullDown=1, Creator=0); da dung = so dong UserID<>0.
+-- Khoa chinh bang la (AwardID, UserID) nen moi nguoi chi co 1 dong nhan cho moi code:
+--   kieu -1: dong nhan Creator=0; kieu < -1: Creator cua dong nhan = so lan nguoi do da nhan (nhan lai thi +1).
+--   Da dung (tong luot) = SUM(IIF(Creator>0,Creator,1)) cac dong UserID<>0.
 -- Chay: sqlcmd -S localhost -E -C -b -f 65001 -i giftcode-nhieu-lan.sql   (chay lai an toan)
 -- Hoan tac ve ban goc game: xem cuoi giftcode-dung-chung.sql (SP_Active_PullDown_goc).
 USE Db_Tank41;
@@ -26,11 +28,16 @@ SET @d = REPLACE(@d, @dec, @dec + NCHAR(13)+NCHAR(10) + N'Declare @Multi Int' + 
 -- doc so luot tu Creator; het luot tra 5 (da dung)
 SET @d = REPLACE(@d, @sel,
   N'@Shared=IIF(Creator=-1,1,0),@Multi=IIF(Creator<-1,-Creator-1,0) From  Active_Number Where ActiveID=@ActiveID and AwardID =@AwardID Order By UserID'
-  + NCHAR(13)+NCHAR(10) + N'       If @Multi>0 And (Select Count(*) From Active_Number Where ActiveID=@ActiveID And AwardID=@AwardID And UserID<>0)>=@Multi Return 5');
+  + NCHAR(13)+NCHAR(10) + N'       If @Multi>0 And (Select IsNull(Sum(IIF(Creator>0,Creator,1)),0) From Active_Number Where ActiveID=@ActiveID And AwardID=@AwardID And UserID<>0)>=@Multi Return 5');
 -- code nhieu lan khong bi chan boi IsOnly (1 nguoi nhan lai duoc)
 SET @d = REPLACE(@d, @only, N'If @CanGet=1 And @Multi=0 ');
--- moi lan nhan ghi 1 dong, dong goc giu nguyen
-SET @d = REPLACE(@d, @ins, N'If @Shared=1 Or @Multi>0 Insert Into Active_Number');
+-- nhan lan dau: them 1 dong (Creator=1 neu nhieu lan); nhan lai (nhieu lan): tang Creator cua dong do. Dong goc giu nguyen.
+DECLARE @val nvarchar(100) = N'Values(@AwardID,@ActiveID,1,Getdate(),@UserID,@Mark,0)';
+IF CHARINDEX(@val,@d)=0 BEGIN RAISERROR(N'SP khac ban da khao sat, khong va.',16,1); RETURN; END
+SET @d = REPLACE(@d, @val, N'Values(@AwardID,@ActiveID,1,Getdate(),@UserID,@Mark,IIF(@Multi>0,1,0))');
+SET @d = REPLACE(@d, @ins,
+  N'If @Multi>0 And Exists(Select 1 From Active_Number Where AwardID=@AwardID And UserID=@UserID) Update Active_Number Set Creator=IIF(Creator>0,Creator,1)+1,[GetDate]=Getdate() Where AwardID=@AwardID And UserID=@UserID'
+  + NCHAR(13)+NCHAR(10) + N'       Else If @Shared=1 Or @Multi>0 Insert Into Active_Number');
 EXEC sp_executesql @d;
 PRINT N'Da va SP_Active_PullDown (code nhieu lan: Creator < -1).';
 GO
