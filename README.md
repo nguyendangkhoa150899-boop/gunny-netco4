@@ -69,9 +69,9 @@ Không đi qua `deploy.sh`, phải làm tay:
 ## 3. Cấu hình server TEST (đang áp dụng)
 
 **Nhân vật mới = cấp tối đa + nhiều tài nguyên.**
-- `SP_Users_Active` (Db_Tank41) vá bởi `_setup/sql/tao-nhan-vat-max.sql`: cấp = dòng cao nhất của `Db_Tank.dbo.LevelInfo` (**hiện 30**, GP 3.490.849), `Gold/Money/MoneyLock` lấy từ tham số. Bản gốc ghi cứng cấp 1 và 0 vàng/xu.
+- `SP_Users_Active` (Db_Tank41) vá bởi `_setup/sql/tao-nhan-vat-max.sql`: cấp = dòng cao nhất của `Db_Tank.dbo.LevelInfo` (**60**, GP 100.000.000), `Gold/Money/MoneyLock` lấy từ tham số. Bản gốc ghi cứng cấp 1 và 0 vàng/xu.
 - Số tài nguyên: `DefaultGold` (50.000.000) và `DefaultMoney` (10.000.000, cũng dùng cho xu khóa) trong `Request/Web.config`. Hàm tạo nhân vật chạy trong tiến trình **Request** (`gameSrc/Tank.Request/Login.cs` → `BaseInterface.CreateLogin` → `ActivePlayer`).
-- Cấp tối đa server dùng `LevelMgr.MaxLevel = số dòng LevelInfo`. `Server_Config.MAXLevel=60` **không** quyết định cấp. Muốn trên 30 phải thêm dòng LevelInfo và client phải hỗ trợ.
+- **Cấp tối đa 60**: server dùng `LevelMgr.MaxLevel = số dòng LevelInfo`; client dùng `Request/LevelList.xml` (`Experience.MAX_LEVEL = số mục + 1`) và vẽ icon tới 60 (`LevelIcon.MAX_LEVEL=60`). `tank.bak` chỉ có 30 dòng LevelInfo (cấp 26 đến 30 còn lệch 1 bậc), `_setup/sql/levelinfo-60.sql` nạp lại đủ 60 cấp từ `LevelList.xml` gốc. Đổi LevelInfo xong phải restart Center/Fighting/Road.
 
 **Tiền tệ** (`Db_Tank41.Sys_Users_Detail`): `Gold` = vàng, `Money` = xu, `MoneyLock` = xu khóa. `Db_Member.Mem_Account.Money` là xu web (khác xu trong game).
 
@@ -79,18 +79,26 @@ Không đi qua `deploy.sh`, phải làm tay:
 
 ---
 
-## 4. Admin panel (`admin/index.php`)
+## 4. Admin panel (`admin/`)
 Đăng nhập `admin` + `ADMIN_PANEL_PASS` trong `.env`. Đọc mọi bí mật từ `.env` (không hardcode).
-- Dashboard: tổng tài khoản, nhân vật, đăng ký hôm nay (`Mem_Account.TimeCreate` là **Unix time**), số bị khóa.
-- Tài khoản: 80 mới nhất, Khóa / Mở khóa (`Mem_Account.IsBan`).
-- Nhân vật: cấp, vàng, xu, xu khóa.
-- Công cụ:
-  - **Cộng xu**: gọi `http://127.0.0.1/ChargeMoney.aspx?content=<chargeID|user|xu|admin|0|md5(5 trường + ChargeKey)>&nickname=<UserID số>`. Request ghi `Charge_Money` + báo Center → người đang online nhận ngay. Chỉ nhận từ IP trong `ChargeIP` (= 127.0.0.1). Tham số `nickname` phải là **UserID dạng số** (thiếu thì lỗi mã 2).
-  - **Cộng vàng / Lên cấp tối đa / Buff toàn server**: ghi thẳng DB, nhân vật phải offline.
+Cấu trúc: `index.php` (đăng nhập, menu, điều phối POST có CSRF rồi chuyển hướng), `lib.php` (hàm chung, `req()` gọi endpoint Request, danh sách XML được xuất bản), `actions.php` (mọi thao tác), `pages/*.php` (mỗi trang một file, đầu file có `if (!defined('GN_ADMIN')) exit;`).
 
-Mã kết quả ChargeMoney: 0 ok, 2 không thấy user, 3 số xu ≤ 0, 5 sai IP, 7 sai chữ ký.
+**Nguyên tắc:** chạy cái gì lên server đang sống thì đi qua **endpoint của Request trên 127.0.0.1** (AdminIP/ChargeIP), Request gọi Center qua WCF. PHP không gọi WCF net.tcp được. Ghi thẳng DB chỉ dùng cho nhân vật offline.
 
-_(Danh sách chức năng của bộ admin cũ: xem mục 9.)_
+| Trang | Chức năng | Cơ chế |
+|---|---|---|
+| Dashboard | online (`Sys_Users_Detail.State=1`), tài khoản, nhân vật, đăng ký hôm nay (`Mem_Account.TimeCreate` là Unix time), bị khóa, tỉ lệ đang chạy | đọc DB |
+| Tài khoản | tìm, Khóa / Mở khóa đăng nhập launcher | `Mem_Account.IsBan` |
+| Nhân vật | tìm, online/offline; **Cộng xu** (online nhận ngay); Lên cấp tối đa, Buff mọi nhân vật offline | `ChargeMoney.aspx?content=chargeID\|user\|xu\|admin\|0\|md5(5 trường+ChargeKey)&nickname=<UserID số>`; còn lại ghi DB |
+| Gửi quà | thư kèm ≤5 vật phẩm + vàng + xu, gửi 1 tài khoản / người online (-10) / tất cả (-9), tìm vật phẩm theo tên | `SendMailAndItem.aspx?title&content&user_id&gold&money&str=tid,count,ngày,cường hóa,0,0,0,0,true\|...` → `SP_Admin_SendAllItem` + Center `MailNotice`. Vật phẩm và vàng/xu về 2 thư riêng |
+| Giftcode | danh sách sự kiện (`Db_Tank.Active`), tạo sự kiện mới (chép cờ từ sự kiện code mẫu Type=1), thêm/xóa quà (`Active_Award`), đổi hạn, sinh code (`Db_Tank41.Active_Number`) | người chơi nhập code trong game → `ActivePullDown.ashx` → quà về thư. Đổi sự kiện xong xuất bản `ActiveList` |
+| Hệ thống | tỉ lệ EXP/vàng/công hiến (`Db_Tank41.Rate`, áp dụng ngay `ExperienceRate.aspx`); thông báo toàn server (`SystemNotice.aspx`); xuất bản XML **từng file** + nạp lại server (`NoticeServerUpdate.aspx type=8 item,9 quest,14 shop,12 rate...`); bảo trì (`KitoffUser.aspx`, đếm ngược 6 phút rồi đá hết); GM trong game (`Game_Commands`); sửa `Db_Tank41.Server_Config` | |
+
+Mã kết quả: ChargeMoney 0 ok/2 không thấy user/5 sai IP/7 sai chữ ký; SendMailAndItem 1 ok/5 sai IP/999 lỗi; SystemNotice 0 ok; ExperienceRate, NoticeServerUpdate 0 ok (`ExperienceRate.aspx` in kèm HTML trang sau con số, `req()` chỉ lấy số đầu); KitoffUser 1 ok.
+
+**Phải khởi động lại Road** mới có hiệu lực: Server_Config, GM (`Game_Commands`), rơi đồ (`Drop_Item`), sự kiện GM (`GM_Activity...`). Không có endpoint nạp lại từ xa cho các phần này.
+
+**GM trong game:** UserID có trong `Game_Commands` gõ được `$kick$tên$lý do`, `$ban$tên$lý do$ngày`, `$unban$tên$lý do`, `$mute$tên$phút$lý do` (lý do ≥ 8 ký tự). Hiện GM: UserID 1 (nhân vật cũ đã xóa, giữ làm dòng tối thiểu) và 227 (`bialk`). **Bảng rỗng thì Road tự tắt.**
 
 ---
 
@@ -120,7 +128,7 @@ Còn lại: mật khẩu sa có trong lịch sử git cũ; `privateKey` RSA tron
 ## 7. Tùy biến game
 Khác TLBB, phần lớn dữ liệu hiển thị lấy từ server nên sửa được:
 - **Vật phẩm/vũ khí**: `Db_Tank.dbo.Shop_Goods` (19.122 dòng; `TemplateID, Name, Description, Attack, Defence, Agility, Luck, Property1..8, NeedLevel, Quality...`; vũ khí `CategoryID=7`, ví dụ 7003 "AK-48"). Tên + chỉ số trong tooltip lấy từ đây.
-- Client tải template qua `Request/TemplateAllList.ashx` (XML sinh từ DB, `CreateAllXml.ashx` tạo lại). Sửa DB → tạo lại XML → restart Road để server nạp lại.
+- Client đọc `Request/TemplateAlllist.xml` (XML nén zlib). Sửa `Shop_Goods` → admin Hệ thống → xuất bản **riêng** `TemplateAllList` + nạp lại server loại 8 (vật phẩm). Lưu ý file dựng từ DB có 19.122 vật phẩm còn bản gốc 13.080 (mục 9); thử trên một máy client trước. Client có thể lưu cache XML.
 - Rơi đồ `Drop_Item`, shop `ShopGoodsShowList`/`Shop_Goods_Box`, cấp `LevelInfo`, quest `Quest_Goods`...
 - Cấu hình chung: `Db_Tank41.dbo.Server_Config` (523 khóa: tỉ lệ, giá, giới hạn...).
 - Giao diện client: mã AS3 trong `flashbaseSrc/` (build bằng Flex/AIR SDK) — sửa được nhưng nặng.
@@ -141,11 +149,34 @@ Khác TLBB, phần lớn dữ liệu hiển thị lấy từ server nên sửa �
 | Cộng xu lỗi mã 2 | thiếu `nickname=<UserID>` | truyền UserID |
 | ServerList trả rỗng khi test | thiếu tham số `rnd` | gọi `ServerList.ashx?rnd=0.123` |
 | deploy.sh lỗi trên VPS | shell SSH là PowerShell | lệnh từ xa viết cú pháp PowerShell |
+| Mọi `.ashx` dựng XML báo "Fail!", log Request đứng từ 2023 | IIS chỉ được tạo file, không được ghi đè trong `Request\` | cấp IIS_IUSRS quyền sửa riêng `Request\*.xml` và `Request\logs` |
+| Admin đọc mã trả về của ExperienceRate rỗng | trang in "0" rồi in luôn HTML | `req()` lấy số đầu |
+| Nhân vật kẹt cấp 30 | LevelInfo chỉ 30 dòng | `_setup/sql/levelinfo-60.sql` + restart |
+| Road tự tắt khi khởi động | bảng `Game_Commands` rỗng | giữ ít nhất 1 dòng |
 
 ---
 
-## 9. Bộ admin cũ (server gốc) làm được gì
-_(đang khảo sát, sẽ bổ sung)_
+## 9. Bộ admin cũ (server gốc) làm được gì, và dữ liệu đang thiếu
+
+Server gốc có 3 lớp quản trị:
+- **GM tool** (`GM/`, ASP.NET MVC, user trong `Db_Gm`): gửi đồ qua thư, phần thưởng đua top, khóa/kick, sửa nhân vật, giftcode, sự kiện, giá shop, rơi đồ, nhiệm vụ, nhập/xuất XML khoảng 70 bảng, khu/kênh server, gộp server. **Hợp đồng WCF của nó không khớp Center trong bộ này** (gọi `MailNotice(id,zone)`, `GetAllChat`, `Shutdown`... không tồn tại; trỏ cổng 2009) nên phần "chạy trực tiếp" của nó hỏng; có đăng ký mở, SQL injection, SSRF. **Không triển khai.**
+- **newweb / Website / Website1** (Laravel): CRUD dữ liệu game, gửi đồ qua `SendMailAndItem.aspx`, sinh giftcode, cộng xu web, khóa tài khoản, nút `createallxml`. Có backdoor `CheckIfAdmin` luôn true, admin mặc định `admin@gmail.com/password`. **Không triển khai.**
+- **Lệnh console** của Road/Center (khoảng 50 lệnh reload, `senditem`, `shutdown`...) và lệnh chat GM.
+
+Admin mới (mục 4) đã gom các chức năng đáng dùng: gửi quà, cộng xu, khóa, giftcode, tỉ lệ, thông báo, xuất bản, bảo trì, GM, Server_Config. Phần CRUD dữ liệu game còn lại (shop, rơi đồ, nhiệm vụ...) làm bằng SSMS hoặc bổ sung dần vào admin.
+
+**Dữ liệu `tank.bak` thiếu/lệch so với bộ XML client gốc (13/12/2023)** (dựng lại từ DB rồi đếm):
+| XML | Client gốc | Dựng từ DB |
+|---|---|---|
+| QuestList (nhiệm vụ) | 1.115 | **179** |
+| NPCInfoList | 1.274 | 1.033 |
+| ShopGoodsShowList | 1.372 | 1.258 |
+| TemplateAlllist (vật phẩm) | 13.080 | 19.122 |
+| LevelList | 60 | 30 (đã sửa, mục 3) |
+
+Hệ quả: server (đọc DB) chỉ biết 179 nhiệm vụ trong khi client hiện 1.115. **Không chạy `CreateAllXml.ashx`** (dựng lại tất cả sẽ làm client mất nhiệm vụ); admin chỉ cho xuất bản từng file. XML gốc nằm trong git (`Request/*.xml`) và bản sao `C:\inst2\xml-backup-20261015` trên VPS. Hướng sửa tốt nhất: nạp ngược nhiệm vụ/NPC/shop từ XML gốc vào DB như đã làm với LevelInfo (`Item`/`Item_Condiction`/`Item_Good` của QuestList ↔ `Quest`/`Quest_Condiction`/`Quest_Goods`).
+
+IIS (IIS_IUSRS) được cấp quyền sửa **riêng các file `Request/*.xml` và `Request/logs`** (không phải cả thư mục) để `.ashx` ghi được XML và log.
 
 ---
 

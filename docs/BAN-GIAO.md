@@ -1,3 +1,5 @@
+> **Tài liệu lịch sử**: kết quả soát bộ Gunny92 ngày 14/10/2026, trước khi dựng. Hiện trạng và cách làm hiện tại xem `README.md` + `CLAUDE.md`.
+
 # Bàn giao — Gunny92 NetCo4 (soát 14/10/2026)
 
 Kết quả soát toàn bộ bộ Gunny92 (4 agent: server, web, client, database). Dùng để dựng server test và phát triển tiếp.
