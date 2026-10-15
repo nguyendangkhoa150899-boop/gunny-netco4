@@ -101,6 +101,7 @@ class MiniGameController extends \App\Http\BaseController
             'serverId' => $sv ? (int)$sv->ID : 0,
             'playerId' => $nv ? (int)$nv->UserID : 0,
             'diem' => Diem::soDu($mid),
+            'quaTest' => CauHinh::int('quatest_mo', 0),
             'lichSuDiem' => array_map(function ($x) {
                 return ['d' => (int)$x->Delta, 'loai' => $x->Loai, 'gc' => $x->GhiChu, 'tg' => substr((string)$x->ThoiGian, 0, 16)];
             }, $this->mem()->select("SELECT TOP 20 Delta,Loai,GhiChu,ThoiGian FROM Web_SoDiem WHERE MemberID=? ORDER BY ID DESC", [$mid])),
@@ -506,6 +507,68 @@ class MiniGameController extends \App\Http\BaseController
         }
         if ($out === 'khong') return $this->error('Không thấy món đã chọn trong rương.');
         return $this->success('Đã gửi ' . $out . ' món vào hộp thư trong game.');
+    }
+
+    /* ======================= GUI QUA TEST ======================= */
+    // Nguoi choi tu tim vat pham va gui vao HOP THU GAME cua chinh nhan vat cua tai khoan dang dang nhap.
+    // Chi cho giai doan test: tat bang quatest_mo = 0 (admin > Mini game). Nhat ky Web_QuaTest. Bang: _setup/sql/qua-test-web.sql
+
+    public function quaTestTim(Request $r)
+    {
+        if (CauHinh::int('quatest_mo', 0) !== 1) return $this->error('Gửi quà test đang tắt.');
+        $q = trim((string)$r->input('q', ''));
+        $cat = (int)$r->input('cat', 0);
+        $where = []; $par = [];
+        if ($q !== '') {
+            if (ctype_digit($q)) { $where[] = "(TemplateID=? OR CAST(TemplateID AS varchar(12)) LIKE ?)"; $par[] = (int)$q; $par[] = $q . '%'; }
+            else { $where[] = "Name LIKE ?"; $par[] = '%' . $q . '%'; }
+        }
+        if ($cat > 0) { $where[] = "CategoryID=?"; $par[] = $cat; }
+        if (!$where) return $this->success('ok', ['ds' => []]);
+        $rows = DB::connection('sqlsrv_tank41')->select("SELECT TOP 300 TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,Description
+            FROM Db_Tank.dbo.Shop_Goods WHERE " . implode(' AND ', $where) . " ORDER BY CASE WHEN TemplateID=? THEN 0 ELSE 1 END, TemplateID",
+            array_merge($par, [ctype_digit($q) ? (int)$q : -1]));
+        $ds = [];
+        foreach ($rows as $x) {
+            // chi tra mon client co anh (mon khong anh vao game thanh o vo hinh)
+            if (!VatPham::file($x->CategoryID, $x->Pic, $x->NeedSex)) continue;
+            $ds[] = ['id' => (int)$x->TemplateID, 'ten' => $x->Name, 'cat' => (int)$x->CategoryID, 'mau' => VatPham::mau((int)$x->Quality), 'hinh' => '/hinh/' . (int)$x->TemplateID,
+                'cs' => (bool)$x->CanStrengthen, 'gt' => (int)$x->NeedSex, 'chiSo' => [(int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck],
+                'moTa' => mb_substr((string)$x->Description, 0, 120)];
+            if (count($ds) >= 60) break;
+        }
+        return $this->success('ok', ['ds' => $ds]);
+    }
+
+    public function quaTestGui(Request $r)
+    {
+        if (CauHinh::int('quatest_mo', 0) !== 1) return $this->error('Gửi quà test đang tắt.');
+        $mid = $this->mid();
+        $nv = $this->nhanVat();
+        if (!$nv) return $this->error('Tài khoản chưa có nhân vật để nhận quà.');
+        $luot = (int)$this->mem()->selectOne("SELECT COUNT(*) n FROM Web_QuaTest WHERE MemberID=? AND ThoiGian>=CAST(GETDATE() AS date)", [$mid])->n;
+        if ($luot >= CauHinh::int('quatest_luot_ngay', 50)) return $this->error('Hôm nay đã gửi đủ ' . $luot . ' lần, mai gửi tiếp.');
+        $ds = json_decode((string)$r->input('ds', '[]'), true);
+        if (!is_array($ds) || !$ds) return $this->error('Chọn ít nhất 1 món.');
+        $ds = array_slice($ds, 0, 5);
+        $slMax = CauHinh::int('quatest_sl_max', 999);
+        $maxStr = (int)(DB::connection('sqlsrv_tank41')->selectOne("SELECT TOP 1 CAST(Value AS nvarchar(20)) v FROM Server_Config WHERE Name='MaxStrengthLevel'")->v ?? 12) ?: 12;
+        $tt = VatPham::thongTin(array_map(function ($x) { return (int)($x['id'] ?? 0); }, $ds));
+        $items = []; $nk = [];
+        foreach ($ds as $x) {
+            $tid = (int)($x['id'] ?? 0);
+            $i = $tt[$tid] ?? null;
+            if (!$i || !VatPham::file($i->CategoryID, $i->Pic, $i->NeedSex)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
+            $cnt = max(1, min($slMax, (int)($x['sl'] ?? 1)));
+            $str = max(0, min($maxStr, (int)($x['cuong'] ?? 0)));
+            $han = max(0, min(3650, (int)($x['han'] ?? 0)));
+            $items[] = [$tid, $cnt, $han, $str, !empty($x['khoa'])];
+            $nk[] = $tid . ' x' . $cnt . ($str ? ' +' . $str : '') . ($han ? ' (' . $han . 'n)' : '');
+        }
+        $kq = GameMail::send((int)$nv->UserID, 'Quà test từ GunnyNetco4', $items);
+        if ($kq !== '1') return $this->error('Máy chủ game đang bận, chưa gửi được (mã ' . $kq . '). Thử lại sau.');
+        $this->mem()->insert("INSERT INTO Web_QuaTest(MemberID,GameUserID,VatPham) VALUES(?,?,?)", [$mid, (int)$nv->UserID, mb_substr(implode('; ', $nk), 0, 1000)]);
+        return $this->success('Đã gửi ' . count($items) . ' món vào hộp thư của ' . $nv->NickName . ' trong game.', ['conLuot' => CauHinh::int('quatest_luot_ngay', 50) - $luot - 1]);
     }
 
     /* ======================= ANH VAT PHAM (cong khai) ======================= */

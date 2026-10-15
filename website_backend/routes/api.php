@@ -72,3 +72,6 @@ Route::post('/ruong/rut', "App\Http\Controllers\MiniGameController@ruongRut")->m
 // shop web: xu web + diem hoat dong (_setup/sql/shop-web.sql)
 Route::post('/shop', "App\Http\Controllers\MiniGameController@shop")->middleware('auth.bearer');
 Route::post('/shop/mua', "App\Http\Controllers\MiniGameController@shopMua")->middleware('auth.bearer');
+// gui qua test vao thu game cua chinh minh (tat bang quatest_mo = 0, _setup/sql/qua-test-web.sql)
+Route::post('/quatest/tim', "App\Http\Controllers\MiniGameController@quaTestTim")->middleware('auth.bearer');
+Route::post('/quatest/gui', "App\Http\Controllers\MiniGameController@quaTestGui")->middleware('auth.bearer');

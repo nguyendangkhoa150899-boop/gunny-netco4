@@ -136,6 +136,24 @@
   .si .price.xu{color:var(--gold)} .si .price.diem{color:#cdb4ff}
   .si .sif input{width:58px;background:#0d1220;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px;font-size:14px;text-align:center}
   .si .sif .b{padding:9px 16px;font-size:14px;margin:0;width:auto}
+  /* gui qua test */
+  .qtrow{display:flex;align-items:center;gap:10px;background:#12141a;border:1px solid var(--line);border-radius:12px;padding:9px 10px;margin-bottom:8px}
+  .qtrow .ic{width:48px;height:48px;flex:none;border-radius:10px;border:2px solid;background:#0d1220;display:flex;align-items:center;justify-content:center}
+  .qtrow .ic img{width:90%;height:90%;object-fit:contain}
+  .qtrow .nm{flex:1;min-width:0} .qtrow .nm b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .qtrow .nm span{font-size:11.5px;color:var(--muted)}
+  .qtrow label{display:flex;flex-direction:column;font-size:10.5px;color:var(--muted);gap:2px}
+  .qtrow input[type=number]{width:62px;background:#0d1220;border:1px solid var(--line);border-radius:7px;color:var(--text);padding:6px;font-size:13px;text-align:center}
+  .qtrow .x{background:#3a1d22;color:#ff9a9a;border:1px solid #6b2a2a;border-radius:8px;width:30px;height:30px;cursor:pointer;font-weight:900}
+  .qtempty{border:1px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px}
+  .qtto{display:flex;align-items:center;gap:8px;background:#1d1a10;border:1px solid #6b5520;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
+  .qtsearch{display:flex;gap:8px} .qtsearch select{background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 10px;font-size:14px}
+  .qtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:12px;max-height:560px;overflow-y:auto;padding-right:4px}
+  .qtc{display:flex;flex-direction:column;align-items:center;gap:4px;background:#12141a;border:1px solid var(--line);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center}
+  .qtc:hover{border-color:var(--gold)}
+  .qtc .ic{width:52px;height:52px;border-radius:9px;border:2px solid;background:#0d1220;position:relative}
+  .qtc .ic img{width:100%;height:100%;object-fit:contain}
+  .qtc .ic small{position:absolute;left:0;right:0;bottom:-1px;font-size:9px;background:#000b;color:#fff;border-radius:0 0 7px 7px}
+  .qtc span{font-size:11px;line-height:1.25;color:#c9cede;max-height:2.5em;overflow:hidden}
   /* rut xu tu game */
   .steps2{margin:0 0 12px;padding-left:20px;line-height:1.9;font-size:14px;color:#c9cede}
   .steps2 b{color:var(--text)}
@@ -279,6 +297,7 @@
     <button data-grp="latthe"><span class="ic">🃏</span>Lật thẻ<span class="n" id="ltN" style="display:none"></span></button>
     <button data-grp="minigame"><span class="ic">🎲</span>Mini game</button>
     <button data-grp="shop"><span class="ic">🛒</span>Shop</button>
+    <button data-grp="quatest" id="qtNav" style="display:none"><span class="ic">📮</span>Gửi quà test</button>
     <button data-grp="ruong"><span class="ic">🎁</span>Rương<span class="n" id="rgN" style="display:none"></span></button>
   </div>
   <div>
@@ -433,6 +452,25 @@
       <div class="bal big" style="font-size:20px;padding:8px 16px 8px 8px"><span class="coin"></span><span class="xuNow">0</span></div></div>
     <div id="shopXu"></div></div></section>
 
+  <!-- ================= GUI QUA TEST (vao thu game cua chinh minh; tat bang quatest_mo=0) ================= -->
+  <section id="sec-quatest"><div class="row2">
+    <div class="card">
+      <h2>Gửi quà test vào game</h2>
+      <div class="qtto">📮 Người nhận: <b id="qtTo">nhân vật của bạn</b> <span class="muted">(tài khoản đang đăng nhập)</span></div>
+      <div id="qtSlots"></div>
+      <button class="b go" id="qtBtn" disabled>GỬI VÀO THƯ GAME</button>
+      <div class="msg" id="qtMsg"></div>
+      <div class="muted" style="margin-top:8px">Tối đa 5 món mỗi lần, đồ vào <b>hộp thư trong game</b> (đang online cũng nhận). Chỉ hiện món client có ảnh. Tính năng cho giai đoạn test, mở server thật sẽ tắt.</div>
+    </div>
+    <div class="card">
+      <h2>Tìm vật phẩm</h2>
+      <div class="qtsearch"><input class="in" id="qtQ" placeholder="Nhập ID hoặc tên, vd: 7194 hoặc Thương Cổ" autocomplete="off">
+        <select id="qtCat"><option value="0">Tất cả</option><option value="7">Vũ khí</option><option value="17">Vũ khí phụ</option><option value="1">Nón</option><option value="5">Áo</option><option value="2">Kính</option><option value="3">Tóc</option><option value="4">Hiệu ứng mắt</option><option value="6">Mặt</option><option value="13">Bộ</option><option value="15">Cánh</option><option value="14">Dây chuyền</option><option value="9">Nhẫn</option><option value="8">Vòng tay</option><option value="11">Đạo cụ</option><option value="50">Vũ khí thú</option><option value="51">Mũ thú</option><option value="52">Áo thú</option></select></div>
+      <div class="muted" id="qtInfo" style="margin-top:8px">Gõ ID hoặc tên để tìm, bấm vào ô để thêm.</div>
+      <div class="qtgrid" id="qtRes"></div>
+    </div>
+  </div></section>
+
   <section id="sec-ghep"><div class="card empty"><b>Ghép đồ</b>Ghép nhiều món trong rương thành món xịn hơn. Tính năng đang phát triển.</div></section>
   </div>
   </div>
@@ -473,8 +511,8 @@
 
   // ---------- dieu huong ----------
   // menu trai = nhom, moi nhom gom cac muc (tab con). Hash: #vi, #taixiu, ... (ten muc)
-  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],shop:['shopdiem','shopxu'],ruong:['ruong','ghep']};
-  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',shopdiem:'Kệ điểm hoạt động',shopxu:'Kệ xu web',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
+  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],shop:['shopdiem','shopxu'],quatest:['quatest'],ruong:['ruong','ghep']};
+  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',quatest:'Gửi quà test',shopdiem:'Kệ điểm hoạt động',shopxu:'Kệ xu web',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
   function nhomCua(sec){ for(var g in NHOM) if(NHOM[g].indexOf(sec)>=0) return g; return 'hoso'; }
   var loaded={};
   function go(sec){
@@ -506,6 +544,7 @@
     var c=d.data.nhanVat, acc=d.data.taiKhoan;
     if(!c){ box.innerHTML='<div class="empty"><b>Chưa có nhân vật</b>Tài khoản '+esc(acc)+' chưa tạo nhân vật. Tải game ở trang chủ, đăng nhập và tạo nhân vật rồi quay lại.</div>'; return; }
     var rate=c.tran?Math.round(100*c.thang/c.tran):0, max=c.cap>=c.capToiDa;
+    $('qtTo').textContent=c.ten;
     // the nhan vat
     box.innerHTML='<div class="hv"><div class="hav">'+esc((c.ten[0]||'G').toUpperCase())+'<i class="'+(c.online?'on':'')+'"></i></div>'
       +'<div class="hinfo"><div class="hnm">'+esc(c.ten)+'</div>'
@@ -539,7 +578,7 @@
   function loadVi(){
     api('/api/vi').then(function(d){
       if(!d||!d.success) return;
-      VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem);
+      VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem); $('qtNav').style.display=d.data.quaTest?'':'none';
       var ld=d.data.lichSuDiem||[];
       $('diemLs').innerHTML=ld.length?ld.map(function(x){ return '<tr><td class="t">'+esc(x.tg.slice(5))+'</td><td>'+esc(LOAI[x.loai]||x.loai)+'<div class="muted">'+esc(x.gc||'')+'</div></td><td class="'+(x.d>=0?'p':'m')+'">'+(x.d>=0?'+':'')+fmt(x.d)+'</td></tr>'; }).join('')
         :'<tr><td class="empty">Chưa có điểm. Điểm danh hoặc đánh xong boss phó bản để nhận.</td></tr>';
@@ -599,7 +638,7 @@
       ddLoad(); refreshBal();
     });
   });
-  function refreshBal(){ api('/api/vi').then(function(d){ if(d&&d.success){ VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem); } }); }
+  function refreshBal(){ api('/api/vi').then(function(d){ if(d&&d.success){ VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem); $('qtNav').style.display=d.data.quaTest?'':'none'; } }); }
 
   // ---------- lat the ----------
   var LT={ds:[],cur:null,busy:false};
@@ -823,6 +862,46 @@
       });
     });
   }
+
+  // ---------- gui qua test ----------
+  var QT={slots:[],res:[],seq:0,t:0};
+  function qtRender(){
+    var h=QT.slots.map(function(x,i){ return '<div class="qtrow"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
+      +'<div class="nm"><b>'+esc(x.ten)+'</b><span>ID '+x.id+(x.gt===1?' · nam':x.gt===2?' · nữ':'')+'</span></div>'
+      +'<label>Số lượng<input type="number" min="1" max="999" value="'+x.sl+'" data-k="sl" data-i="'+i+'"></label>'
+      +(x.cs?'<label>Cường hóa<input type="number" min="0" max="12" value="'+x.cuong+'" data-k="cuong" data-i="'+i+'"></label>':'')
+      +'<label>Hạn (ngày)<input type="number" min="0" value="'+x.han+'" data-k="han" data-i="'+i+'" title="0 = vĩnh viễn"></label>'
+      +'<button class="x" data-del="'+i+'" title="Bỏ">×</button></div>'; }).join('');
+    for(var k=QT.slots.length;k<5;k++) h+='<div class="qtempty">Ô '+(k+1)+': bấm vào vật phẩm bên phải để thêm</div>';
+    $('qtSlots').innerHTML=h; $('qtBtn').disabled=!QT.slots.length;
+    $('qtSlots').querySelectorAll('input[data-k]').forEach(function(inp){ inp.oninput=function(){ QT.slots[+inp.dataset.i][inp.dataset.k]=Math.max(0,parseInt(inp.value,10)||0); }; });
+    $('qtSlots').querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ QT.slots.splice(+b.dataset.del,1); qtRender(); }; });
+  }
+  function qtSearch(){
+    var q=$('qtQ').value.trim(), cat=$('qtCat').value, my=++QT.seq;
+    if(!q && cat==='0'){ $('qtRes').innerHTML=''; $('qtInfo').textContent='Gõ ID hoặc tên để tìm, bấm vào ô để thêm.'; return; }
+    $('qtInfo').textContent='Đang tìm...';
+    api('/api/quatest/tim',{q:q,cat:cat}).then(function(r){
+      if(my!==QT.seq) return;
+      if(!r||!r.success){ $('qtInfo').textContent=(r&&r.message)||'Lỗi khi tìm.'; return; }
+      QT.res=r.data.ds; $('qtInfo').textContent=QT.res.length?('Tìm thấy '+QT.res.length+(QT.res.length>=60?' (hiện 60 đầu)':'')+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
+      $('qtRes').innerHTML=QT.res.map(function(x,i){ return '<div class="qtc" data-i="'+i+'" title="'+esc(x.ten+(x.moTa?'\n'+x.moTa:''))+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="" loading="lazy"><small>'+x.id+'</small></div><span>'+esc(x.ten)+'</span></div>'; }).join('');
+      $('qtRes').querySelectorAll('.qtc').forEach(function(el){ el.onclick=function(){
+        if(QT.slots.length>=5){ toast('Đã đủ 5 ô, bỏ bớt một món trước.',true); return; }
+        var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,sl:1,cuong:x.cs?12:0,han:0}); qtRender(); }; });
+    });
+  }
+  $('qtQ').addEventListener('input',function(){ clearTimeout(QT.t); QT.t=setTimeout(qtSearch,300); });
+  $('qtCat').addEventListener('change',qtSearch);
+  $('qtBtn').addEventListener('click',function(){
+    if(!QT.slots.length) return;
+    $('qtBtn').disabled=true;
+    api('/api/quatest/gui',{ds:JSON.stringify(QT.slots.map(function(x){ return {id:x.id,sl:x.sl,cuong:x.cuong,han:x.han}; }))}).then(function(r){
+      var m=$('qtMsg'); m.className='msg '+(r&&r.success?'ok':'err'); m.textContent=(r&&r.message)||'Có lỗi xảy ra.';
+      if(r&&r.success){ toast(r.message); QT.slots=[]; qtRender(); } else $('qtBtn').disabled=false;
+    });
+  });
+  qtRender();
 
   // ---------- ruong ----------
   var RG={ds:[],sel:[]};
