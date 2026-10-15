@@ -35,8 +35,15 @@ class MiniGameController extends \App\Http\BaseController
     /** nhan vat cua tai khoan (server nay moi tai khoan 1 nhan vat) */
     private function nhanVat()
     {
-        return Player::select(['UserID', 'NickName'])->where('UserName', auth()->user()->Email)
+        return Player::select(['UserID', 'NickName', 'Sex'])->where('UserName', auth()->user()->Email)
             ->where('NickName', '<>', '')->orderBy('UserID')->first();
+    }
+
+    /** gioi tinh theo NeedSex cua Shop_Goods: 1 nam, 2 nu, 0 chua co nhan vat (Sys_Users_Detail.Sex: 1 nam, 0 nu) */
+    private function gioiTinh($nv = null): int
+    {
+        $nv = $nv ?: $this->nhanVat();
+        return $nv ? ((int)$nv->Sex === 1 ? 1 : 2) : 0;
     }
 
     private function soCuoc(Request $r, string $loai)
@@ -654,6 +661,9 @@ class MiniGameController extends \App\Http\BaseController
         }
         if ($cat > 0) { $where[] = "CategoryID=?"; $par[] = $cat; }
         if (!$where) return $this->success('ok', ['ds' => []]);
+        // chi do dung gioi tinh nhan vat (15/10: hoang nu tu gui ao nam, khong mac duoc)
+        $gt = $this->gioiTinh();
+        if ($gt) { $where[] = "NeedSex IN (0,?)"; $par[] = $gt; }
         $rows = DB::connection('sqlsrv_tank41')->select("SELECT TOP 300 TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,Description
             FROM Db_Tank.dbo.Shop_Goods WHERE " . implode(' AND ', $where) . " ORDER BY CASE WHEN TemplateID=? THEN 0 ELSE 1 END, TemplateID",
             array_merge($par, [ctype_digit($q) ? (int)$q : -1]));
@@ -689,6 +699,8 @@ class MiniGameController extends \App\Http\BaseController
             $tid = (int)($x['id'] ?? 0);
             $i = $tt[$tid] ?? null;
             if (!VatPham::dungDuoc($i)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
+            if (in_array((int)$i->NeedSex, [1, 2], true) && (int)$i->NeedSex !== $this->gioiTinh($nv))
+                return $this->error('Món ' . $i->Name . ' dành cho nhân vật ' . ((int)$i->NeedSex === 1 ? 'nam' : 'nữ') . ', ' . $nv->NickName . ' không mặc được.');
             $cnt = max(1, min($slMax, (int)($x['sl'] ?? 1)));
             $str = max(0, min($maxStr, (int)($x['cuong'] ?? 0)));
             $han = max(0, min(3650, (int)($x['han'] ?? 0)));
