@@ -44,6 +44,7 @@ function run_action($conn,$act,$P){
     $items=[];
     for($i=0;$i<5;$i++){
       $tid=(int)($P['tid'][$i]??0); if($tid<=0) continue;
+      if(!item_in_client($tid)) return item_khong_client_msg($tid);
       $cnt=max(1,(int)($P['cnt'][$i]??1)); $day=max(0,(int)($P['day'][$i]??0)); $str=min(max_strength($conn),max(0,(int)($P['str'][$i]??0)));
       $bind=!empty($P['bind'][$i]) ? 'true' : 'false';
       // TemplateID,Count,ValidDate(ngay, 0=vinh vien),StrengthenLevel,AttackCompose,DefendCompose,AgilityCompose,LuckCompose,IsBind
@@ -71,6 +72,7 @@ function run_action($conn,$act,$P){
   case 'gc_award_add':
     $aid=(int)($P['aid']??0); $tid=(int)($P['tid']??0);
     if(!$aid || (!$tid && empty($P['gold']) && empty($P['money']))) return 'Thiếu sự kiện hoặc vật phẩm.';
+    if($tid>0 && !item_in_client($tid)) return item_khong_client_msg($tid);
     $ok=exec_sql($conn,"INSERT INTO Db_Tank.dbo.Active_Award(ActiveID,ItemID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,LuckCompose,AgilityCompose,Gold,Money,Sex,Mark) VALUES(?,?,?,?,?,0,0,0,0,?,?,0,0)",
       [$aid,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),max(0,(int)($P['gold']??0)),max(0,(int)($P['money']??0))]);
     return $ok===true ? 'Đã thêm phần thưởng.' : 'Lỗi: '.h($ok);
@@ -113,6 +115,7 @@ function run_action($conn,$act,$P){
     $str=min(max_strength($conn),max(0,(int)($P['str']??0))); $gold=max(0,(int)($P['gold']??0)); $money=max(0,(int)($P['money']??0)); $bind=!empty($P['bind'])?1:0;
     if(!$tid && !$gold && !$money) return 'Cần ID vật phẩm, hoặc vàng/xu.';
     if($tid && !scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    if($tid && !item_in_client($tid)) return item_khong_client_msg($tid);
     $r=exec_sql($conn,"INSERT INTO Db_Tank41.dbo.Web_DiemDanh_Qua(Moc,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Gold,[Money]) VALUES(?,?,?,?,?,?,?,?)",[$moc,$tid,$cnt,$day,$str,$bind,$gold,$money]);
     return $r===true ? 'Đã thêm quà '.($moc ? 'mốc '.$moc.' ngày' : 'mỗi ngày').'.' : 'Lỗi: '.h($r);
 
@@ -141,6 +144,7 @@ function run_action($conn,$act,$P){
     $pb=(string)($P['pb']??''); $tid=max(0,(int)($P['tid']??0)); $xu=max(0,(int)($P['xu']??0)); $ts=max(1,(int)($P['ts']??10));
     if(!$tid && !$xu) return 'Cần ID vật phẩm hoặc xu web.';
     if($tid && !scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    if($tid && !item_in_client($tid)) return item_khong_client_msg($tid);
     $r=exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_The_Qua(Khoa,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,XuWeb,TrongSo) VALUES(?,?,?,?,?,?,?,?)",
       [$pb===''?null:$pb,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),!empty($P['bind'])?1:0,$xu,$ts]);
     $_SESSION['mg_pb']=$pb;
@@ -166,6 +170,7 @@ function run_action($conn,$act,$P){
     $tid=(int)($P['tid']??0); $gia=(int)($P['gia']??0); $tien=($P['tien']??'')==='xu'?'xu':'diem'; $ke=trim($P['ke']??'');
     if($tid<=0||$gia<=0||$ke==='') return 'Cần ID vật phẩm, kệ và giá.';
     if(!scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    if(!item_in_client($tid)) return item_khong_client_msg($tid);
     $nz=fn($x)=>($x===''||$x===null)?null:max(0,(int)$x);
     $dt=fn($x)=>trim((string)$x)===''?null:date('Y-m-d H:i:s',strtotime($x));
     $r=exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_Shop(Ke,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Tien,Gia,GioiHanNgay,GioiHanTuan,GioiHanTong,Kho,BatDau,KetThuc,ThuTu,MoTa) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",

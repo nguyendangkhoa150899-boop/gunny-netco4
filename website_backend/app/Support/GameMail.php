@@ -16,6 +16,8 @@ class GameMail
     {
         $str = [];
         foreach ($items as $it) {
+            // chot cuoi: mon client khong biet ID lam nguoi nhan ket man hinh giay khi vao game (VatPham::trongClient)
+            if (!VatPham::trongClient((int)$it[0])) return 'mon ' . (int)$it[0] . ' khong co trong client';
             // TemplateID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,AgilityCompose,LuckCompose,IsBind
             $str[] = implode(',', [(int)$it[0], max(1, (int)$it[1]), (int)($it[2] ?? 0), (int)($it[3] ?? 0), 0, 0, 0, 0, !empty($it[4]) ? 'true' : 'false']);
         }

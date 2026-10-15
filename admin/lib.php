@@ -82,6 +82,25 @@ function item_icon_file($cat,$pic,$sex){
   foreach($try as $r){ $f=RES_DIR.str_replace('/','\\',$r); if(is_file($f)) return $f; }
   return null;
 }
+/* Mon co trong TemplateAlllist.xml cua client (nen zlib) khong. Co anh chua du: do admin cu tu che (352xxxxx...) dung lai anh do that
+   nhung client khong biet ID -> nguoi nhan ket man hinh giay khi vao game (15/10: hoang). Cache theo mtime trong thu muc tam. */
+define('CLIENT_XML', 'C:\\Gunny92\\Request\\TemplateAlllist.xml');
+function item_in_client($tid){
+  static $ds = null;
+  if ($ds === null) {
+    $mt = @filemtime(CLIENT_XML); $ds = [];
+    if ($mt) {
+      $cf = sys_get_temp_dir().'\\gn_client_tpl_'.$mt.'.json';
+      $c = @file_get_contents($cf); $ds = $c !== false ? json_decode($c, true) : null;
+      if (!is_array($ds)) {
+        $raw = @file_get_contents(CLIENT_XML); $xml = $raw === false ? false : @gzuncompress($raw); $ds = [];
+        if ($xml !== false && preg_match_all('/<Item [^>]*?TemplateID="(\d+)"/', $xml, $m)) { $ds = array_fill_keys($m[1], 1); @file_put_contents($cf, json_encode($ds)); }
+      }
+    }
+  }
+  return isset($ds[(string)(int)$tid]);
+}
+function item_khong_client_msg($tid){ return 'Món ID '.(int)$tid.' không có trong client (đồ tự chế của admin cũ): người nhận sẽ kẹt màn hình khi vào game. Không thêm.'; }
 function item_icon_url($cat,$pic,$sex){ return 'icon.php?c='.(int)$cat.'&p='.rawurlencode((string)$pic).'&s='.(int)$sex; }
 // Mau vien theo pham chat (Shop_Goods.Quality)
 function quality_color($q){ return [0=>'#6b7a90',1=>'#9aa7b8',2=>'#3fbf6f',3=>'#3b8cff',4=>'#a35bff',5=>'#ff9a1f',6=>'#ff4d5e'][(int)$q] ?? '#6b7a90'; }

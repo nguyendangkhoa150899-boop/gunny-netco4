@@ -22,7 +22,8 @@ if ($_GET['ajax'] === 'items') {
   // mon ma client khong co file anh (vd do thu cung hat28/cloth28+ cua ban game moi hon) vao game cung vo hinh: mac dinh an
   $hidden = 0; $kept = [];
   foreach ($rows as $r) {
-    $r['img'] = item_icon_file($r['CategoryID'],$r['Pic'],$r['NeedSex']) !== null;
+    // "co anh" = client dung duoc: co file anh VA client biet ID (do tu che 352xxxxx co anh nhung lam client loi, xem item_in_client)
+    $r['img'] = item_icon_file($r['CategoryID'],$r['Pic'],$r['NeedSex']) !== null && item_in_client($r['TemplateID']);
     if ($img === 'co' && !$r['img']) { $hidden++; continue; }
     if ($img === 'khong' && $r['img']) continue;
     if (count($kept) < 90) $kept[] = $r;

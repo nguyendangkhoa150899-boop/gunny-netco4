@@ -453,7 +453,7 @@ class MiniGameController extends \App\Http\BaseController
             if ($id === -200) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => $sl, 'g' => 0, 'm' => 0, 'tip' => (int)$x->IsTips];
             if ($id <= 0) continue;
             $i = VatPham::thongTin([$id])[$id] ?? null;
-            if (!$i || !VatPham::file($i->CategoryID, $i->Pic, $i->NeedSex)) continue;   // client khong co anh -> vao game vo hinh, quay lai
+            if (!VatPham::dungDuoc($i)) continue;   // client khong biet / khong co anh -> quay lai
             return ['t' => $id, 'c' => $sl, 'v' => (int)$x->ValueDate, 's' => 0, 'b' => (int)$x->IsBind, 'x' => 0, 'g' => 0, 'm' => 0, 'tip' => (int)$x->IsTips];
         }
         return null;
@@ -659,8 +659,8 @@ class MiniGameController extends \App\Http\BaseController
             array_merge($par, [ctype_digit($q) ? (int)$q : -1]));
         $ds = [];
         foreach ($rows as $x) {
-            // chi tra mon client co anh (mon khong anh vao game thanh o vo hinh)
-            if (!VatPham::file($x->CategoryID, $x->Pic, $x->NeedSex)) continue;
+            // chi tra mon client biet ID va co anh (mon la lam client loi dung sanh, xem VatPham::trongClient)
+            if (!VatPham::dungDuoc($x)) continue;
             $ds[] = ['id' => (int)$x->TemplateID, 'ten' => $x->Name, 'cat' => (int)$x->CategoryID, 'mau' => VatPham::mau((int)$x->Quality), 'hinh' => '/hinh/' . (int)$x->TemplateID,
                 'cs' => (bool)$x->CanStrengthen, 'gt' => (int)$x->NeedSex, 'chiSo' => [(int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck],
                 'lv' => (int)$x->NeedLevel, 'q' => (int)$x->Quality,
@@ -688,7 +688,7 @@ class MiniGameController extends \App\Http\BaseController
         foreach ($ds as $x) {
             $tid = (int)($x['id'] ?? 0);
             $i = $tt[$tid] ?? null;
-            if (!$i || !VatPham::file($i->CategoryID, $i->Pic, $i->NeedSex)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
+            if (!VatPham::dungDuoc($i)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
             $cnt = max(1, min($slMax, (int)($x['sl'] ?? 1)));
             $str = max(0, min($maxStr, (int)($x['cuong'] ?? 0)));
             $han = max(0, min(3650, (int)($x['han'] ?? 0)));

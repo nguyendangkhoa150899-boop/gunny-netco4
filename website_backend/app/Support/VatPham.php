@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -11,6 +12,36 @@ use Illuminate\Support\Facades\DB;
 class VatPham
 {
     const RES_DIR = 'C:\\Gunny92\\Resource.Server\\';
+    /** danh sach vat pham client tai ve (quest1/TemplateAlllist.xml, nen zlib) */
+    const CLIENT_XML = 'C:\\Gunny92\\Request\\TemplateAlllist.xml';
+
+    private static $dsClient = null;
+
+    /**
+     * Mon co trong TemplateAlllist.xml cua client khong. CO ANH CHUA DU: do admin cu tu che (352xxxxx...) dung lai anh do that
+     * nhung client khong biet ID -> nam trong tui la client loi khi dung sanh, ket man hinh giay (15/10: hoang).
+     * Khong doc duoc file -> coi nhu khong co mon nao (chan het, khong cho lot).
+     */
+    public static function trongClient(int $tid): bool
+    {
+        if (self::$dsClient === null) {
+            $mt = @filemtime(self::CLIENT_XML);
+            self::$dsClient = !$mt ? [] : Cache::rememberForever('client_tpl_' . $mt, function () {
+                $raw = @file_get_contents(self::CLIENT_XML);
+                $xml = $raw === false ? false : @gzuncompress($raw);
+                if ($xml === false) return [];
+                preg_match_all('/<Item [^>]*?TemplateID="(\d+)"/', $xml, $m);
+                return array_fill_keys(array_map('intval', $m[1]), 1);
+            });
+        }
+        return isset(self::$dsClient[$tid]);
+    }
+
+    /** dua vao game duoc: client biet ID va co anh. $i = dong tu thongTin() */
+    public static function dungDuoc($i): bool
+    {
+        return $i && self::trongClient((int)$i->TemplateID) && self::file($i->CategoryID, $i->Pic, $i->NeedSex) !== null;
+    }
 
     /** [TemplateID => {Name, CategoryID, Pic, NeedSex, Quality}] */
     public static function thongTin(array $ids): array
