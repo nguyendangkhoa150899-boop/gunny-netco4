@@ -59,6 +59,20 @@
   .feat{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
   .feat .f{background:#121c30; border:1px dashed var(--line); border-radius:11px; padding:13px; text-align:center; color:var(--muted); font-size:13px}
   .feat .f b{display:block; color:var(--text); font-size:14px; margin-bottom:2px}
+  .dd{margin-top:14px; padding:14px; background:#0d1626; border:1px solid var(--line); border-radius:12px}
+  .dd .hd{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:10px}
+  .dd .hd b{font-size:15px} .dd .hd span{color:var(--accent); font-size:13px; font-weight:700}
+  .ddgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px}
+  .ddgrid div{aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:12px; font-weight:700;
+    background:#121c30; border:1px solid var(--line); color:var(--muted)}
+  .ddgrid div.done{background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#1a1000}
+  .ddgrid div.today{border:2px solid var(--accent); color:var(--text)}
+  .ddgrid div.miss{opacity:.4}
+  .ddq{font-size:13px; color:var(--muted); margin-top:10px} .ddq b{color:var(--text)}
+  .ddmoc{display:flex; flex-direction:column; gap:4px; margin-top:6px; font-size:12px}
+  .ddmoc div{display:flex; gap:8px; color:var(--muted)} .ddmoc div.ok{color:var(--ok)}
+  .ddmoc div span:first-child{min-width:58px; font-weight:700}
+  .dd .btn{margin-top:12px}
   .soon{font-size:11px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:1px 7px; margin-top:6px; display:inline-block}
   .link{color:var(--muted); font-size:13px; text-align:center; margin-top:14px; cursor:pointer}
   .link:hover{color:var(--text)}
@@ -154,8 +168,15 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
           <div class="av" id="p_av">G</div>
           <div><div class="nm" id="p_name">Người chơi</div><div class="xu" id="p_xu">Xu: 0</div></div>
         </div>
+        <div class="dd" id="dd">
+          <div class="hd"><b id="dd_title">Điểm danh</b><span id="dd_cnt"></span></div>
+          <div class="ddgrid" id="dd_grid"></div>
+          <div class="ddq" id="dd_daily"></div>
+          <div class="ddmoc" id="dd_moc"></div>
+          <button class="btn" id="dd_btn" disabled>ĐIỂM DANH HÔM NAY</button>
+          <div class="msg" id="dd_msg"></div>
+        </div>
         <div class="feat">
-          <div class="f"><b>Điểm danh</b>nhận xu mỗi ngày<br><span class="soon">sắp có</span></div>
           <div class="f"><b>Đổi mật khẩu</b>bảo mật tài khoản<br><span class="soon">sắp có</span></div>
           <div class="f"><b>Lịch sử</b>giao dịch của bạn<br><span class="soon">sắp có</span></div>
           <div class="f"><b>Sự kiện</b>quà và giftcode<br><span class="soon">sắp có</span></div>
@@ -223,6 +244,7 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     document.getElementById('p_name').textContent=name;
     document.getElementById('p_av').textContent=(name[0]||'G').toUpperCase();
     document.getElementById('p_xu').textContent='Xu: '+((info&&info.Money)||0);
+    ddMsg.className='msg'; ddLoad();
   }
   document.getElementById('logForm').addEventListener('submit',function(e){
     e.preventDefault();
@@ -238,12 +260,59 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     .finally(function(){ b.disabled=false; b.textContent='ĐĂNG NHẬP'; });
   });
 
-  document.getElementById('logout').addEventListener('click',function(){
+  function logout(){
     try{ localStorage.removeItem('gn_token'); localStorage.removeItem('gn_user'); }catch(e){}
     document.getElementById('panel').style.display='none';
     document.getElementById('auth').style.display='block';
     document.getElementById('logForm').reset();
+  }
+  document.getElementById('logout').addEventListener('click',logout);
+  // diem danh web: /api/diemdanh/info va /api/diemdanh (DiemDanhController), qua ve hop thu trong game
+  var ddMsg=document.getElementById('dd_msg'), ddBtn=document.getElementById('dd_btn');
+  function ddShow(type,text){ ddMsg.className='msg '+type; ddMsg.textContent=text; }
+  function authPost(url){
+    var t=''; try{ t=localStorage.getItem('gn_token')||''; }catch(e){}
+    return fetch(url,{method:'POST',headers:{'Accept':'application/json','Authorization':'Bearer '+t}})
+      .then(function(r){ if(r.status===403){ return {success:false,expired:true,message:'Phiên đăng nhập đã hết, vui lòng đăng nhập lại.'}; }
+        return r.json().catch(function(){ return {success:false,message:'Lỗi máy chủ, thử lại sau.'}; }); });
+  }
+  function ddRender(d){
+    document.getElementById('dd_title').textContent='Điểm danh tháng '+d.thang+' · '+d.nhanvat;
+    document.getElementById('dd_cnt').textContent=d.ngay.length+' ngày';
+    var g=document.getElementById('dd_grid'); g.innerHTML='';
+    for(var i=1;i<=d.songay;i++){
+      var c=document.createElement('div'); c.textContent=i;
+      if(d.ngay.indexOf(i)>=0) c.className='done';
+      else if(i===d.homnay) c.className='today';
+      else if(i<d.homnay) c.className='miss';
+      g.appendChild(c);
+    }
+    var dl=document.getElementById('dd_daily'); dl.innerHTML='';
+    if(d.quangay){ var b=document.createElement('b'); b.textContent=d.quangay; dl.appendChild(document.createTextNode('Mỗi ngày: ')); dl.appendChild(b); }
+    var m=document.getElementById('dd_moc'); m.innerHTML='';
+    (d.moc||[]).forEach(function(x){
+      var r=document.createElement('div'); if(x.dat) r.className='ok';
+      var a=document.createElement('span'); a.textContent=(x.dat?'✓ ':'')+'Đủ '+x.moc+' ngày';
+      var q=document.createElement('span'); q.textContent=x.qua;
+      r.appendChild(a); r.appendChild(q); m.appendChild(r);
+    });
+    ddBtn.disabled=!!d.dadiemdanh; ddBtn.textContent=d.dadiemdanh?'HÔM NAY ĐÃ ĐIỂM DANH':'ĐIỂM DANH HÔM NAY';
+  }
+  function ddLoad(){
+    authPost('/api/diemdanh/info').then(function(d){
+      if(d&&d.success&&d.data){ ddRender(d.data); }
+      else { ddBtn.disabled=true; ddShow('err',(d&&d.message)||'Không tải được điểm danh.'); if(d&&d.expired) setTimeout(logout,1500); }
+    }).catch(function(){ ddShow('err','Không kết nối được máy chủ.'); });
+  }
+  ddBtn.addEventListener('click',function(){
+    ddBtn.disabled=true; ddBtn.textContent='Đang gửi quà...';
+    authPost('/api/diemdanh').then(function(d){
+      if(d&&d.success){ ddShow('ok',d.message+((d.data&&d.data.qua&&d.data.qua.length)?' Nhận: '+d.data.qua.join('; ')+'.':'')); }
+      else ddShow('err',(d&&d.message)||'Có lỗi xảy ra.');
+      ddLoad();
+    }).catch(function(){ ddShow('err','Không kết nối được máy chủ.'); ddBtn.disabled=false; ddBtn.textContent='ĐIỂM DANH HÔM NAY'; });
   });
+
 
   // Nguoi dung Mac: dua nut MacBook len truoc (moi nut giu mau rieng)
   if(/Mac/i.test(navigator.platform||navigator.userAgent)){

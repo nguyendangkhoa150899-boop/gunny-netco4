@@ -52,3 +52,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/clearBagPassword/validatetfa', "App\Http\Controllers\ClearBagPasswordController@validatetfa")->middleware('auth.bearer');
 Route::post('/process', "App\Http\Controllers\ProcessController@index");
 //});
+// diem danh web (DiemDanhController, bang Db_Tank41.Web_DiemDanh*)
+Route::post('/diemdanh/info', "App\Http\Controllers\DiemDanhController@info")->middleware('auth.bearer');
+Route::post('/diemdanh', "App\Http\Controllers\DiemDanhController@checkin")->middleware('auth.bearer');

@@ -107,6 +107,19 @@ function run_action($conn,$act,$P){
     exec_sql($conn,"DELETE FROM Db_Tank41.dbo.Active_Number WHERE ActiveID=? AND AwardID=? AND UserID=0",[$aid,$c]);
     return 'Đã xóa code '.h($c).'.';
 
+  /* ---------- diem danh web ---------- */
+  case 'dd_add':
+    $moc=max(0,min(31,(int)($P['moc']??0))); $tid=max(0,(int)($P['tid']??0)); $cnt=max(1,(int)($P['cnt']??1)); $day=max(0,(int)($P['day']??0));
+    $str=min(max_strength($conn),max(0,(int)($P['str']??0))); $gold=max(0,(int)($P['gold']??0)); $money=max(0,(int)($P['money']??0)); $bind=!empty($P['bind'])?1:0;
+    if(!$tid && !$gold && !$money) return 'Cần ID vật phẩm, hoặc vàng/xu.';
+    if($tid && !scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    $r=exec_sql($conn,"INSERT INTO Db_Tank41.dbo.Web_DiemDanh_Qua(Moc,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Gold,[Money]) VALUES(?,?,?,?,?,?,?,?)",[$moc,$tid,$cnt,$day,$str,$bind,$gold,$money]);
+    return $r===true ? 'Đã thêm quà '.($moc ? 'mốc '.$moc.' ngày' : 'mỗi ngày').'.' : 'Lỗi: '.h($r);
+
+  case 'dd_del':
+    exec_sql($conn,"DELETE FROM Db_Tank41.dbo.Web_DiemDanh_Qua WHERE ID=?",[(int)($P['id']??0)]);
+    return 'Đã xóa quà.';
+
   /* ---------- he thong ---------- */
   case 'rate_add':
     $t=(int)($P['type']??0); $rate=(float)($P['rate']??1);
