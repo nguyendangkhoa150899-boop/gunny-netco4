@@ -215,3 +215,10 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 
 ## 12. Ảnh vật phẩm (admin)
 `admin/lib.php` `item_icon_rel()` chép công thức `PathManager.solveGoodsPath` của client (theo `CategoryID` + `Pic` + `NeedSex`, bảng `EquipType.TYPES`); không có thì thử `image/unfrightprop|prop|error/<pic>/icon.png`. `admin/icon.php` đọc file từ `C:\Gunny92\Resource.Server` và trả ảnh (chỉ admin đã đăng nhập), vì `res.netco4.click` không có HTTPS. Thử mẫu: 1.313/1.919 mẫu có ảnh, trang bị/vũ khí gần đủ; các loại client 3.0 không có (10, 37, 61, 62, 71, 74, 82 đến 91) hiện ô "?". DB có 19.122 vật phẩm nhưng client chỉ biết 13.047.
+
+## 13. Điểm danh trên web (thay điểm danh trong game)
+Điểm danh trong game bị server gốc **khóa cứng trong `Game.Server.dll`** (đã kiểm IL của bản đang chạy: `SignAwardHandler` chỉ còn lệnh báo "Tính năng bị khóa!", `DailyAwardHandler` loại 0 và 2 cũng vậy). Thêm nữa, bản gốc tin số ngày client gửi lên (nhận quà mốc lặp được). Nên chuyển ra web:
+- `_setup/sql/diem-danh-web.sql`: `Db_Tank41.dbo.Web_DiemDanh` (khóa chính `UserID, Ngay` → không nhận 2 lần/ngày kể cả bấm đồng thời) và `Web_DiemDanh_Qua` (`Moc` 0 = mỗi ngày, N = khi đủ N ngày trong tháng).
+- `website_backend/app/Http/Controllers/DiemDanhController.php`: `POST /api/diemdanh/info`, `POST /api/diemdanh` (bearer token của portal). Ngày lấy theo `GETDATE()` của SQL Server (giờ VN). Quà gửi qua `SendMailAndItem.aspx` (an toàn cả khi online); gửi lỗi thì xóa dòng điểm danh để bấm lại.
+- Portal: khung "Điểm danh tháng" trong bảng tài khoản (lịch tháng, quà mỗi ngày, các mốc). Admin > **Điểm danh**: thêm/xóa quà, thống kê, danh sách điểm danh gần đây.
+- Đã test đầu cuối bằng tài khoản tạm (đăng ký → tạo nhân vật → đăng nhập → điểm danh → lần 2 bị chặn → thư có vật phẩm → token sai bị 403) rồi xóa sạch.
