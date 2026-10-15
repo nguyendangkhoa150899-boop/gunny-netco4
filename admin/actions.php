@@ -85,28 +85,27 @@ function run_action($conn,$act,$P){
     return 'Đã đổi ngày kết thúc. Nhớ Xuất bản dữ liệu.';
 
   case 'gc_codes':
-    // Creator=-1: code dung chung (moi nguoi nhap 1 lan, can _setup/sql/giftcode-dung-chung.sql). 0: code thuong, dung 1 lan.
-    $aid=(int)($P['aid']??0); $shared=!empty($P['shared']); $creator=$shared?-1:0;
-    $ins="INSERT INTO Db_Tank41.dbo.Active_Number(AwardID,ActiveID,PullDown,GetDate,UserID,Mark,Creator) VALUES(?,?,0,GETDATE(),0,0,?)";
-    $codes=[]; $skip=[];
-    $custom=array_filter(preg_split('/[\s,;]+/', strtoupper(trim($P['custom']??''))));
-    if($custom){
-      foreach($custom as $c){
-        if(!preg_match('/^[A-Z0-9_\-]{3,30}$/',$c)){ $skip[]=$c.' (chỉ chữ, số, _ -, 3 đến 30 ký tự)'; continue; }
-        if(scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Active_Number WHERE AwardID=?",[$c])){ $skip[]=$c.' (đã tồn tại)'; continue; }
-        if(exec_sql($conn,$ins,[$c,$aid,$creator])===true) $codes[]=$c;
-      }
-    } else {
-      $num=min(500,max(1,(int)($P['num']??10)));
-      $prefix=(string)scalar($conn,"SELECT ISNULL(CodePrefix,'') FROM Db_Tank.dbo.Active WHERE ActiveID=?",[$aid]);
-      $abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      for($i=0;$i<$num;$i++){
-        $c=$prefix; while(strlen($c)<strlen($prefix)+12) $c.=$abc[random_int(0,strlen($abc)-1)];
-        if(exec_sql($conn,$ins,[$c,$aid,$creator])===true) $codes[]=$c;
-      }
-    }
-    $_SESSION['gc_codes']=$codes;
-    return 'Đã tạo '.count($codes).' code '.($shared?'dùng chung (mỗi người nhập 1 lần)':'dùng 1 lần').' cho sự kiện #'.$aid.'.'.($skip?' Bỏ qua: '.h(implode(', ',$skip)).'.':'');
+    // Creator cua dong code goc: -1 = moi nguoi 1 lan; < -1 = nhieu lan, tong -Creator-1 luot (xem _setup/sql/giftcode-nhieu-lan.sql)
+    $aid=(int)($P['aid']??0);
+    if(!scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Active WHERE ActiveID=?",[$aid])) return 'Không có sự kiện #'.$aid.'.';
+    $mode=($P['mode']??'')==='multi'?'multi':'once';
+    $times=(int)($P['times']??0);
+    if($mode==='multi' && ($times<1 || $times>100000)) return 'Số lượt phải từ 1 đến 100000.';
+    $creator=$mode==='multi'?-($times+1):-1;
+    $c=strtoupper(trim($P['code']??''));
+    if($c===''){ $abc='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; $c='NC4'; while(strlen($c)<11) $c.=$abc[random_int(0,strlen($abc)-1)]; }
+    if(!preg_match('/^[A-Z0-9_\-]{3,30}$/',$c)) return 'Tên code chỉ gồm chữ không dấu, số, _ -, từ 3 đến 30 ký tự.';
+    if(scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Active_Number WHERE AwardID=?",[$c])) return 'Code '.h($c).' đã tồn tại, chọn tên khác.';
+    $r=exec_sql($conn,"INSERT INTO Db_Tank41.dbo.Active_Number(AwardID,ActiveID,PullDown,GetDate,UserID,Mark,Creator) VALUES(?,?,0,GETDATE(),0,0,?)",[$c,$aid,$creator]);
+    if($r!==true) return 'Lỗi tạo code: '.h($r);
+    $_SESSION['gc_new_code']=$c;
+    return 'Đã tạo code '.h($c).': '.($mode==='multi'?'dùng nhiều lần, tổng '.$times.' lượt':'mỗi người dùng 1 lần').'.';
+
+  case 'gc_code_del':
+    // chi xoa dong goc: code ngung dung duoc, lich su nguoi da nhan giu lai
+    $aid=(int)($P['aid']??0); $c=(string)($P['code']??'');
+    exec_sql($conn,"DELETE FROM Db_Tank41.dbo.Active_Number WHERE ActiveID=? AND AwardID=? AND UserID=0",[$aid,$c]);
+    return 'Đã xóa code '.h($c).'.';
 
   /* ---------- he thong ---------- */
   case 'rate_add':
