@@ -4,7 +4,7 @@ $acts = q($conn,"SELECT a.ActiveID,a.Title,a.Type,a.HasKey,a.StartDate,a.EndDate
   (SELECT COUNT(*) FROM Db_Tank41.dbo.Active_Number n WHERE n.ActiveID=a.ActiveID AND n.PullDown=1) used
   FROM Db_Tank.dbo.Active a ORDER BY a.ActiveID DESC");
 $sel = (int)($_GET['aid'] ?? 0);
-$awards = $sel ? q($conn,"SELECT w.ID,w.ItemID,w.Count,w.ValidDate,w.StrengthenLevel,w.Gold,w.Money,ISNULL(g.Name,'') Name FROM Db_Tank.dbo.Active_Award w LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=w.ItemID WHERE w.ActiveID=? ORDER BY w.ID",[$sel]) : [];
+$awards = $sel ? q($conn,"SELECT w.ID,w.ItemID,w.Count,w.ValidDate,w.StrengthenLevel,w.Gold,w.Money,ISNULL(g.Name,'') Name,ISNULL(g.CategoryID,0) Cat,ISNULL(g.Pic,'') Pic,ISNULL(g.NeedSex,0) Sex,ISNULL(g.Quality,0) Q FROM Db_Tank.dbo.Active_Award w LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=w.ItemID WHERE w.ActiveID=? ORDER BY w.ID",[$sel]) : [];
 $codes = $_SESSION['gc_codes'] ?? null; unset($_SESSION['gc_codes']);
 $now = date('Y-m-d H:i:s');
 ?>
@@ -40,7 +40,9 @@ $now = date('Y-m-d H:i:s');
 <h2>Quà của sự kiện #<?= $sel ?></h2>
 <table><tr><th>Vật phẩm</th><th>Số lượng</th><th>Hạn</th><th>Cường hóa</th><th>Vàng</th><th>Xu</th><th></th></tr>
 <?php foreach($awards as $w): ?>
-  <tr><td><?= (int)$w['ItemID'] ?> <?= h($w['Name']) ?></td><td><?= (int)$w['Count'] ?></td><td><?= (int)$w['ValidDate'] ?: 'vĩnh viễn' ?></td><td><?= (int)$w['StrengthenLevel'] ?></td><td><?= n($w['Gold']) ?></td><td><?= n($w['Money']) ?></td>
+  <tr><td><div style="display:flex;align-items:center;gap:10px">
+    <?php if((int)$w['ItemID']>0): ?><img src="<?= h(item_icon_url($w['Cat'],$w['Pic'],$w['Sex'])) ?>" alt="" style="width:40px;height:40px;object-fit:contain;background:#0d1626;border:2px solid <?= quality_color($w['Q']) ?>;border-radius:8px"><?php endif; ?>
+    <span><?= h($w['Name'] ?: 'vàng / xu') ?><br><span class="muted">ID <?= (int)$w['ItemID'] ?></span></span></div></td><td><?= (int)$w['Count'] ?></td><td><?= (int)$w['ValidDate'] ?: 'vĩnh viễn' ?></td><td><?= (int)$w['StrengthenLevel'] ?></td><td><?= n($w['Gold']) ?></td><td><?= n($w['Money']) ?></td>
     <td><form method="post" style="margin:0"><?= csrf() ?><input type="hidden" name="act" value="gc_award_del"><input type="hidden" name="id" value="<?= (int)$w['ID'] ?>"><button class="btn sm danger">Xóa</button></form></td></tr>
 <?php endforeach; if(!$awards) echo '<tr><td colspan="7" class="muted">Chưa có quà.</td></tr>'; ?>
 </table>
