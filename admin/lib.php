@@ -96,6 +96,25 @@ function max_level($conn){ return (int)scalar($conn,"SELECT TOP 1 Grade FROM Db_
      SystemNotice.aspx     0=ok 2=sai IP
      ExperienceRate.aspx / NoticeServerUpdate.aspx  0=ok (gia tri Center tra ve) 4/5=loi
      KitoffUser.aspx       1=bat dau dem nguoc 6 phut roi kick moi nguoi */
+/* So nguoi DANG CHOI THAT theo Center (Request ServerList.ashx: total=...). DB Sys_Users_Detail.State co the ket 1 sau khi
+   server game sap / tat ngang. null = khong hoi duoc Center. */
+function center_online(){
+  $ctx = stream_context_create(['http'=>['timeout'=>8,'ignore_errors'=>true]]);
+  $r = @file_get_contents('http://127.0.0.1/ServerList.ashx', false, $ctx);
+  return ($r !== false && preg_match('/total="(\d+)"/', $r, $m)) ? (int)$m[1] : null;
+}
+/* thanh trang thai: server game bao X dang choi / DB ghi Y online + nut Lam moi, Reset */
+function status_bar($conn){
+  $real = center_online();
+  $db = (int)scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Sys_Users_Detail WHERE State=1");
+  $lech = $real !== null && $real !== $db;
+  $h = '<div class="stbar"><span>Server game báo đang chơi: <b>'.($real===null?'?':(int)$real).'</b></span>'
+     .'<span class="muted">DB ghi online: <b>'.$db.'</b></span>'
+     .($lech ? '<span class="warn">Lệch: có nhân vật kẹt trạng thái online (thường do server game tắt ngang). Bấm Reset để sửa.</span>' : '')
+     .'<span style="flex:1"></span><a class="btn sm" href="'.h($_SERVER['REQUEST_URI'] ?? '?').'">Làm mới</a>'
+     .'<form method="post">'.csrf().'<input type="hidden" name="act" value="state_reset"><button class="btn sm danger" title="Đặt tất cả về Offline. Ai thật sự đang chơi sẽ tự hiện Online lại ở lần server game lưu tự động kế tiếp (vài phút).">Reset trạng thái</button></form></div>';
+  return $h;
+}
 function req($path,$params=[]){
   $url = 'http://127.0.0.1/'.$path.($params ? '?'.http_build_query($params,'','&',PHP_QUERY_RFC3986) : '');
   $ctx = stream_context_create(['http'=>['timeout'=>40,'ignore_errors'=>true]]);

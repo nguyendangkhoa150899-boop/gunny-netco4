@@ -195,6 +195,13 @@ function run_action($conn,$act,$P){
     exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_SoDiem(MemberID,Delta,SoDu,Loai,GhiChu) VALUES(?,?,?,'admin',?)",[$mid,$d,(int)$row[0],mb_substr(trim($P['note']??'') ?: 'Admin '.($d>0?'tặng':'trừ'),0,200)]);
     return 'Đã '.($d>0?'cộng ':'trừ ').n(abs($d)).' điểm cho '.h($em).'. Số dư: '.n($row[0]).'.';
 
+  case 'state_reset':
+    // dat het ve Offline; nguoi that su dang choi duoc Road ghi lai State=1 o lan luu tu dong ke tiep (UpdatePlayer ghi @State)
+    $truoc=(int)scalar($conn,"SELECT COUNT(*) FROM Db_Tank41.dbo.Sys_Users_Detail WHERE State=1");
+    exec_sql($conn,"UPDATE Db_Tank41.dbo.Sys_Users_Detail SET State=0 WHERE State=1");
+    $real=center_online();
+    return 'Đã đặt '.$truoc.' nhân vật về Offline. Server game đang báo '.($real===null?'?':$real).' người chơi; ai thật sự đang chơi sẽ tự hiện Online lại sau vài phút (lần lưu tự động kế tiếp).';
+
   /* ---------- he thong ---------- */
   case 'rate_add':
     $t=(int)($P['type']??0); $rate=(float)($P['rate']??1);

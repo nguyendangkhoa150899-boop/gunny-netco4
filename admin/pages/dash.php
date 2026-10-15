@@ -8,8 +8,9 @@ $srv      = q($conn,"SELECT TOP 1 Name,IP,Port FROM Db_Tank41.dbo.Server_List");
 $rates    = q($conn,"SELECT Type,Rate FROM Db_Tank41.dbo.Rate WHERE ServerID=? AND GETDATE() BETWEEN BeginDay AND EndDay",[SERVER_ID]);
 $RN = [0=>'EXP',1=>'Vàng',2=>'Công hiến'];
 ?>
+<?= status_bar($conn) ?>
 <div class="cards">
-  <div class="c"><div class="n"><?= (int)$online ?></div><div class="l">Đang online</div></div>
+  <div class="c"><div class="n"><?= (int)$online ?></div><div class="l">DB ghi online</div></div>
   <div class="c"><div class="n"><?= (int)$acc ?></div><div class="l">Tổng tài khoản</div></div>
   <div class="c"><div class="n"><?= (int)$chars ?></div><div class="l">Tổng nhân vật</div></div>
   <div class="c"><div class="n"><?= (int)$accToday ?></div><div class="l">Đăng ký hôm nay</div></div>

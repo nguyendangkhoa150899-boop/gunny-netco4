@@ -70,7 +70,9 @@ $flash = $_SESSION['flash'] ?? ''; unset($_SESSION['flash']);
   table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px}
   th,td{text-align:left;padding:9px 11px;font-size:13px;border-bottom:1px solid var(--line);vertical-align:middle}
   th{color:var(--muted);font-weight:600;background:#0f1828} tr:last-child td{border-bottom:0}
-  .tag{font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap} .tag.ok{background:rgba(54,208,127,.15);color:var(--ok)} .tag.ban{background:rgba(255,93,108,.15);color:var(--err)} .tag.on{background:rgba(37,99,235,.2);color:#8db4ff}
+  .tag{font-size:12px;padding:2px 8px;border-radius:999px;white-space:nowrap} .tag.ok{background:rgba(54,208,127,.15);color:var(--ok)} .tag.ban{background:rgba(255,93,108,.15);color:var(--err)} .tag.on{background:rgba(54,208,127,.18);color:#4ade80;font-weight:700} .tag.off{background:rgba(148,163,184,.12);color:#94a3b8}
+  .stbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--card,#141c2e);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:0 0 14px}
+  .stbar b{font-size:18px} .stbar .warn{color:#fbbf24;font-size:13px} .stbar form{margin:0}
   .flash{background:rgba(54,208,127,.12);border:1px solid var(--ok);color:var(--ok);padding:10px 13px;border-radius:10px;margin-bottom:16px;font-size:14px}
   h2{font-size:18px;margin:6px 0 12px} h3{font-size:15px;margin:0 0 6px}
   .note{background:#0e1829;border-left:3px solid var(--accent);padding:11px 14px;border-radius:8px;color:var(--muted);font-size:13px;margin-bottom:16px}

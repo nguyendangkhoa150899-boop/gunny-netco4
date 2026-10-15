@@ -5,6 +5,7 @@ $rows = $kw==='' ? q($conn,$sql."ORDER BY State DESC, LastDate DESC") : q($conn,
 $maxLv = max_level($conn);
 ?>
 <h2>Nhân vật</h2>
+<?= status_bar($conn) ?>
 <form class="row" method="get" style="max-width:420px;margin-bottom:12px"><input type="hidden" name="page" value="chars"><input name="q" value="<?= h($kw) ?>" placeholder="Tìm tài khoản hoặc tên nhân vật"><button class="btn sm" style="flex:0">Tìm</button></form>
 <div class="note"><b>Cộng xu</b> đi qua kênh nạp nội bộ, người đang online nhận ngay. <b>Lên cấp / Buff</b> ghi thẳng DB nên chỉ áp dụng cho nhân vật <b>offline</b> (đang online thì lúc thoát server ghi đè lại). Muốn tặng vàng, vật phẩm an toàn khi đang online: dùng trang <a href="?page=mail">Gửi quà</a>.</div>
 <div class="grid3">
@@ -21,7 +22,7 @@ $maxLv = max_level($conn);
   <tr>
     <td><?= (int)$r['UserID'] ?></td><td><?= h($r['UserName']) ?></td><td><?= h($r['NickName']) ?></td><td><?= (int)$r['Grade'] ?></td>
     <td><?= n($r['Gold']) ?></td><td><?= n($r['Money']) ?></td><td><?= n($r['MoneyLock']) ?></td><td><?= (int)$r['Win'] ?>/<?= (int)$r['Total'] ?></td>
-    <td><?= (int)$r['State']===1 ? '<span class="tag on">Online</span>' : '<span class="tag ok">Offline</span>' ?></td>
+    <td><?= (int)$r['State']===1 ? '<span class="tag on">● Online</span>' : '<span class="tag off">Offline</span>' ?></td>
     <td><?= h(substr((string)$r['LastDate'],0,16)) ?></td>
   </tr>
   <?php endforeach; ?>
