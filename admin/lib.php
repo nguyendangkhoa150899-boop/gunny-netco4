@@ -45,6 +45,46 @@ function publish_files(){ return [
   'NPCInfoList'        => ['NPC: DB 1.033, client gốc 1.274', 2],
   'QuestList'          => ['Nhiệm vụ: DB chỉ 179, client gốc 1.115, ĐỪNG dựng lại', 2],
 ]; }
+/* Duong dan file icon vat pham trong Resource.Server, theo dung cong thuc client (flashbaseSrc PathManager.solveGoodsPath,
+   EquipType). Loai client 3.0 khong biet (DB moi hon) thi thu cac thu muc du phong. Tra ve null neu khong co anh. */
+define('RES_DIR', 'C:\\Gunny92\\Resource.Server\\');
+function item_icon_rel($cat,$pic,$sex){
+  $T=['','head','glass','hair','eff','cloth','face','arm','armlet','ring','','','','suits','necklace','wing','chatBall','','','','','','','','','','','','armlet','ring'];
+  $c=(int)$cat; $p=$pic;
+  if($c==7||$c==27) return "image/arm/$p/1/icon.png";
+  if(in_array($c,[11,24,65,68,69,72],true)) return "image/unfrightprop/$p/icon.png";
+  if($c==12) return "image/task/$p/icon.png";
+  if($c==16) return "image/specialprop/chatBall/$p/icon.png";
+  if($c<10 || in_array($c,[13,14,28,29],true)){
+    $t=$T[$c] ?? '';
+    if(in_array($c,[8,9,14,28,29],true)) return "image/equip/$t/$p/icon.png";   // vong tay, nhan, day chuyen: khong chia nam nu
+    return 'image/equip/'.((int)$sex===2?'f':'m')."/$t/$p/icon_1.png";
+  }
+  if($c==15) return "image/equip/wing/$p/icon.png";
+  if($c==17||$c==31) return "image/equip/offhand/$p/icon.png";
+  if($c==25) return "image/gift/$p/icon.png";
+  if($c==26) return "image/card/$p/icon.jpg";
+  if($c==18) return "image/cardbox/$p/icon.png";
+  if($c==19) return "image/equip/recover/$p/icon.png";
+  if(in_array($c,[20,23,30,40,34,35],true)) return "image/unfrightprop/$p/icon.png";
+  if($c==32||$c==36) return "image/farm/Crops/$p/seed.png";
+  if($c==33) return "image/farm/Fertilizer/$p/icon.png";
+  if($c==52) return "image/petequip/cloth/$p/icon.png";
+  if($c==50) return "image/petequip/arm/$p/icon.png";
+  if($c==51) return "image/petequip/hat/$p/icon.png";
+  return "image/prop/$p/icon.png";
+}
+function item_icon_file($cat,$pic,$sex){
+  $pic=(string)$pic;
+  if($pic==='' || strpos($pic,'..')!==false || !preg_match('#^[A-Za-z0-9_\-/]+$#',$pic)) return null;
+  $try=[item_icon_rel($cat,$pic,$sex),"image/unfrightprop/$pic/icon.png","image/prop/$pic/icon.png","image/error/$pic/icon.png"];
+  if((int)$sex!==2) $try[]=str_replace('/m/','/f/',$try[0]); else $try[]=str_replace('/f/','/m/',$try[0]);
+  foreach($try as $r){ $f=RES_DIR.str_replace('/','\\',$r); if(is_file($f)) return $f; }
+  return null;
+}
+function item_icon_url($cat,$pic,$sex){ return 'icon.php?c='.(int)$cat.'&p='.rawurlencode((string)$pic).'&s='.(int)$sex; }
+// Mau vien theo pham chat (Shop_Goods.Quality)
+function quality_color($q){ return [0=>'#6b7a90',1=>'#9aa7b8',2=>'#3fbf6f',3=>'#3b8cff',4=>'#a35bff',5=>'#ff9a1f',6=>'#ff4d5e'][(int)$q] ?? '#6b7a90'; }
 function max_level($conn){ return (int)scalar($conn,"SELECT TOP 1 Grade FROM Db_Tank.dbo.LevelInfo ORDER BY Grade DESC"); }
 
 /* Goi endpoint quan tri cua Request (chi nhan tu 127.0.0.1: AdminIP/ChargeIP). Tra ve chuoi ket qua da trim.

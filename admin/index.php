@@ -24,6 +24,9 @@ $PAGES = ['dash'=>'Dashboard','accounts'=>'Tài khoản','chars'=>'Nhân vật',
 $page = $_GET['page'] ?? 'dash';
 if (!isset($PAGES[$page])) $page = 'dash';
 
+// ---- JSON cho trang (tim vat pham...) ----
+if ($authed && isset($_GET['ajax'])) { require __DIR__.'/ajax.php'; exit; }
+
 // ---- thao tac POST: xu ly xong chuyen huong (F5 khong gui lai) ----
 if ($authed && isset($_POST['act'])) {
   if (!hash_equals($_SESSION['csrf'] ?? 'x', (string)($_POST['csrf'] ?? ''))) $_SESSION['flash'] = 'CSRF không hợp lệ, tải lại trang rồi thử lại.';
