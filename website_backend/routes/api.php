@@ -24,8 +24,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/register', "App\Http\Controllers\RegisterController@index");
     Route::post('/serverlist', "App\Http\Controllers\ServerListController@index");
     Route::post('/playerlist', "App\Http\Controllers\PlayerListController@index")->middleware('auth.bearer');
-    Route::post('/cardCharge', "App\Http\Controllers\PaymentController@rechargeCard")->middleware('auth.bearer');
-    Route::post('/cardCallback', "App\Http\Controllers\PaymentController@cardCallback");
     Route::post('/convertCoin', "App\Http\Controllers\ConvertCoinController@index")->middleware(['auth.bearer']);
     Route::post('/convertCoin/validatetfa', "App\Http\Controllers\ConvertCoinController@validatetfa")->middleware('auth.bearer');
     Route::post('/changePassword', "App\Http\Controllers\ChangePasswordController@index")->middleware('auth.bearer');
@@ -48,8 +46,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/lite/validate', "App\Http\Controllers\LauncherLiteController@validatetfa");
     Route::post('/verifyEmail', 'App\Http\Controllers\TFAController@verifyEmail')->middleware('auth.bearer');
     Route::post('/validateVerifyEmail', 'App\Http\Controllers\TFAController@validateVerifyEmail')->middleware('auth.bearer');
-    Route::post('/getBankQrCode', 'App\Http\Controllers\PaymentController@getBankQrCode')->middleware('auth.bearer');
-    Route::post('/getMomoChargeQr', 'App\Http\Controllers\PaymentController@getMomoChargeQr')->middleware('auth.bearer');
     Route::post('/forgotPassword', "App\Http\Controllers\ForgotPasswordController@index");
     Route::post('/forgotPassword/validate', "App\Http\Controllers\ForgotPasswordController@validate");
     Route::post('/clearBagPassword', "App\Http\Controllers\ClearBagPasswordController@index")->middleware('auth.bearer');

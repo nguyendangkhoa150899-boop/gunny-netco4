@@ -24,7 +24,7 @@ class RegisterController extends BaseController
                 return $this->error('Email đã được sử dụng!');
             }
         }
-        $password = md5($request->password);
+        $password = bcrypt($request->password);
         $member = new Member();
         $member->Email = $email;
         $member->Password = $password;
