@@ -402,18 +402,79 @@ class MiniGameController extends \App\Http\BaseController
                   : ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => 100];
     }
 
+    /* ---- quay qua Y HET GAME (PVEGame.TakeCard -> DropInventory.CopyDrop) ----
+     * Drop_Condiction CondictionType=5 (Copy), Para1 chua ",<ma man>,", Para2 chua ",1," -> DropId (lay dong dau tien nhu DropMgr.FindCondiction).
+     * Drop_Item cua DropId: nguong = rand[0, Random lon nhat), giu cac mon Random >= nguong, chon deu 1 mon; so luong rand[BeginData, EndData).
+     * ItemId -100 = vang, -200 = xu game (ShopMgr.FindSpecialItemInfo) -> gui thu game. Tien te khac web khong gui duoc -> quay lai.
+     * Ai boss khong co bang thi lay bang ai khac cung pho ban; khong co nua thi bo qua web (Web_The_Qua). lt_nguon='web' de chi dung bo qua web. */
+    private $dropCache = [];
+
+    private function dropIdCua(int $mission, string $khoa): int
+    {
+        $k = $mission . '|' . $khoa;
+        if (isset($this->dropCache[$k])) return $this->dropCache[$k];
+        $tank = DB::connection('sqlsrv_tank41');
+        $r = $tank->selectOne("SELECT TOP 1 DropID FROM Db_Tank.dbo.Drop_Condiction WHERE CondictionType=5 AND Para1 LIKE ? AND Para2 LIKE '%,1,%' ORDER BY DropID", ['%,' . $mission . ',%']);
+        if (!$r) $r = $this->mem()->selectOne("SELECT TOP 1 c.DropID FROM Web_The_Man m JOIN Db_Tank.dbo.Drop_Condiction c
+            ON c.CondictionType=5 AND c.Para1 LIKE '%,'+CAST(m.MissionId AS varchar(12))+',%' AND c.Para2 LIKE '%,1,%' WHERE m.Khoa=? ORDER BY m.Ai DESC, m.MissionId DESC", [$khoa]);
+        return $this->dropCache[$k] = $r ? (int)$r->DropID : 0;
+    }
+
+    private function quayLaGame(int $dropId): ?array
+    {
+        static $cache = [];
+        if (!isset($cache[$dropId])) $cache[$dropId] = DB::connection('sqlsrv_tank41')->select("SELECT ItemId,Random,BeginData,EndData,ValueDate,IsBind,IsTips FROM Db_Tank.dbo.Drop_Item WHERE DropId=?", [$dropId]);
+        $ds = $cache[$dropId];
+        if (!$ds) return null;
+        $max = max(array_map(function ($x) { return (int)$x->Random; }, $ds));
+        if ($max <= 0) return null;
+        for ($thu = 0; $thu < 8; $thu++) {
+            $nguong = random_int(0, $max - 1);
+            $loc = array_values(array_filter($ds, function ($x) use ($nguong) { return (int)$x->Random >= $nguong; }));
+            if (!$loc) continue;
+            $x = $loc[random_int(0, count($loc) - 1)];
+            $a = (int)$x->BeginData; $b = (int)$x->EndData;
+            $sl = max(1, $b > $a ? random_int($a, $b - 1) : $a);
+            $id = (int)$x->ItemId;
+            if ($id === -100) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => 0, 'g' => $sl, 'm' => 0, 'tip' => (int)$x->IsTips];
+            if ($id === -200) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => 0, 'g' => 0, 'm' => $sl, 'tip' => (int)$x->IsTips];
+            if ($id <= 0) continue;
+            $i = VatPham::thongTin([$id])[$id] ?? null;
+            if (!$i || !VatPham::file($i->CategoryID, $i->Pic, $i->NeedSex)) continue;   // client khong co anh -> vao game vo hinh, quay lai
+            return ['t' => $id, 'c' => $sl, 'v' => (int)$x->ValueDate, 's' => 0, 'b' => (int)$x->IsBind, 'x' => 0, 'g' => 0, 'm' => 0, 'tip' => (int)$x->IsTips];
+        }
+        return null;
+    }
+
+    /** 1 la: bang roi do cua game (mac dinh), khong co thi bo qua web */
+    private function quay($v, array &$pool = null): array
+    {
+        if (CauHinh::get('lt_nguon', 'game') !== 'web') {
+            $d = $this->dropIdCua((int)$v->MissionId, (string)$v->Khoa);
+            if ($d) { $b = $this->quayLaGame($d); if ($b) return $b; }
+        }
+        if ($pool === null) $pool = $this->boQua($v->Khoa);
+        return $this->quayLa($pool);
+    }
+
+    private function soLat(): int
+    {
+        return max(1, min(self::SO_LA, CauHinh::int('lt_solat', self::SO_LAT)));
+    }
+
     private function moTaBai(array $bai): array
     {
         $tt = VatPham::thongTin(array_column(array_filter($bai), 't'));
         return array_map(function ($b) use ($tt) {
             if (!$b) return null;
             $i = $tt[$b['t']] ?? null;
+            $g = (int)($b['g'] ?? 0); $m = (int)($b['m'] ?? 0);
             $ten = $b['t'] ? (($i->Name ?? ('Vật phẩm ' . $b['t'])) . ($b['c'] > 1 ? ' x' . $b['c'] : '') . ($b['s'] ? ' +' . $b['s'] : '')) : '';
-            if ($b['x']) $ten = trim($ten . ($ten ? ' + ' : '') . number_format($b['x'], 0, ',', '.') . ' xu web');
+            foreach ([[$b['x'], ' xu web'], [$g, ' vàng'], [$m, ' xu game']] as [$n, $dv]) if ($n) $ten = trim($ten . ($ten ? ' + ' : '') . number_format($n, 0, ',', '.') . $dv);
             return ['ten' => $ten, 'hinh' => $b['t'] ? '/hinh/' . $b['t'] : null, 'mau' => $b['t'] ? VatPham::mau((int)($i->Quality ?? 0)) : '#ffcf5c',
-                    'han' => $b['v'] ? $b['v'] . ' ngày' : '', 'xu' => $b['x'],
-                    // hiem: pham chat tim tro len hoac tu 10.000 xu web -> mat bai VIP vang
-                    'hiem' => ($b['t'] && (int)($i->Quality ?? 0) >= 4) || $b['x'] >= 10000];
+                    'han' => $b['v'] ? $b['v'] . ' ngày' : '', 'xu' => $b['x'], 'vang' => $g > 0,
+                    // hiem: pham chat tim tro len, game danh dau IsTips (thong bao toan server), hoac tu 10.000 xu web -> mat bai VIP vang
+                    'hiem' => ($b['t'] && ((int)($i->Quality ?? 0) >= 4 || !empty($b['tip']))) || $b['x'] >= 10000];
         }, $bai);
     }
 
@@ -432,7 +493,7 @@ class MiniGameController extends \App\Http\BaseController
             return ['id' => (int)$x->ID, 'phoBan' => $x->Khoa, 'tg' => substr((string)$x->ThoiGian, 0, 16), 'daLat' => $mo];
         }, $rows);
         $homNay = $this->mem()->select("SELECT Khoa, COUNT(*) n FROM Web_The_Luot WHERE GameUserID=? AND Ngay=CAST(GETDATE() AS date) GROUP BY Khoa", [(int)$nv->UserID]);
-        return $this->success('ok', ['ds' => $ds, 'homNay' => $homNay, 'soLan' => CauHinh::int('lt_solan', 3), 'mo' => CauHinh::int('lt_mo', 1), 'soLa' => self::SO_LA, 'soLat' => self::SO_LAT]);
+        return $this->success('ok', ['ds' => $ds, 'homNay' => $homNay, 'soLan' => CauHinh::int('lt_solan', 3), 'mo' => CauHinh::int('lt_mo', 1), 'soLa' => self::SO_LA, 'soLat' => $this->soLat()]);
     }
 
     public function latTheLat(Request $r)
@@ -443,30 +504,40 @@ class MiniGameController extends \App\Http\BaseController
         if ($o < 0 || $o >= self::SO_LA) return $this->error('Lá bài không hợp lệ.');
         $nv = $this->nhanVat();
         $out = null;
+        try {
         $this->mem()->transaction(function () use ($mid, $id, $o, $nv, &$out) {
             $v = $this->mem()->selectOne("SELECT * FROM Web_The_Luot WITH (UPDLOCK,ROWLOCK) WHERE ID=? AND MemberID=? AND Xong=0", [$id, $mid]);
             if (!$v) { $out = 'het'; return; }
             $lat = $v->DaLat === '' ? [] : array_map('intval', explode(',', $v->DaLat));
-            if (in_array($o, $lat, true) || count($lat) >= self::SO_LAT) { $out = 'roi'; return; }
+            if (in_array($o, $lat, true) || count($lat) >= $this->soLat()) { $out = 'roi'; return; }
             $bai = array_replace(array_fill(0, self::SO_LA, null), json_decode($v->Bai, true) ?: []);
-            $pool = $this->boQua($v->Khoa);
-            $b = $bai[$o] = $this->quayLa($pool);
+            $pool = null;
+            $b = $bai[$o] = $this->quay($v, $pool);
             $nguon = 'Lật thẻ ' . $v->Khoa;
             if ($b['x'] > 0) XuWeb::doi($mid, $b['x'], 'latthe', $nguon);
+            // vang / xu game (ItemId -100 / -200 cua bang roi do game) gui thang vao thu game; loi thi huy ca lan lat
+            if ((int)($b['g'] ?? 0) > 0 || (int)($b['m'] ?? 0) > 0) {
+                if (!$nv) throw new \RuntimeException('khong co nhan vat');
+                $kq = GameMail::send((int)$nv->UserID, 'Quà lật thẻ ' . $v->Khoa, [], (int)($b['g'] ?? 0), (int)($b['m'] ?? 0));
+                if ($kq !== '1') throw new \RuntimeException('mail ' . $kq);
+            }
             if ($b['t'] > 0) {
                 $this->mem()->insert("INSERT INTO Web_Ruong(MemberID,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Nguon) VALUES(?,?,?,?,?,?,?)",
                     [$mid, $b['t'], max(1, $b['c']), $b['v'], $b['s'], $b['b'] ? 1 : 0, mb_substr($nguon, 0, 100)]);
             }
             $lat[] = $o;
-            $xong = count($lat) >= self::SO_LAT;
-            // lat du 3 la: quay not 6 la con lai (cung ty le) chi de hien cho nguoi choi biet da bo lo gi
-            if ($xong) for ($i = 0; $i < self::SO_LA; $i++) if (!$bai[$i]) $bai[$i] = $this->quayLa($pool);
+            $xong = count($lat) >= $this->soLat();
+            // lat du: quay not cac la con lai (cung ty le game) chi de hien cho nguoi choi biet da bo lo gi
+            if ($xong) for ($i = 0; $i < self::SO_LA; $i++) if (!$bai[$i]) $bai[$i] = $this->quay($v, $pool);
             $this->mem()->update("UPDATE Web_The_Luot SET DaLat=?, Xong=?, Bai=? WHERE ID=?", [implode(',', $lat), $xong ? 1 : 0, json_encode($bai), $id]);
             $mt = $this->moTaBai($bai);
-            $out = ['o' => $o, 'bai' => $mt[$o], 'conLai' => self::SO_LAT - count($lat), 'xong' => $xong, 'tatCa' => $xong ? $mt : null];
+            $out = ['o' => $o, 'bai' => $mt[$o], 'conLai' => $this->soLat() - count($lat), 'xong' => $xong, 'tatCa' => $xong ? $mt : null];
         });
+        } catch (\Throwable $e) {
+            return $this->error('Máy chủ game đang bận, lá này chưa lật. Thử lại sau ít phút.');
+        }
         if ($out === 'het') return $this->error('Lượt lật này đã xong.');
-        if ($out === 'roi') return $this->error('Lá này đã lật hoặc đã hết 3 lần lật.');
+        if ($out === 'roi') return $this->error('Lá này đã lật hoặc đã hết lượt lật.');
         return $this->success('ok', $out + ['soDu' => XuWeb::soDu($mid)]);
     }
 
@@ -534,6 +605,7 @@ class MiniGameController extends \App\Http\BaseController
             if (!VatPham::file($x->CategoryID, $x->Pic, $x->NeedSex)) continue;
             $ds[] = ['id' => (int)$x->TemplateID, 'ten' => $x->Name, 'cat' => (int)$x->CategoryID, 'mau' => VatPham::mau((int)$x->Quality), 'hinh' => '/hinh/' . (int)$x->TemplateID,
                 'cs' => (bool)$x->CanStrengthen, 'gt' => (int)$x->NeedSex, 'chiSo' => [(int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck],
+                'lv' => (int)$x->NeedLevel, 'q' => (int)$x->Quality,
                 'moTa' => mb_substr((string)$x->Description, 0, 120)];
             if (count($ds) >= 60) break;
         }

@@ -148,12 +148,18 @@
   .qtto{display:flex;align-items:center;gap:8px;background:#1d1a10;border:1px solid #6b5520;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
   .qtsearch{display:flex;gap:8px} .qtsearch select{background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 10px;font-size:14px}
   .qtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:12px;max-height:560px;overflow-y:auto;padding-right:4px}
-  .qtc{display:flex;flex-direction:column;align-items:center;gap:4px;background:#12141a;border:1px solid var(--line);border-radius:10px;padding:8px 4px;cursor:pointer;text-align:center}
-  .qtc:hover{border-color:var(--gold)}
-  .qtc .ic{width:52px;height:52px;border-radius:9px;border:2px solid;background:#0d1220;position:relative}
-  .qtc .ic img{width:100%;height:100%;object-fit:contain}
-  .qtc .ic small{position:absolute;left:0;right:0;bottom:-1px;font-size:9px;background:#000b;color:#fff;border-radius:0 0 7px 7px}
+  .qtc{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;text-align:center;padding:2px}
+  .qtc .ic{width:64px;height:64px;border-radius:10px;border:2px solid;background:radial-gradient(circle at 50% 35%,#1f2a44,#0d1220 70%);position:relative;transition:transform .1s,box-shadow .1s}
+  .qtc:hover .ic{transform:translateY(-2px);box-shadow:0 0 0 2px var(--gold),0 6px 16px #0008}
+  .qtc .ic img{width:100%;height:100%;object-fit:contain;padding:4px}
+  .qtc .ic small{position:absolute;left:3px;right:3px;bottom:2px;font-size:9.5px;font-weight:700;background:#000c;color:#fff;border-radius:5px;line-height:1.4}
   .qtc span{font-size:11px;line-height:1.25;color:#c9cede;max-height:2.5em;overflow:hidden}
+  /* tooltip thong so (giong admin > Gui qua) */
+  #qtTip{position:fixed;z-index:150;pointer-events:none;width:270px;background:#0f1828;border:1px solid #3a4a6e;border-radius:10px;padding:11px 12px;font-size:12.5px;box-shadow:0 10px 30px rgba(0,0,0,.6);display:none}
+  #qtTip b.tn{font-size:14px;display:block;margin-bottom:5px}
+  #qtTip .r{display:flex;justify-content:space-between;color:var(--muted);padding:1px 0} #qtTip .r span:last-child{color:var(--text);font-weight:600}
+  #qtTip .r.cs span:last-child{color:#7dffb0}
+  #qtTip .d{margin-top:6px;color:#9fb1cc;line-height:1.45;border-top:1px solid #24304a;padding-top:6px}
   /* rut xu tu game */
   .steps2{margin:0 0 12px;padding-left:20px;line-height:1.9;font-size:14px;color:#c9cede}
   .steps2 b{color:var(--text)}
@@ -479,6 +485,7 @@
 </div>
 
 <div id="winpop"></div>
+<div id="qtTip"></div>
 <div id="toast"></div>
 <div id="gmodal" class="hidden"><div id="gmBox"><div id="gmMsg"></div><div id="gmActs"><button class="b gray" id="gmCancel">Hủy</button><button class="b blue" id="gmOk">Đồng ý</button></div></div></div>
 
@@ -865,6 +872,26 @@
 
   // ---------- gui qua test ----------
   var QT={slots:[],res:[],seq:0,t:0};
+  var QT_LOAI={1:'Nón',2:'Kính',3:'Tóc',4:'Hiệu ứng mắt',5:'Áo',6:'Mặt',7:'Vũ khí',8:'Vòng tay',9:'Nhẫn',11:'Đạo cụ',13:'Bộ',14:'Dây chuyền',15:'Cánh',16:'Bóng chat',17:'Vũ khí phụ',27:'Vũ khí',31:'Vũ khí phụ',50:'Vũ khí thú',51:'Mũ thú',52:'Áo thú'};
+  var QT_PC=['Thường','Thường','Tốt','Hiếm','Sử thi','Huyền thoại','Thần thoại','Tối thượng'];
+  function qtTipShow(x,e){
+    var cs=x.chiSo||[0,0,0,0], t=$('qtTip');
+    t.innerHTML='<b class="tn" style="color:'+esc(x.mau)+'">'+esc(x.ten)+'</b>'
+      +'<div class="r"><span>ID</span><span>'+x.id+'</span></div>'
+      +'<div class="r"><span>Loại</span><span>'+esc(QT_LOAI[x.cat]||('loại '+x.cat))+'</span></div>'
+      +(x.q!=null?'<div class="r"><span>Phẩm chất</span><span style="color:'+esc(x.mau)+'">'+esc(QT_PC[x.q]||x.q)+'</span></div>':'')
+      +(x.lv?'<div class="r"><span>Cấp yêu cầu</span><span>'+x.lv+'</span></div>':'')
+      +(x.gt===1?'<div class="r"><span>Giới tính</span><span>Nam</span></div>':x.gt===2?'<div class="r"><span>Giới tính</span><span>Nữ</span></div>':'')
+      +(cs[0]?'<div class="r"><span>Tấn công</span><span>'+cs[0]+'</span></div>':'')
+      +(cs[1]?'<div class="r"><span>Phòng thủ</span><span>'+cs[1]+'</span></div>':'')
+      +(cs[2]?'<div class="r"><span>Nhanh nhẹn</span><span>'+cs[2]+'</span></div>':'')
+      +(cs[3]?'<div class="r"><span>May mắn</span><span>'+cs[3]+'</span></div>':'')
+      +(x.cs?'<div class="r cs"><span>Cường hóa</span><span>được (tối đa +12)</span></div>':'')
+      +(x.moTa?'<div class="d">'+esc(x.moTa)+'</div>':'');
+    t.style.display='block'; qtTipMove(e);
+  }
+  function qtTipMove(e){ var t=$('qtTip'), x=e.clientX+16, y=e.clientY+16; if(x+285>window.innerWidth) x=e.clientX-286; if(y+t.offsetHeight>window.innerHeight) y=window.innerHeight-t.offsetHeight-8; t.style.left=x+'px'; t.style.top=y+'px'; }
+  function qtTipHide(){ $('qtTip').style.display='none'; }
   function qtRender(){
     var h=QT.slots.map(function(x,i){ return '<div class="qtrow"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
       +'<div class="nm"><b>'+esc(x.ten)+'</b><span>ID '+x.id+(x.gt===1?' · nam':x.gt===2?' · nữ':'')+'</span></div>'
@@ -875,7 +902,8 @@
     for(var k=QT.slots.length;k<5;k++) h+='<div class="qtempty">Ô '+(k+1)+': bấm vào vật phẩm bên phải để thêm</div>';
     $('qtSlots').innerHTML=h; $('qtBtn').disabled=!QT.slots.length;
     $('qtSlots').querySelectorAll('input[data-k]').forEach(function(inp){ inp.oninput=function(){ QT.slots[+inp.dataset.i][inp.dataset.k]=Math.max(0,parseInt(inp.value,10)||0); }; });
-    $('qtSlots').querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ QT.slots.splice(+b.dataset.del,1); qtRender(); }; });
+    $('qtSlots').querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ QT.slots.splice(+b.dataset.del,1); qtTipHide(); qtRender(); }; });
+    $('qtSlots').querySelectorAll('.qtrow .ic').forEach(function(ic,i){ ic.onmouseenter=function(e){ qtTipShow(QT.slots[i],e); }; ic.onmousemove=qtTipMove; ic.onmouseleave=qtTipHide; });
   }
   function qtSearch(){
     var q=$('qtQ').value.trim(), cat=$('qtCat').value, my=++QT.seq;
@@ -885,10 +913,11 @@
       if(my!==QT.seq) return;
       if(!r||!r.success){ $('qtInfo').textContent=(r&&r.message)||'Lỗi khi tìm.'; return; }
       QT.res=r.data.ds; $('qtInfo').textContent=QT.res.length?('Tìm thấy '+QT.res.length+(QT.res.length>=60?' (hiện 60 đầu)':'')+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
-      $('qtRes').innerHTML=QT.res.map(function(x,i){ return '<div class="qtc" data-i="'+i+'" title="'+esc(x.ten+(x.moTa?'\n'+x.moTa:''))+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="" loading="lazy"><small>'+x.id+'</small></div><span>'+esc(x.ten)+'</span></div>'; }).join('');
+      $('qtRes').innerHTML=QT.res.map(function(x,i){ return '<div class="qtc" data-i="'+i+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="" loading="lazy"><small>'+x.id+'</small></div><span>'+esc(x.ten)+'</span></div>'; }).join('');
       $('qtRes').querySelectorAll('.qtc').forEach(function(el){ el.onclick=function(){
         if(QT.slots.length>=5){ toast('Đã đủ 5 ô, bỏ bớt một món trước.',true); return; }
-        var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,sl:1,cuong:x.cs?12:0,han:0}); qtRender(); }; });
+        var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,cat:x.cat,q:x.q,lv:x.lv,chiSo:x.chiSo,moTa:x.moTa,sl:1,cuong:x.cs?12:0,han:0}); qtTipHide(); qtRender(); };
+        el.onmouseenter=function(e){ qtTipShow(QT.res[+el.dataset.i],e); }; el.onmousemove=qtTipMove; el.onmouseleave=qtTipHide; });
     });
   }
   $('qtQ').addEventListener('input',function(){ clearTimeout(QT.t); QT.t=setTimeout(qtSearch,300); });
