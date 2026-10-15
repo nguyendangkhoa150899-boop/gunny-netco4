@@ -2,7 +2,7 @@
 # Chi sua file text, khong chay gi cua bo Gunny. Chay trong PowerShell: powershell -ExecutionPolicy Bypass -File 1-sua-config.ps1
 # Sua $G cho dung noi ban giai nen bo Gunny tren VPS.
 $G  = "C:\Gunny92"
-$sa = 'Gunny$Sa2026Kx'          # mat khau sa (dat giong luc cai SQL Server)
+$sa = $env:GUNNY_SA_PASSWORD; if (-not $sa) { throw "Dat bien moi truong GUNNY_SA_PASSWORD truoc (gia tri o file mat khau tren Desktop)" }
 
 $files = @(
   "$G\Server\center\Center.Service.exe.config",

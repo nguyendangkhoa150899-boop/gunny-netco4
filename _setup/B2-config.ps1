@@ -2,7 +2,7 @@
 # PowerShell Admin:  powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\B2-config.ps1
 $ErrorActionPreference = 'Continue'
 $G  = 'C:\Gunny92'
-$sa = 'Gunny$Sa2026Kx'
+$sa = $env:GUNNY_SA_PASSWORD; if (-not $sa) { throw "Dat bien moi truong GUNNY_SA_PASSWORD truoc (gia tri o file mat khau tren Desktop)" }
 
 Write-Host "== 1. Sua cac file config ==" -ForegroundColor Cyan
 $files = @(

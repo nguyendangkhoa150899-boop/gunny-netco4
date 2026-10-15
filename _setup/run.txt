@@ -16,7 +16,7 @@ CHUAN BI TRUOC KHI DONG HO CHAY (lam o may nha, chua ton gio VPS):
     + 5 file: tank41.bak, tank.bak, member.bak, admin.bak, gm.bak
 - Up phan do + thu muc _setup nay len Google Drive (de tren VPS tai ve, nhanh hon keo tha RDP).
 
-MAT KHAU sa (dung xuyen suot): Gunny$Sa2026Kx
+MAT KHAU sa (dung xuyen suot): <MAT KHAU SA: xem file mat khau tren Desktop>
 
 ------------------------------------------------------------------------
  THU TU LAM TREN VPS (dang nhap bang Remote Desktop)
@@ -30,11 +30,11 @@ MAT KHAU sa (dung xuyen suot): Gunny$Sa2026Kx
     - Tai "SQL Server 2022 Developer" tu microsoft.com.
     - Cai kieu Basic, hoac Custom chon:
         * Instance: MAC DINH (Default instance = MSSQLSERVER). DUNG chon ten SQLEXPRESS.
-        * Authentication: MIXED MODE. Mat khau sa: Gunny$Sa2026Kx
+        * Authentication: MIXED MODE. Mat khau sa: <MAT KHAU SA: xem file mat khau tren Desktop>
     - Tai them SSMS (SQL Server Management Studio) de thao tac bang giao dien.
 
 [3] KHOI PHUC 5 DATABASE (dung giao dien SSMS cho de)
-    - Mo SSMS, dang nhlocalhost, login sa / Gunny$Sa2026Kx.
+    - Mo SSMS, dang nhlocalhost, login sa / <MAT KHAU SA: xem file mat khau tren Desktop>.
     - Chuot phai muc "Databases" -> Restore Database -> Device -> chon file .bak -> OK.
     - Lam cho ca 5: tank41, tank, member, admin, gm.  (BO tank-gku.bak)
     - SSMS tu dien ten + duong dan, khong can go lenh.

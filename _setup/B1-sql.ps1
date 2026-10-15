@@ -1,7 +1,7 @@
 # B1-sql.ps1 — bat Mixed Mode, dat mat khau sa, khoi phuc 5 database. Chay SAU khi da cai SQL Server (Basic).
 # Chay trong PowerShell Admin:  powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\B1-sql.ps1
 $ErrorActionPreference = 'Stop'
-$sa      = 'Gunny$Sa2026Kx'
+$sa      = $env:GUNNY_SA_PASSWORD; if (-not $sa) { throw "Dat bien moi truong GUNNY_SA_PASSWORD truoc (gia tri o file mat khau tren Desktop)" }
 $bakDir  = 'C:\Gunny92'          # noi chua cac file .bak
 $dataDir = 'C:\SQLDATA'          # noi dat file .mdf/.ldf sau khi restore
 New-Item -ItemType Directory -Force $dataDir | Out-Null
