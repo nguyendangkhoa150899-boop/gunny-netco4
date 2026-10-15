@@ -247,3 +247,8 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 - `MiniGameController::nhanXuNganHang` chạy mỗi lần gọi `/api/vi` (mục Ví tự gọi 10 giây/lần): `DELETE` từng thư (chỉ 1 lần) → `Web_RutXu` → cộng xu web `floor(xu / rut_tile)`. Vượt `rut_tran_ngay` thì thư nằm chờ sang ngày. Thư kèm đồ / thư thu tiền (Type 2) bỏ qua, nằm lại ở NganHang.
 - **Giữ `rut_tile` = `he-so-doi-coin`**, lệch nhau là người chơi quay vòng nạp/rút để in xu.
 - Đã test (thư giả lập đúng như game tạo): 1,5 triệu → 1,5 triệu xu web; 800 nghìn vượt trần → chờ; kèm đồ / thu tiền bỏ qua; gọi lại không cộng trùng; sổ cái khớp.
+
+## 17. Vận hành: khởi động lại VPS (15/10/2026)
+- Đã tạo 2 tác vụ SYSTEM: `GunnyServers` (onstart) và `GunnyWatchdog` (5 phút/lần), cùng chạy `C:\Gunny92\start-servers.ps1` (chờ SQL rồi bật Center → Fighting → Road nếu chưa chạy). Đã test qua 1 lần reboot: game tự lên sau khoảng 3 phút.
+- `sshd` trước đây để Manual nên reboot xong mất SSH. Đã đặt `Automatic`. Nếu mất SSH: vào bảng điều khiển VPS trên web nhà cung cấp (QEMU console), PowerShell Run as administrator: `Start-Service sshd; Set-Service sshd -StartupType Automatic`.
+- Windows Update tự cài bản vá SQL Server, làm SQL tắt khoảng 3 phút (15:27 đến 15:30 ngày 15/10), rồi chờ reboot. Gặp thì kiểm tra `Get-Service MSSQLSERVER` và khóa `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired`; reboot lúc vắng người (game tự lên nhờ GunnyServers).
