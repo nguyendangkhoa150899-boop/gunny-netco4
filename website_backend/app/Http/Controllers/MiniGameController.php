@@ -592,30 +592,50 @@ class MiniGameController extends \App\Http\BaseController
         }, $rows)]);
     }
 
-    /** rut toi da 5 mon vao hop thu game (1 thu). Xoa khoi ruong truoc, gui thu loi thi hoan lai (rollback). */
+    const RUT_TOI_DA = 50;   // so o toi da moi lan bam Rut
+    const MON_MOI_THU = 5;   // SendMailAndItem: toi da 5 dinh kem moi thu
+
+    /**
+     * Rut nhieu o vao hop thu game, TU CHIA THU 5 mon/thu (11 mon -> 5 + 5 + 1 = 3 thu).
+     * Moi thu 1 transaction rieng: xoa o khoi ruong -> gui thu -> loi thi rollback rieng thu do va dung lai.
+     * => thu da gui thi do da ra khoi ruong, thu loi thi do van con nguyen trong ruong (khong mat, khong nhan doi).
+     */
     public function ruongRut(Request $r)
     {
-        $ids = array_slice(array_values(array_unique(array_filter(array_map('intval', (array)$r->input('ids', []))))), 0, 5);
-        if (!$ids) return $this->error('Chọn món cần rút (tối đa 5 món mỗi lần).');
+        $ids = array_slice(array_values(array_unique(array_filter(array_map('intval', (array)$r->input('ids', []))))), 0, self::RUT_TOI_DA);
+        if (!$ids) return $this->error('Chọn món cần rút.');
         $nv = $this->nhanVat();
         if (!$nv) return $this->error('Tài khoản chưa có nhân vật để nhận đồ.');
         $mid = $this->mid();
-        $out = null;
-        try {
-            $this->mem()->transaction(function () use ($mid, $ids, $nv, &$out) {
-                $rows = $this->mem()->select("SELECT * FROM Web_Ruong WITH (UPDLOCK,ROWLOCK) WHERE MemberID=? AND ID IN (" . implode(',', $ids) . ")", [$mid]);
-                if (!$rows) { $out = 'khong'; return; }
-                $this->mem()->delete("DELETE FROM Web_Ruong WHERE MemberID=? AND ID IN (" . implode(',', array_map(function ($x) { return (int)$x->ID; }, $rows)) . ")", [$mid]);
-                $items = array_map(function ($x) { return [(int)$x->TemplateID, (int)$x->Count, (int)$x->ValidDate, (int)$x->StrengthenLevel, (bool)$x->IsBind]; }, $rows);
-                $kq = GameMail::send((int)$nv->UserID, 'Đồ rút từ rương web', $items);
-                if ($kq !== '1') throw new \RuntimeException('mail ' . $kq);
-                $out = count($rows);
-            });
-        } catch (\Throwable $e) {
-            return $this->error('Máy chủ game đang bận, chưa gửi được. Đồ vẫn còn trong rương, thử lại sau.');
+        // chi lay o that su cua minh, giu thu tu chon
+        $co = array_map(function ($x) { return (int)$x->ID; }, $this->mem()->select("SELECT ID FROM Web_Ruong WHERE MemberID=? AND ID IN (" . implode(',', $ids) . ")", [$mid]));
+        $ids = array_values(array_filter($ids, function ($i) use ($co) { return in_array($i, $co, true); }));
+        if (!$ids) return $this->error('Không thấy món đã chọn trong rương.');
+        $nhom = array_chunk($ids, self::MON_MOI_THU);
+        $tong = count($nhom);
+        $guiThu = 0; $guiMon = 0; $loi = false;
+        foreach ($nhom as $k => $nIds) {
+            try {
+                $this->mem()->transaction(function () use ($mid, $nIds, $nv, $k, $tong, &$guiMon) {
+                    $rows = $this->mem()->select("SELECT * FROM Web_Ruong WITH (UPDLOCK,ROWLOCK) WHERE MemberID=? AND ID IN (" . implode(',', $nIds) . ")", [$mid]);
+                    if (!$rows) return;
+                    $this->mem()->delete("DELETE FROM Web_Ruong WHERE MemberID=? AND ID IN (" . implode(',', array_map(function ($x) { return (int)$x->ID; }, $rows)) . ")", [$mid]);
+                    $items = array_map(function ($x) { return [(int)$x->TemplateID, (int)$x->Count, (int)$x->ValidDate, (int)$x->StrengthenLevel, (bool)$x->IsBind]; }, $rows);
+                    $title = 'Đồ rút từ rương web' . ($tong > 1 ? ' (' . ($k + 1) . '/' . $tong . ')' : '');
+                    $kq = GameMail::send((int)$nv->UserID, $title, $items);
+                    if ($kq !== '1') throw new \RuntimeException('mail ' . $kq);
+                    $guiMon += count($rows);
+                });
+                $guiThu++;
+            } catch (\Throwable $e) {
+                $loi = true;
+                break;
+            }
         }
-        if ($out === 'khong') return $this->error('Không thấy món đã chọn trong rương.');
-        return $this->success('Đã gửi ' . $out . ' món vào hộp thư trong game.');
+        if (!$guiThu) return $this->error('Máy chủ game đang bận, chưa gửi được. Đồ vẫn còn trong rương, thử lại sau.');
+        $msg = 'Đã gửi ' . $guiMon . ' món thành ' . $guiThu . ' thư vào hộp thư trong game.';
+        if ($loi) $msg .= ' Thư thứ ' . ($guiThu + 1) . ' bị lỗi, các món còn lại vẫn ở trong rương, bấm rút lại sau.';
+        return $this->success($msg, ['thu' => $guiThu, 'mon' => $guiMon, 'loi' => $loi]);
     }
 
     /* ======================= GUI QUA TEST ======================= */

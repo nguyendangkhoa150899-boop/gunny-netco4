@@ -462,9 +462,9 @@
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
         <h2 style="margin:0">Rương web</h2>
-        <button class="b blue" id="rgBtn" disabled>Rút vào game (0/5)</button>
+        <div style="display:flex;gap:8px"><button class="b gray" id="rgAll" type="button">Chọn tất cả</button><button class="b blue" id="rgBtn" disabled>Rút vào game</button></div>
       </div>
-      <div class="muted" style="margin-bottom:12px">Chọn tối đa <b>5 món</b> mỗi lần, đồ gửi vào <b>hộp thư trong game</b> (đang online cũng nhận).</div>
+      <div class="muted" style="margin-bottom:12px">Chọn bao nhiêu món cũng được (tối đa 50 ô mỗi lần), web <b>tự chia thư 5 món/thư</b> vào <b>hộp thư trong game</b> (đang online cũng nhận). Ví dụ 11 món thành 3 thư: 5 + 5 + 1.</div>
       <div class="rgrid" id="rgGrid"></div>
     </div>
   </section>
@@ -989,15 +989,20 @@
           +'<div><div class="tn">'+esc(x.ten)+(x.cuong?' +'+x.cuong:'')+'</div><div class="sn">'+(x.han?x.han+' ngày':'Vĩnh viễn')+(x.khoa?' · khóa':'')+'</div><div class="sn">'+esc(x.nguon||'')+'</div></div><span class="ck"></span></div>'; }).join('')
         :'<div class="empty" style="grid-column:1/-1"><b>Rương trống</b>Lật thẻ sau phó bản để nhận đồ vào đây.</div>';
       $('rgGrid').querySelectorAll('.ri').forEach(function(el){ el.onclick=function(){ var id=+el.dataset.id, i=RG.sel.indexOf(id);
-        if(i>=0) RG.sel.splice(i,1); else { if(RG.sel.length>=5){ toast('Tối đa 5 món mỗi lần rút.',true); return; } RG.sel.push(id); }
+        if(i>=0) RG.sel.splice(i,1); else { if(RG.sel.length>=50){ toast('Tối đa 50 ô mỗi lần rút.',true); return; } RG.sel.push(id); }
         el.classList.toggle('on',RG.sel.indexOf(id)>=0); rgBtn(); }; });
       rgBtn();
     });
   }
-  function rgBtn(){ $('rgBtn').disabled=!RG.sel.length; $('rgBtn').textContent='Rút vào game ('+RG.sel.length+'/5)'; }
+  function rgBtn(){ var n=RG.sel.length, t=Math.ceil(n/5); $('rgBtn').disabled=!n; $('rgBtn').textContent=n?('Rút '+n+' món ('+t+' thư)'):'Rút vào game';
+    $('rgAll').textContent=(RG.ds.length&&n>=Math.min(50,RG.ds.length))?'Bỏ chọn':'Chọn tất cả'; }
+  $('rgAll').addEventListener('click',function(){
+    if(RG.ds.length&&RG.sel.length>=Math.min(50,RG.ds.length)) RG.sel=[]; else RG.sel=RG.ds.slice(0,50).map(function(x){ return x.id; });
+    document.querySelectorAll('#rgGrid .ri').forEach(function(el){ el.classList.toggle('on',RG.sel.indexOf(+el.dataset.id)>=0); }); rgBtn();
+  });
   $('rgBtn').addEventListener('click',function(){
     if(!RG.sel.length) return;
-    gConfirm('Gửi <b>'+RG.sel.length+' món</b> vào hộp thư trong game?').then(function(ok){
+    gConfirm('Gửi <b>'+RG.sel.length+' món</b> vào hộp thư trong game, chia thành <b>'+Math.ceil(RG.sel.length/5)+' thư</b> (5 món/thư)?').then(function(ok){
       if(!ok) return; $('rgBtn').disabled=true;
       api('/api/ruong/rut',{ids:RG.sel}).then(function(r){ toast((r&&r.message)||'Có lỗi xảy ra.',!(r&&r.success)); if(r&&r.success) RG.sel=[]; rgLoad(); });
     });
