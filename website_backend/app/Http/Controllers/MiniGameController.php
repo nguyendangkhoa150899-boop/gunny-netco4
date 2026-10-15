@@ -436,8 +436,9 @@ class MiniGameController extends \App\Http\BaseController
             $a = (int)$x->BeginData; $b = (int)$x->EndData;
             $sl = max(1, $b > $a ? random_int($a, $b - 1) : $a);
             $id = (int)$x->ItemId;
-            if ($id === -100) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => 0, 'g' => $sl, 'm' => 0, 'tip' => (int)$x->IsTips];
-            if ($id === -200) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => 0, 'g' => 0, 'm' => $sl, 'tip' => (int)$x->IsTips];
+            // vang (-100) / xu game (-200) trong bang game: quy thanh XU WEB cong vao vi (tien cua shop web), ty le lt_vang_xuweb / 1:1
+            if ($id === -100) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => (int)round($sl * CauHinh::float('lt_vang_xuweb', 1)), 'g' => 0, 'm' => 0, 'tip' => (int)$x->IsTips];
+            if ($id === -200) return ['t' => 0, 'c' => 1, 'v' => 0, 's' => 0, 'b' => 1, 'x' => $sl, 'g' => 0, 'm' => 0, 'tip' => (int)$x->IsTips];
             if ($id <= 0) continue;
             $i = VatPham::thongTin([$id])[$id] ?? null;
             if (!$i || !VatPham::file($i->CategoryID, $i->Pic, $i->NeedSex)) continue;   // client khong co anh -> vao game vo hinh, quay lai
