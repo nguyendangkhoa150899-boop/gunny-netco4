@@ -66,7 +66,9 @@ if ($authed && isset($_POST['act'])) {
         else {
           $cid = 'adm'.date('YmdHis').mt_rand(100,999);
           $sig = md5($cid.$user.$amt.'admin'.'0'.$CHARGE_KEY);
-          $res = trim((string)@file_get_contents('http://127.0.0.1/ChargeMoney.aspx?content='.rawurlencode("$cid|$user|$amt|admin|0|$sig")));
+          // Ban that (gameSrc/Tank.Request/ChargeMoney.cs) doc tham so "nickname" la UserID (so) cua nhan vat.
+          $uid = (int)scalar($conn,"SELECT UserID FROM Db_Tank41.dbo.Sys_Users_Detail WHERE UserName=?",[$user]);
+          $res = trim((string)@file_get_contents('http://127.0.0.1/ChargeMoney.aspx?content='.rawurlencode("$cid|$user|$amt|admin|0|$sig").'&nickname='.$uid));
           $flash = $res==='0' ? 'Đã cộng '.number_format($amt).' xu cho '.h($user).'.' : 'Cộng xu lỗi (mã '.h($res).').';
         }
       }
