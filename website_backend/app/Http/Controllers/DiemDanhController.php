@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Support\XuWeb;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -27,7 +28,7 @@ class DiemDanhController extends \App\Http\BaseController
 
     private function rewards()
     {
-        return $this->db()->select("SELECT q.Moc,q.TemplateID,q.[Count] Cnt,q.ValidDate,q.StrengthenLevel,q.IsBind,q.Gold,q.[Money] Money,
+        return $this->db()->select("SELECT q.Moc,q.TemplateID,q.[Count] Cnt,q.ValidDate,q.StrengthenLevel,q.IsBind,q.Gold,q.[Money] Money,q.XuWeb,
             ISNULL(g.Name,'') Name FROM Web_DiemDanh_Qua q LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=q.TemplateID ORDER BY q.Moc,q.ID");
     }
 
@@ -40,6 +41,7 @@ class DiemDanhController extends \App\Http\BaseController
         }
         if ($r->Gold) $parts[] = number_format($r->Gold, 0, ',', '.') . ' vàng';
         if ($r->Money) $parts[] = number_format($r->Money, 0, ',', '.') . ' xu';
+        if (!empty($r->XuWeb)) $parts[] = number_format($r->XuWeb, 0, ',', '.') . ' xu web';
         return implode(', ', $parts);
     }
 
@@ -99,6 +101,7 @@ class DiemDanhController extends \App\Http\BaseController
         $items = [];
         $gold = 0;
         $money = 0;
+        $xuWeb = 0;
         $got = [];
         foreach ($this->rewards() as $r) {
             if ((int)$r->Moc !== 0 && (int)$r->Moc !== $count) continue;
@@ -108,6 +111,7 @@ class DiemDanhController extends \App\Http\BaseController
             }
             $gold += (int)$r->Gold;
             $money += (int)$r->Money;
+            $xuWeb += (int)$r->XuWeb;
             $got[] = self::label($r);
         }
         // SendMailAndItem nhan toi da 5 mon moi thu
@@ -123,7 +127,9 @@ class DiemDanhController extends \App\Http\BaseController
             $db->delete("DELETE FROM Web_DiemDanh WHERE UserID=? AND Ngay=CAST(GETDATE() AS date)", [$p->UserID]);
             return $this->error('Máy chủ game đang bận, chưa gửi được quà. Thử lại sau ít phút.');
         }
-        return $this->success('Điểm danh thành công! Quà đã gửi vào hộp thư trong game.', ['songay' => $count, 'qua' => $got]);
+        // xu web cong thang vao vi (khong qua thu)
+        if ($xuWeb > 0) XuWeb::doi((int)auth()->user()->UserID, $xuWeb, 'diemdanh', 'Điểm danh ngày ' . $now->d . '/' . $now->m);
+        return $this->success('Điểm danh thành công! Quà đã gửi vào hộp thư trong game' . ($xuWeb ? ', xu web đã cộng vào ví' : '') . '.', ['songay' => $count, 'qua' => $got]);
     }
 
     private function sendMail($uid, $title, $items, $gold, $money)

@@ -120,6 +120,47 @@ function run_action($conn,$act,$P){
     exec_sql($conn,"DELETE FROM Db_Tank41.dbo.Web_DiemDanh_Qua WHERE ID=?",[(int)($P['id']??0)]);
     return 'Đã xóa quà.';
 
+  /* ---------- mini game web (Db_Member, xem pages/minigame.php) ---------- */
+  case 'mg_xu':
+    $em=strtolower(trim($P['user']??'')); $xu=(int)($P['xu']??0);
+    if($em===''||!$xu) return 'Cần tài khoản và số xu khác 0.';
+    $mid=(int)scalar($conn,"SELECT UserID FROM Db_Member.dbo.Mem_Account WHERE Email=?",[$em]);
+    if(!$mid) return 'Không có tài khoản '.h($em).'.';
+    $note=trim($P['note']??'') ?: 'Admin '.($xu>0?'tặng':'trừ');
+    $st=sqlsrv_query($conn,"SET NOCOUNT ON; UPDATE Db_Member.dbo.Mem_Account SET Money=Money+? OUTPUT inserted.Money WHERE UserID=? AND Money+?>=0",[$xu,$mid,$xu]);
+    $row=$st?sqlsrv_fetch_array($st,SQLSRV_FETCH_NUMERIC):null;
+    if(!$row) return 'Không đủ xu web để trừ.';
+    exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_SoXu(MemberID,Delta,SoDu,Loai,GhiChu) VALUES(?,?,?,'admin',?)",[$mid,$xu,(int)$row[0],mb_substr($note,0,200)]);
+    return 'Đã '.($xu>0?'cộng ':'trừ ').n(abs($xu)).' xu web cho '.h($em).'. Số dư: '.n($row[0]).'.';
+
+  case 'mg_cfg':
+    foreach((array)($P['cfg']??[]) as $kk=>$v) exec_sql($conn,"UPDATE Db_Member.dbo.Web_CauHinh SET GiaTri=? WHERE Khoa=?",[trim((string)$v),(string)$kk]);
+    return 'Đã lưu cấu hình mini game.';
+
+  case 'mg_qua_add':
+    $pb=(string)($P['pb']??''); $tid=max(0,(int)($P['tid']??0)); $xu=max(0,(int)($P['xu']??0)); $ts=max(1,(int)($P['ts']??10));
+    if(!$tid && !$xu) return 'Cần ID vật phẩm hoặc xu web.';
+    if($tid && !scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    $r=exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_The_Qua(Khoa,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,XuWeb,TrongSo) VALUES(?,?,?,?,?,?,?,?)",
+      [$pb===''?null:$pb,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),!empty($P['bind'])?1:0,$xu,$ts]);
+    $_SESSION['mg_pb']=$pb;
+    return $r===true?'Đã thêm quà lật thẻ.':'Lỗi: '.h($r);
+
+  case 'mg_qua_ts':
+    exec_sql($conn,"UPDATE Db_Member.dbo.Web_The_Qua SET TrongSo=? WHERE ID=?",[max(0,(int)($P['ts']??0)),(int)($P['id']??0)]);
+    $_SESSION['mg_pb']=(string)($P['pb']??'');
+    return 'Đã lưu trọng số.';
+
+  case 'mg_qua_del':
+    exec_sql($conn,"DELETE FROM Db_Member.dbo.Web_The_Qua WHERE ID=?",[(int)($P['id']??0)]);
+    $_SESSION['mg_pb']=(string)($P['pb']??'');
+    return 'Đã xóa quà.';
+
+  case 'mg_pb':
+    $sl=trim((string)($P['solan']??''));
+    exec_sql($conn,"UPDATE Db_Member.dbo.Web_The_PhoBan SET SoLanNgay=?,BatTat=? WHERE Khoa=?",[$sl===''?null:max(0,(int)$sl),!empty($P['bat'])?1:0,(string)($P['khoa']??'')]);
+    return 'Đã lưu phó bản '.h($P['khoa']??'').'.';
+
   /* ---------- he thong ---------- */
   case 'rate_add':
     $t=(int)($P['type']??0); $rate=(float)($P['rate']??1);

@@ -20,7 +20,7 @@ if (isset($_POST['login_user'])) {
 }
 $authed = !empty($_SESSION['admin']);
 
-$PAGES = ['dash'=>'Dashboard','accounts'=>'Tài khoản','chars'=>'Nhân vật','mail'=>'Gửi quà','giftcode'=>'Giftcode','diemdanh'=>'Điểm danh','system'=>'Hệ thống'];
+$PAGES = ['dash'=>'Dashboard','accounts'=>'Tài khoản','chars'=>'Nhân vật','mail'=>'Gửi quà','giftcode'=>'Giftcode','diemdanh'=>'Điểm danh','minigame'=>'Mini game','system'=>'Hệ thống'];
 $page = $_GET['page'] ?? 'dash';
 if (!isset($PAGES[$page])) $page = 'dash';
 

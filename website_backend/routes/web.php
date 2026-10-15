@@ -23,3 +23,5 @@ Route::get('/getTopList', "App\Http\Controllers\TopListController@index");
 Route::get('/dashboard', function () {
     return view('dashboard');
 });
+// anh vat pham cong khai cho portal (doc tu Resource.Server; res.netco4.click khong co HTTPS)
+Route::get('/hinh/{tid}', "App\Http\Controllers\MiniGameController@hinh")->where('tid', '[0-9]+');

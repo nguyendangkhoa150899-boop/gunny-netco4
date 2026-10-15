@@ -50,6 +50,7 @@ class HoSoController extends \App\Http\BaseController
         }
         return $this->success('ok', [
             'taiKhoan' => $member->Email,
+            'xuWeb' => \App\Support\XuWeb::soDu((int)$member->UserID),
             'nhanVat' => $char,
         ]);
     }

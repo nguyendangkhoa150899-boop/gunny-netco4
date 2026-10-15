@@ -56,3 +56,16 @@ Route::post('/process', "App\Http\Controllers\ProcessController@index");
 Route::post('/diemdanh/info', "App\Http\Controllers\DiemDanhController@info")->middleware('auth.bearer');
 Route::post('/diemdanh', "App\Http\Controllers\DiemDanhController@checkin")->middleware('auth.bearer');
 Route::post('/hoso', "App\Http\Controllers\HoSoController@index")->middleware('auth.bearer');
+
+// mini game web (MiniGameController, xu web = Mem_Account.Money, bang _setup/sql/minigame-web.sql)
+Route::post('/vi', "App\Http\Controllers\MiniGameController@vi")->middleware('auth.bearer');
+Route::post('/taixiu', "App\Http\Controllers\MiniGameController@taiXiu")->middleware('auth.bearer');
+Route::post('/taixiu/lichsu', "App\Http\Controllers\MiniGameController@taiXiuLichSu")->middleware('auth.bearer');
+Route::post('/domin', "App\Http\Controllers\MiniGameController@doMin")->middleware('auth.bearer');
+Route::post('/domin/batdau', "App\Http\Controllers\MiniGameController@doMinBatDau")->middleware('auth.bearer');
+Route::post('/domin/mo', "App\Http\Controllers\MiniGameController@doMinMo")->middleware('auth.bearer');
+Route::post('/domin/rut', "App\Http\Controllers\MiniGameController@doMinRut")->middleware('auth.bearer');
+Route::post('/latthe', "App\Http\Controllers\MiniGameController@latThe")->middleware('auth.bearer');
+Route::post('/latthe/lat', "App\Http\Controllers\MiniGameController@latTheLat")->middleware('auth.bearer');
+Route::post('/ruong', "App\Http\Controllers\MiniGameController@ruong")->middleware('auth.bearer');
+Route::post('/ruong/rut', "App\Http\Controllers\MiniGameController@ruongRut")->middleware('auth.bearer');
