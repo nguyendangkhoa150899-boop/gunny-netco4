@@ -27,7 +27,7 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
   .res{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:12px 8px;margin-top:12px;max-height:560px;overflow:auto;padding:4px}
   .ri{display:flex;flex-direction:column;align-items:center;gap:4px}
   .ri .nm{font-size:11px;color:var(--text);text-align:center;line-height:14px;height:28px;overflow:hidden;width:84px}
-  .tip{position:fixed;z-index:50;pointer-events:none;width:250px;background:#0f1828;border:1px solid #3a4a6e;border-radius:10px;padding:11px 12px;font-size:12px;color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.6);display:none}
+  .tip{position:fixed;z-index:50;pointer-events:none;width:300px;background:#0f1828;border:1px solid #3a4a6e;border-radius:10px;padding:11px 12px;font-size:12px;color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.6);display:none}
   .tip b{font-size:14px;display:block;margin-bottom:4px}
   .tip .r{display:flex;justify-content:space-between;color:var(--muted)} .tip .r span:last-child{color:var(--text)}
   .tip .d{margin-top:6px;color:#9fb1cc;line-height:1.45}
@@ -115,10 +115,14 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       +(it.def?'<div class="r"><span>Phòng thủ</span><span>'+it.def+'</span></div>':'')
       +(it.agi?'<div class="r"><span>Nhanh nhẹn</span><span>'+it.agi+'</span></div>':'')
       +(it.luck?'<div class="r"><span>May mắn</span><span>'+it.luck+'</span></div>':'')
-      +(it.desc?'<div class="d">'+esc(it.desc)+'</div>':'');
+      +(it.desc?'<div class="d">'+esc(it.desc)+'</div>':'')
+      +(it.gold?'<div class="d" style="color:#ffd76a">Vũ khí này dát vàng được: cường hóa +12 rồi dùng Châu báu chúc phúc công kích (11560)</div>':'')
+      +(it.box?'<div class="d" style="color:var(--text)"><b style="font-size:12px;margin:2px 0">Mở ra nhận</b>'+it.box.map(function(b){
+          return '<div class="r"><span>'+esc(b.name||('ID '+b.id))+(b.cnt>1?' x'+b.cnt:'')+(b.str?' +'+b.str:'')+(b.days?' ('+b.days+' ngày)':'')+' <span style="color:#6f86a8">#'+b.id+'</span></span><span>'+(b.rate>=100?'chắc chắn':b.rate+'%')+'</span></div>';
+        }).join('')+(it.box.length&&it.box[it.box.length-1].more?'<div class="r"><span>... còn nữa</span></div>':'')+'</div>':'');
     tip.innerHTML=s; tip.style.display='block'; moveTip(e);
   }
-  function moveTip(e){ var x=e.clientX+16, y=e.clientY+16; if(x+260>window.innerWidth) x=e.clientX-266; if(y+tip.offsetHeight>window.innerHeight) y=window.innerHeight-tip.offsetHeight-8; tip.style.left=x+'px'; tip.style.top=y+'px'; }
+  function moveTip(e){ var x=e.clientX+16, y=e.clientY+16; if(x+310>window.innerWidth) x=e.clientX-316; if(y+tip.offsetHeight>window.innerHeight) y=window.innerHeight-tip.offsetHeight-8; tip.style.left=x+'px'; tip.style.top=y+'px'; }
   res.addEventListener('mouseover',function(e){ var c=e.target.closest('.cell'); if(c&&res._items) showTip(res._items[+c.dataset.k],e); });
   res.addEventListener('mousemove',function(e){ if(tip.style.display==='block') moveTip(e); });
   res.addEventListener('mouseout',function(e){ if(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest('.cell')) tip.style.display='none'; });
