@@ -52,7 +52,8 @@ $flash = $_SESSION['flash'] ?? ''; unset($_SESSION['flash']);
   .login .sub{color:var(--muted);font-size:13px;margin-bottom:18px}
   input,select,textarea{width:100%;padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:#0d1626;color:var(--text);font-size:14px;outline:none;font-family:inherit}
   input:focus,select:focus,textarea:focus{border-color:var(--accent)}
-  input[type=checkbox]{width:auto}
+  input[type=checkbox],input[type=radio]{width:auto;margin:0 6px 0 0;vertical-align:middle}
+  label{cursor:pointer}
   .btn{display:inline-block;cursor:pointer;border:0;color:#1a1200;font-weight:800;font-size:14px;padding:10px 16px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
   .btn.sm{padding:6px 11px;font-size:12px}
   .btn.blue{background:var(--blue);color:#fff}
