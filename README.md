@@ -270,3 +270,9 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 | Tuần 6 đến 8 | Dát vàng LEGEND bậc 2 (kỳ vọng ~20 viên đá 11560 × 30 điểm, 5 viên/ngày) + LEGEND-Thiên Sứ Ban Phúc 1.200 điểm cho người cày nhiều | Kệ điểm + lật thẻ |
 
 Chỉnh giá/giới hạn ở admin, không cần sửa code. Mở thật nên **bỏ 10 triệu xu tặng sẵn** và **tắt code NETCO4VIP** (code test cho thẳng Thánh Kiếm vàng vĩnh viễn).
+
+## 19. Gửi quà test (người chơi tự gửi đồ vào thư game của mình)
+- Mục **📮 Gửi quà test** trên `/dashboard`: tìm vật phẩm theo ID/tên/loại (chỉ món client có ảnh), tối đa 5 món/lần (số lượng ≤ `quatest_sl_max`, cường hóa ≤ MaxStrengthLevel, hạn ngày), gửi bằng `SendMailAndItem.aspx` vào **hộp thư của nhân vật thuộc tài khoản đang đăng nhập** (không chọn người nhận khác được).
+- Code: `MiniGameController::quaTestTim / quaTestGui`, bảng `_setup/sql/qua-test-web.sql` (`Web_QuaTest` nhật ký, cấu hình `quatest_mo`, `quatest_luot_ngay` = 50, `quatest_sl_max` = 999). Admin > Mini game có bảng nhật ký 15 lần gần nhất.
+- **Mở server thật: đặt `quatest_mo` = 0** (admin > Mini game > Cấu hình). Menu tự ẩn, API trả "đang tắt".
+- Test PowerShell lưu ý: PS 5.1 làm mất dấu `"` khi truyền JSON cho `curl.exe`. Gửi JSON bằng file (`--data-urlencode ds@file.json`).

@@ -50,7 +50,15 @@ $soLan = (int)scalar($conn,"SELECT GiaTri FROM Db_Member.dbo.Web_CauHinh WHERE K
   </div>
 </div>
 
-<h2>Quà lật thẻ: <?= $selPb==='' ? 'bộ chung (phó bản chưa có bộ riêng)' : h($selPb) ?></h2>
+<?php $qt = (int)scalar($conn,"SELECT CASE WHEN OBJECT_ID('Db_Member.dbo.Web_QuaTest') IS NULL THEN 0 ELSE 1 END")
+  ? q($conn,"SELECT TOP 15 t.ThoiGian, a.Email, t.VatPham FROM Db_Member.dbo.Web_QuaTest t LEFT JOIN Db_Member.dbo.Mem_Account a ON a.UserID=t.MemberID ORDER BY t.ID DESC") : []; ?>
+<h2>Gửi quà test (người chơi tự gửi đồ vào thư game)</h2>
+<div class="note">Bật/tắt bằng cấu hình <code>quatest_mo</code> ở khung Cấu hình phía trên (1 bật, 0 tắt). <b>Mở server thật thì đặt 0</b>: mục "Gửi quà test" tự ẩn khỏi trang người chơi và API từ chối.</div>
+<table><tr><th>Thời gian</th><th>Tài khoản</th><th>Đã gửi cho mình</th></tr>
+<?php foreach($qt as $t): ?><tr><td><?= h(substr((string)$t['ThoiGian'],0,16)) ?></td><td><?= h($t['Email']) ?></td><td><?= h($t['VatPham']) ?></td></tr><?php endforeach; if(!$qt) echo '<tr><td colspan="3" class="muted">Chưa ai gửi.</td></tr>'; ?>
+</table>
+
+<h2>Quà lật thẻ:<?= $selPb==='' ? 'bộ chung (phó bản chưa có bộ riêng)' : h($selPb) ?></h2>
 <div class="note">Mỗi lần lật, server quay 1 món theo <b>trọng số</b>: tỉ lệ = trọng số / tổng trọng số. Món hiếm thì để trọng số nhỏ (vd 1 trên tổng 100 = 1%). Phó bản có bộ quà riêng thì dùng bộ riêng, không thì dùng bộ chung. Món phẩm chất tím trở lên hoặc từ 10.000 xu web hiện mặt bài VIP vàng.</div>
 <form method="get" class="row" style="max-width:640px"><input type="hidden" name="page" value="minigame">
   <select name="pb" onchange="this.form.submit()"><option value="">Bộ chung</option>
