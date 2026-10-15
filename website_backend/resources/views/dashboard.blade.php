@@ -278,7 +278,8 @@
   .ri.on{border-color:var(--gold);box-shadow:0 0 0 1px #ffcf5c66}
   .ri .ic{width:48px;height:48px;border-radius:9px;border:2px solid;background:#0d1220;flex:none;position:relative}
   .ri .ic img{width:100%;height:100%;object-fit:contain}
-  .ri .ic b{position:absolute;right:-2px;bottom:-2px;background:#000c;color:#fff;font-size:11px;border-radius:5px;padding:0 4px}
+  .ri .ic b{position:absolute;right:-5px;bottom:-5px;background:linear-gradient(180deg,#ffe08a,#f2c14e);color:#2a1c00;font-size:11px;font-weight:900;border-radius:6px;padding:0 5px;border:1px solid #a8842f;line-height:1.5}
+  .ri > div:nth-child(2){min-width:0;padding-right:18px}   /* chua cho o tick goc phai, khong de len ten */
   .ri .tn{font-size:13px;font-weight:700;line-height:1.25}
   .ri .sn{font-size:11.5px;color:var(--muted)}
   .ri .ck{position:absolute;top:6px;right:8px;width:16px;height:16px;border-radius:4px;border:1px solid var(--line)}
@@ -984,7 +985,7 @@
       RG.ds=r.data.ds; RG.sel=RG.sel.filter(function(id){ return RG.ds.some(function(x){ return x.id===id; }); });
       var n=RG.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n; $('tRg').textContent=n?(n+' món chờ rút vào game'):'Rương trống'; hot('qRg',n);
       $('rgGrid').innerHTML=n?RG.ds.map(function(x){
-        return '<div class="ri'+(RG.sel.indexOf(x.id)>=0?' on':'')+'" data-id="'+x.id+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="">'+(x.sl>1?'<b>'+x.sl+'</b>':'')+'</div>'
+        return '<div class="ri'+(RG.sel.indexOf(x.id)>=0?' on':'')+'" data-id="'+x.id+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="">'+(x.sl>1?'<b>x'+fmt(x.sl)+'</b>':'')+'</div>'
           +'<div><div class="tn">'+esc(x.ten)+(x.cuong?' +'+x.cuong:'')+'</div><div class="sn">'+(x.han?x.han+' ngày':'Vĩnh viễn')+(x.khoa?' · khóa':'')+'</div><div class="sn">'+esc(x.nguon||'')+'</div></div><span class="ck"></span></div>'; }).join('')
         :'<div class="empty" style="grid-column:1/-1"><b>Rương trống</b>Lật thẻ sau phó bản để nhận đồ vào đây.</div>';
       $('rgGrid').querySelectorAll('.ri').forEach(function(el){ el.onclick=function(){ var id=+el.dataset.id, i=RG.sel.indexOf(id);

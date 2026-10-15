@@ -172,10 +172,7 @@ class MiniGameController extends \App\Http\BaseController
                 if ($con2 === null) { $out = $h->Tien === 'diem' ? 'Không đủ điểm hoạt động.' : 'Không đủ xu web.'; return; }
                 if ($h->Kho !== null) $this->mem()->update("UPDATE Web_Shop SET Kho=Kho-? WHERE ID=?", [$sl, $sid]);
                 $this->mem()->insert("INSERT INTO Web_ShopMua(MemberID,ShopID,SoLuong,Tien,Gia) VALUES(?,?,?,?,?)", [$mid, $sid, $sl, $h->Tien, (int)$h->Gia]);
-                for ($i = 0; $i < $sl; $i++) {
-                    $this->mem()->insert("INSERT INTO Web_Ruong(MemberID,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Nguon) VALUES(?,?,?,?,?,?,?)",
-                        [$mid, (int)$h->TemplateID, max(1, (int)$h->Count), (int)$h->ValidDate, (int)$h->StrengthenLevel, $h->IsBind ? 1 : 0, 'Shop web']);
-                }
+                $this->vaoRuong($mid, (int)$h->TemplateID, max(1, (int)$h->Count) * $sl, (int)$h->ValidDate, (int)$h->StrengthenLevel, (bool)$h->IsBind, 'Shop web');
                 $out = ['ten' => $ten, 'sl' => $sl, 'tong' => $tong, 'tien' => $h->Tien];
             });
         } catch (\Throwable $e) {
@@ -537,10 +534,7 @@ class MiniGameController extends \App\Http\BaseController
                 $kq = GameMail::send((int)$nv->UserID, 'Quà lật thẻ ' . $v->Khoa, [], (int)($b['g'] ?? 0), (int)($b['m'] ?? 0));
                 if ($kq !== '1') throw new \RuntimeException('mail ' . $kq);
             }
-            if ($b['t'] > 0) {
-                $this->mem()->insert("INSERT INTO Web_Ruong(MemberID,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Nguon) VALUES(?,?,?,?,?,?,?)",
-                    [$mid, $b['t'], max(1, $b['c']), $b['v'], $b['s'], $b['b'] ? 1 : 0, mb_substr($nguon, 0, 100)]);
-            }
+            if ($b['t'] > 0) $this->vaoRuong($mid, $b['t'], max(1, $b['c']), $b['v'], $b['s'], (bool)$b['b'], $nguon);
             $lat[] = $o;
             $xong = count($lat) >= $this->soLat();
             // lat du: quay not cac la con lai (cung ty le game) chi de hien cho nguoi choi biet da bo lo gi
@@ -558,6 +552,34 @@ class MiniGameController extends \App\Http\BaseController
     }
 
     /* ======================= RUONG WEB ======================= */
+
+    /**
+     * Cho do vao ruong, CONG DON nhu trong game: cung mon + cung han + cung cuong hoa + cung khoa thi gop vao o cu,
+     * moi o toi da Shop_Goods.MaxCount (game: 1 = khong chong, vd chau bau / trang bi; da 99999; ruong 999). Day thi mo o moi.
+     * Moi o ruong = 1 dinh kem khi rut ra thu nen khong bao gio vuot MaxCount cua game. Ben goi da mo transaction.
+     */
+    private function vaoRuong(int $mid, int $tid, int $sl, int $han, int $cuong, bool $khoa, string $nguon): void
+    {
+        $mx = (int)(DB::connection('sqlsrv_tank41')->selectOne("SELECT MaxCount m FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?", [$tid])->m ?? 1);
+        $mx = max(1, $mx);
+        $nguon = mb_substr($nguon, 0, 100);
+        if ($mx > 1) {
+            $o = $this->mem()->select("SELECT ID,[Count] c FROM Web_Ruong WITH (UPDLOCK,ROWLOCK) WHERE MemberID=? AND TemplateID=? AND ValidDate=? AND StrengthenLevel=? AND IsBind=? AND [Count]<? ORDER BY ID",
+                [$mid, $tid, $han, $cuong, $khoa ? 1 : 0, $mx]);
+            foreach ($o as $x) {
+                if ($sl <= 0) break;
+                $them = min($sl, $mx - (int)$x->c);
+                $this->mem()->update("UPDATE Web_Ruong SET [Count]=[Count]+?, Nguon=?, ThoiGian=GETDATE() WHERE ID=?", [$them, $nguon, (int)$x->ID]);
+                $sl -= $them;
+            }
+        }
+        while ($sl > 0) {
+            $n = min($sl, $mx);
+            $this->mem()->insert("INSERT INTO Web_Ruong(MemberID,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Nguon) VALUES(?,?,?,?,?,?,?)",
+                [$mid, $tid, $n, $han, $cuong, $khoa ? 1 : 0, $nguon]);
+            $sl -= $n;
+        }
+    }
 
     public function ruong()
     {
