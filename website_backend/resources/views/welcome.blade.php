@@ -74,8 +74,8 @@
   .dl2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
   .dl2 .btn{margin-top:0}
   .btn small{display:block; font-size:12px; font-weight:600; opacity:.75; margin-top:2px}
-  .btn.alt{background:#1d2740; color:var(--text); border:1px solid var(--line); box-shadow:none}
-  .btn.alt:hover{border-color:var(--accent)}
+  .btn.mac{background:linear-gradient(90deg,#4f8cff,#2563eb); color:#ffffff; box-shadow:0 8px 22px rgba(37,99,235,.35)}
+  .btn.mac:hover{box-shadow:0 12px 30px rgba(37,99,235,.5)}
   pre.cmd{background:#0a1120; color:#ffd479; border-radius:8px; padding:10px 12px; font-size:12px; margin:10px 0 8px; white-space:pre-wrap; word-break:break-all}
   .copy{background:#1d2740; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer}
   .copy:hover{border-color:var(--accent)}
@@ -104,7 +104,7 @@
       <div class="muted">Đã kèm sẵn Flash, không cần cài gì thêm.</div>
       <div class="dl2" id="dl2">
         <a class="btn" id="dlWin" href="/downloads/GunnyNetco4-Launcher.zip">WINDOWS<small>~145 MB</small></a>
-        <a class="btn alt" id="dlMac" href="/downloads/GunnyNetco4-Mac.zip">MACBOOK<small>~144 MB</small></a>
+        <a class="btn mac" id="dlMac" href="/downloads/GunnyNetco4-Mac.zip">MACBOOK<small>~144 MB</small></a>
       </div>
       <div class="note">
         <b>Windows:</b> giải nén rồi chạy <code>netco4gunny.exe</code>. Nếu SmartScreen chặn, bấm <b>More info</b> rồi <b>Run anyway</b>.
@@ -128,7 +128,7 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
         <div class="pane active" id="pane-reg">
           <form id="regForm" autocomplete="off">
             <div class="field"><label>Tên tài khoản (5 đến 15 ký tự, không dấu, không khoảng trắng)</label>
-              <input id="r_user" maxlength="15" placeholder="vd: thanhgun"></div>
+              <input id="r_user" maxlength="15" placeholder="vd: biabia"></div>
             <div class="field"><label>Mật khẩu (tối thiểu 6 ký tự)</label>
               <input id="r_pass" type="password" placeholder="••••••"></div>
             <div class="field"><label>Nhập lại mật khẩu</label>
@@ -245,10 +245,10 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     document.getElementById('logForm').reset();
   });
 
-  // Nguoi dung Mac: dua nut MacBook len lam nut chinh
+  // Nguoi dung Mac: dua nut MacBook len truoc (moi nut giu mau rieng)
   if(/Mac/i.test(navigator.platform||navigator.userAgent)){
     var w=document.getElementById('dlWin'), m=document.getElementById('dlMac');
-    w.classList.add('alt'); m.classList.remove('alt'); m.parentNode.insertBefore(m,w);
+    m.parentNode.insertBefore(m,w);
   }
   document.getElementById('copyMac').addEventListener('click',function(){
     var b=this, txt=document.getElementById('macCmd').textContent;
