@@ -57,13 +57,17 @@ try {
   $have=@{}; (Q "SELECT ID FROM Quest").Rows | ForEach-Object { $have[[int]$_.ID]=1 }
   $hasC=@{}; (Q "SELECT DISTINCT QuestID FROM Quest_Condiction").Rows | ForEach-Object { $hasC[[int]$_.QuestID]=1 }
   $hasG=@{}; (Q "SELECT DISTINCT QuestID FROM Quest_Goods").Rows | ForEach-Object { $hasG[[int]$_.QuestID]=1 }
-  $nQ=0;$nC=0;$nG=0
+  # phan thuong tro toi vat pham khong co trong Shop_Goods thi bo qua (tra nhiem vu se loi neu giu)
+  $items=@{}; (Q "SELECT TemplateID FROM Shop_Goods").Rows | ForEach-Object { $items[[int]$_.TemplateID]=1 }
+  $nQ=0;$nC=0;$nG=0;$nGskip=0
   foreach($it in $qXml.Result.Item){ $id=[int]$it.ID; if($have.ContainsKey($id)){ continue }
     InsertFromXml 'Quest' $it $qCols @() @{}; $nQ++
     foreach($ch in $it.ChildNodes){
       if($ch.Name -eq 'Item_Condiction' -and -not $hasC.ContainsKey($id)){ InsertFromXml 'Quest_Condiction' $ch $cCols @('ID') @{}; $nC++ }
-      elseif($ch.Name -eq 'Item_Good' -and -not $hasG.ContainsKey($id)){ InsertFromXml 'Quest_Goods' $ch $gCols @('ID') @{}; $nG++ } } }
-  "Quest them: $nQ, dieu kien: $nC, phan thuong: $nG"
+      elseif($ch.Name -eq 'Item_Good' -and -not $hasG.ContainsKey($id)){
+        $rid=[int]$ch.RewardItemID; if($rid -gt 0 -and -not $items.ContainsKey($rid)){ $nGskip++; continue }
+        InsertFromXml 'Quest_Goods' $ch $gCols @('ID') @{}; $nG++ } } }
+  "Quest them: $nQ, dieu kien: $nC, phan thuong: $nG (bo qua $nGskip phan thuong tro vat pham khong ton tai)"
 
   # ---- Shop hien thi ----
   $sXml=[xml](Dec "$XmlDir\ShopGoodsShowList.xml")
