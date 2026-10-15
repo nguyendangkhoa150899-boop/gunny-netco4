@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Player;
 use App\Support\CauHinh;
+use App\Support\Diem;
 use App\Support\GameMail;
 use App\Support\VatPham;
 use App\Support\XuWeb;
@@ -99,7 +100,88 @@ class MiniGameController extends \App\Http\BaseController
             }, $ls),
             'serverId' => $sv ? (int)$sv->ID : 0,
             'playerId' => $nv ? (int)$nv->UserID : 0,
+            'diem' => Diem::soDu($mid),
+            'lichSuDiem' => array_map(function ($x) {
+                return ['d' => (int)$x->Delta, 'loai' => $x->Loai, 'gc' => $x->GhiChu, 'tg' => substr((string)$x->ThoiGian, 0, 16)];
+            }, $this->mem()->select("SELECT TOP 20 Delta,Loai,GhiChu,ThoiGian FROM Web_SoDiem WHERE MemberID=? ORDER BY ID DESC", [$mid])),
         ]);
+    }
+
+    /* ======================= SHOP WEB ======================= */
+    // 2 loai tien: 'xu' = xu web (XuWeb), 'diem' = diem hoat dong (Diem). Do vao Ruong web. Bang: _setup/sql/shop-web.sql
+
+    /** so luong da mua cua 1 mon trong khoang (ngay / 7 ngay / tron doi) */
+    private function daMua(int $mid, int $sid): array
+    {
+        $r = $this->mem()->selectOne("SELECT
+            ISNULL(SUM(CASE WHEN ThoiGian>=CAST(GETDATE() AS date) THEN SoLuong END),0) ngay,
+            ISNULL(SUM(CASE WHEN ThoiGian>=DATEADD(day,-7,GETDATE()) THEN SoLuong END),0) tuan,
+            ISNULL(SUM(SoLuong),0) tong FROM Web_ShopMua WHERE MemberID=? AND ShopID=?", [$mid, $sid]);
+        return ['ngay' => (int)$r->ngay, 'tuan' => (int)$r->tuan, 'tong' => (int)$r->tong];
+    }
+
+    /** con mua duoc toi da bao nhieu (null = khong gioi han) */
+    private static function conMua($h, array $da)
+    {
+        $con = null;
+        foreach (['GioiHanNgay' => 'ngay', 'GioiHanTuan' => 'tuan', 'GioiHanTong' => 'tong'] as $cot => $k) {
+            if ($h->$cot !== null) $con = min($con ?? PHP_INT_MAX, max(0, (int)$h->$cot - $da[$k]));
+        }
+        if ($h->Kho !== null) $con = min($con ?? PHP_INT_MAX, max(0, (int)$h->Kho));
+        return $con;
+    }
+
+    public function shop()
+    {
+        $mid = $this->mid();
+        $rows = $this->mem()->select("SELECT * FROM Web_Shop WHERE BatTat=1 AND (BatDau IS NULL OR BatDau<=GETDATE()) AND (KetThuc IS NULL OR KetThuc>GETDATE()) ORDER BY Tien DESC, ThuTu, ID");
+        $tt = VatPham::thongTin(array_map(function ($x) { return (int)$x->TemplateID; }, $rows));
+        $ds = array_map(function ($h) use ($mid, $tt) {
+            $i = $tt[(int)$h->TemplateID] ?? null;
+            $da = $this->daMua($mid, (int)$h->ID);
+            return ['id' => (int)$h->ID, 'ke' => $h->Ke, 'ten' => ($i->Name ?? ('Vật phẩm ' . $h->TemplateID)) . ((int)$h->Count > 1 ? ' x' . $h->Count : '') . ((int)$h->StrengthenLevel ? ' +' . $h->StrengthenLevel : ''),
+                'hinh' => '/hinh/' . (int)$h->TemplateID, 'mau' => VatPham::mau((int)($i->Quality ?? 0)), 'q' => (int)($i->Quality ?? 0),
+                'tien' => $h->Tien, 'gia' => (int)$h->Gia, 'han' => (int)$h->ValidDate, 'khoa' => (bool)$h->IsBind, 'moTa' => $h->MoTa,
+                'gh' => ['ngay' => $h->GioiHanNgay, 'tuan' => $h->GioiHanTuan, 'tong' => $h->GioiHanTong], 'da' => $da,
+                'kho' => $h->Kho === null ? null : (int)$h->Kho, 'con' => self::conMua($h, $da),
+                'ketThuc' => $h->KetThuc ? substr((string)$h->KetThuc, 0, 16) : null];
+        }, $rows);
+        return $this->success('ok', ['ds' => $ds, 'xu' => XuWeb::soDu($mid), 'diem' => Diem::soDu($mid), 'mo' => CauHinh::int('shop_mo', 1)]);
+    }
+
+    public function shopMua(Request $r)
+    {
+        if (CauHinh::int('shop_mo', 1) !== 1) return $this->error('Shop đang tạm đóng.');
+        $mid = $this->mid();
+        $sid = (int)$r->input('id');
+        $sl = max(1, min(99, (int)$r->input('sl', 1)));
+        $out = null;
+        try {
+            $this->mem()->transaction(function () use ($mid, $sid, $sl, &$out) {
+                $h = $this->mem()->selectOne("SELECT * FROM Web_Shop WITH (UPDLOCK,ROWLOCK) WHERE ID=? AND BatTat=1 AND (BatDau IS NULL OR BatDau<=GETDATE()) AND (KetThuc IS NULL OR KetThuc>GETDATE())", [$sid]);
+                if (!$h) { $out = 'Món này không còn bán.'; return; }
+                // khoa theo nguoi mua de 2 lan bam cung luc khong vuot gioi han
+                $this->mem()->select("SELECT TOP 1 ID FROM Web_ShopMua WITH (UPDLOCK,HOLDLOCK) WHERE MemberID=? AND ShopID=?", [$mid, $sid]);
+                $con = self::conMua($h, $this->daMua($mid, $sid));
+                if ($con !== null && $sl > $con) { $out = $con > 0 ? ('Bạn chỉ mua thêm được ' . $con . ' món này.') : ($h->Kho !== null && (int)$h->Kho <= 0 ? 'Hết hàng.' : 'Đã đạt giới hạn mua món này.'); return; }
+                $tong = (int)$h->Gia * $sl;
+                $tt = VatPham::thongTin([(int)$h->TemplateID])[(int)$h->TemplateID] ?? null;
+                $ten = $tt->Name ?? ('Vật phẩm ' . $h->TemplateID);
+                $con2 = $h->Tien === 'diem' ? Diem::doi($mid, -$tong, 'shop', 'Mua ' . $ten . ' x' . $sl) : XuWeb::doi($mid, -$tong, 'shop', 'Mua ' . $ten . ' x' . $sl);
+                if ($con2 === null) { $out = $h->Tien === 'diem' ? 'Không đủ điểm hoạt động.' : 'Không đủ xu web.'; return; }
+                if ($h->Kho !== null) $this->mem()->update("UPDATE Web_Shop SET Kho=Kho-? WHERE ID=?", [$sl, $sid]);
+                $this->mem()->insert("INSERT INTO Web_ShopMua(MemberID,ShopID,SoLuong,Tien,Gia) VALUES(?,?,?,?,?)", [$mid, $sid, $sl, $h->Tien, (int)$h->Gia]);
+                for ($i = 0; $i < $sl; $i++) {
+                    $this->mem()->insert("INSERT INTO Web_Ruong(MemberID,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Nguon) VALUES(?,?,?,?,?,?,?)",
+                        [$mid, (int)$h->TemplateID, max(1, (int)$h->Count), (int)$h->ValidDate, (int)$h->StrengthenLevel, $h->IsBind ? 1 : 0, 'Shop web']);
+                }
+                $out = ['ten' => $ten, 'sl' => $sl, 'tong' => $tong, 'tien' => $h->Tien];
+            });
+        } catch (\Throwable $e) {
+            return $this->error('Có lỗi khi mua, chưa trừ tiền. Thử lại sau.');
+        }
+        if (!is_array($out)) return $this->error($out ?: 'Có lỗi xảy ra.');
+        return $this->success('Đã mua ' . $out['ten'] . ' x' . $out['sl'] . ', đồ đã vào Rương web.', $out + ['xu' => XuWeb::soDu($mid), 'diem' => Diem::soDu($mid)]);
     }
 
     /* ======================= TAI XIU ======================= */
@@ -286,7 +368,10 @@ class MiniGameController extends \App\Http\BaseController
             try {
                 $this->mem()->insert("INSERT INTO Web_The_Luot(MemberID,GameUserID,LogID,Khoa,MissionId,Bai,ThoiGian,Ngay) VALUES(?,?,?,?,?,?,?,?)",
                     [$mid, $gid, (int)$l->ID, $pb->Khoa, (int)$l->Content, '[]', $l->TimeCreate, $ngay]);
-            } catch (\Throwable $e) { /* LogID da co luot */ }
+            } catch (\Throwable $e) { continue; /* LogID da co luot */ }
+            // diem hoat dong: moi lan thang boss (moi luot lat) +diem_phoban, tran diem_phoban_tran/ngay
+            $cong = min(CauHinh::int('diem_phoban', 5), CauHinh::int('diem_phoban_tran', 50) - Diem::homNay($mid, 'phoban'));
+            if ($cong > 0) Diem::doi($mid, $cong, 'phoban', 'Thắng ' . $pb->Khoa);
         }
         if ($max > $last) {
             $this->mem()->statement("MERGE Web_The_Quet t USING (SELECT ? g, ? l) s ON t.GameUserID=s.g WHEN MATCHED THEN UPDATE SET LogID=s.l WHEN NOT MATCHED THEN INSERT(GameUserID,LogID) VALUES(s.g,s.l);", [$gid, $max]);

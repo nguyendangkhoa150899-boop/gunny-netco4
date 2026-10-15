@@ -112,6 +112,30 @@
   .b.sm2{padding:8px 12px;font-size:13px;border-radius:9px}
   .fr2{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
   .fr2 span{color:var(--muted)} .fr2 b{font-size:16px;font-variant-numeric:tabular-nums}
+  /* diem hoat dong + shop */
+  .gem{display:inline-block;width:18px;height:18px;flex:none;transform:rotate(45deg);border-radius:4px;background:linear-gradient(135deg,#d9b8ff,#8b5cf6 55%,#5b21b6);box-shadow:0 0 0 1px #4c1d95,0 0 8px #8b5cf655;vertical-align:-3px;margin:0 2px}
+  .gem.s{width:12px;height:12px;border-radius:3px;vertical-align:-1px}
+  .bal.diem{background:#1b1430;border-color:#5b3a9a;color:#cdb4ff}
+  .bal.diem.big{font-size:20px;padding:8px 16px 8px 10px}
+  .shd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .shd .muted{margin-top:4px;max-width:720px}
+  .kehd{font-size:14px;font-weight:800;color:var(--gold);margin:16px 0 8px;letter-spacing:.3px}
+  .shopgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+  .si{display:flex;flex-direction:column;background:#12141a;border:1px solid var(--line);border-radius:14px;padding:12px;gap:10px}
+  .si.q5,.si.q6,.si.q7{border-color:#5a4520;background:linear-gradient(180deg,#1d1a12,#12141a)}
+  .si .top2{display:flex;gap:12px;align-items:flex-start}
+  .si .sic{width:62px;height:62px;flex:none;border-radius:12px;border:2px solid;background:#0d1220;display:flex;align-items:center;justify-content:center}
+  .si .sic img{width:90%;height:90%;object-fit:contain}
+  .si .sit{display:block;font-size:14.5px;line-height:1.3}
+  .si .sim{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .si .sil{display:flex;flex-wrap:wrap;gap:4px}
+  .si .sil span{font-size:11px;color:#c9cede;background:#1b1e27;border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+  .si .sil span.het{color:#ff8a8a;border-color:#6b2a2a}
+  .si .sif{display:flex;align-items:center;gap:8px;margin-top:auto}
+  .si .price{flex:1;font-size:17px;font-weight:900;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:6px}
+  .si .price.xu{color:var(--gold)} .si .price.diem{color:#cdb4ff}
+  .si .sif input{width:58px;background:#0d1220;border:1px solid var(--line);border-radius:8px;color:var(--text);padding:7px;font-size:14px;text-align:center}
+  .si .sif .b{padding:9px 16px;font-size:14px;margin:0;width:auto}
   /* rut xu tu game */
   .steps2{margin:0 0 12px;padding-left:20px;line-height:1.9;font-size:14px;color:#c9cede}
   .steps2 b{color:var(--text)}
@@ -242,6 +266,7 @@
     <a class="brand" href="/">GUNNYNETCO4</a>
     <div class="tr">
       <div class="bal" title="Xu web: dùng chơi mini game, đổi sang xu game ở mục Ví xu"><span class="coin"></span><span id="balTop">0</span></div>
+      <div class="bal diem" title="Điểm hoạt động: mua kệ hiếm ở Shop. Kiếm từ điểm danh và đánh xong boss phó bản, không đổi từ xu được"><span class="gem"></span><span id="diemTop">0</span></div>
       <div class="chip2"><div class="av" id="c_av">G</div><span id="c_name">...</span></div>
       <a class="lk" href="/">Trang chủ</a>
       <a class="lk" id="logout">Đăng xuất</a>
@@ -253,6 +278,7 @@
     <button data-grp="hoso" class="on"><span class="ic">👤</span>Hồ sơ</button>
     <button data-grp="latthe"><span class="ic">🃏</span>Lật thẻ<span class="n" id="ltN" style="display:none"></span></button>
     <button data-grp="minigame"><span class="ic">🎲</span>Mini game</button>
+    <button data-grp="shop"><span class="ic">🛒</span>Shop</button>
     <button data-grp="ruong"><span class="ic">🎁</span>Rương<span class="n" id="rgN" style="display:none"></span></button>
   </div>
   <div>
@@ -301,7 +327,10 @@
         <div class="muted" style="margin-top:8px">Trang tự kiểm tra thư mới mỗi 10 giây khi đang mở mục Ví.</div>
       </div>
     </div>
-    <div class="card"><h2>Lịch sử xu web</h2><table class="ls" id="viLs"></table></div>
+    <div class="row2" style="margin-top:14px">
+      <div class="card"><h2>Lịch sử xu web</h2><table class="ls" id="viLs"></table></div>
+      <div class="card"><h2>Điểm hoạt động <span class="gem s"></span> <b id="viDiem" style="color:#cdb4ff">0</b></h2><table class="ls" id="diemLs"></table></div>
+    </div>
   </section>
 
   <!-- ================= DIEM DANH ================= -->
@@ -392,6 +421,18 @@
     </div>
   </section>
 
+  <!-- ================= SHOP (A xu web / B diem hoat dong) ================= -->
+  <section id="sec-shopdiem"><div class="card">
+    <div class="shd"><div><h2 style="margin:0">Kệ điểm hoạt động</h2>
+      <div class="muted">Đồ hiếm, chỉ mua bằng <b>điểm hoạt động</b> (không đổi từ xu được). Kiếm điểm: <b>điểm danh</b> +10/ngày (đủ 7/14/21/28 ngày thêm +20), mỗi lần <b>đánh xong boss phó bản</b> +5 (tối đa 50/ngày). Đồ mua xong vào <b>Rương web</b>.</div></div>
+      <div class="bal diem big"><span class="gem"></span><span class="diemNow">0</span></div></div>
+    <div id="shopDiem"></div></div></section>
+  <section id="sec-shopxu"><div class="card">
+    <div class="shd"><div><h2 style="margin:0">Kệ xu web</h2>
+      <div class="muted">Mua bằng <b>xu web</b> (đổi 1:1 với xu game; rút xu từ game ở mục Hồ sơ → Ví xu). Đồ mua xong vào <b>Rương web</b>, rút vào game khi cần.</div></div>
+      <div class="bal big" style="font-size:20px;padding:8px 16px 8px 8px"><span class="coin"></span><span class="xuNow">0</span></div></div>
+    <div id="shopXu"></div></div></section>
+
   <section id="sec-ghep"><div class="card empty"><b>Ghép đồ</b>Ghép nhiều món trong rương thành món xịn hơn. Tính năng đang phát triển.</div></section>
   </div>
   </div>
@@ -426,13 +467,14 @@
   function gConfirm(msg){ return new Promise(function(res){ $('gmMsg').innerHTML=msg; $('gmodal').classList.remove('hidden');
     function done(v){ $('gmodal').classList.add('hidden'); $('gmOk').onclick=$('gmCancel').onclick=null; res(v); }
     $('gmOk').onclick=function(){ done(true); }; $('gmCancel').onclick=function(){ done(false); }; }); }
-  function setBal(v){ if(v==null) return; $('balTop').textContent=fmt(v); $('viBal').textContent=fmt(v); }
+  function setBal(v){ if(v==null) return; $('balTop').textContent=fmt(v); $('viBal').textContent=fmt(v); document.querySelectorAll('.xuNow').forEach(function(e){ e.textContent=fmt(v); }); }
+  function setDiem(v){ if(v==null) return; $('diemTop').textContent=fmt(v); $('viDiem').textContent=fmt(v); document.querySelectorAll('.diemNow').forEach(function(e){ e.textContent=fmt(v); }); var p=$('pfDiem'); if(p) p.textContent=fmt(v); }
   function winpop(n){ var e=$('winpop'); e.textContent=(n>=0?'+':'')+fmt(n); e.style.color=n>0?'#3ddc84':'#ff5d5d'; e.className=''; void e.offsetWidth; e.className='show'; }
 
   // ---------- dieu huong ----------
   // menu trai = nhom, moi nhom gom cac muc (tab con). Hash: #vi, #taixiu, ... (ten muc)
-  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],ruong:['ruong','ghep']};
-  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
+  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],shop:['shopdiem','shopxu'],ruong:['ruong','ghep']};
+  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',shopdiem:'Kệ điểm hoạt động',shopxu:'Kệ xu web',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
   function nhomCua(sec){ for(var g in NHOM) if(NHOM[g].indexOf(sec)>=0) return g; return 'hoso'; }
   var loaded={};
   function go(sec){
@@ -446,8 +488,8 @@
     sn.innerHTML=NHOM[g].length>1?NHOM[g].map(function(x){ return '<button data-sub="'+x+'" class="'+(x===sec?'on':'')+'">'+TEN[x]+'</button>'; }).join(''):'';
     sn.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.dataset.sub); }; });
     if(location.hash!=='#'+sec) history.replaceState(null,'','#'+sec);
-    var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad}[sec];
-    if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||!loaded[sec])){ loaded[sec]=1; f(); }
+    var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad,shopdiem:shopLoad,shopxu:shopLoad}[sec];
+    if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||sec.indexOf('shop')===0||!loaded[sec])){ loaded[sec]=1; f(); }
     window.scrollTo(0,0);
     // dang mo Vi: 10 giay kiem tra thu rut xu 1 lan
     clearInterval(window._viPoll);
@@ -475,6 +517,7 @@
     // tai san
     $('cTaiSan').innerHTML='<h2>Tài sản</h2>'
       +'<div class="money hi"><span class="coin"></span><div><span>Xu web</span><b>'+fmt(d.data.xuWeb)+'</b></div><button class="b gold sm2" data-go="vi">Đổi sang game</button></div>'
+      +'<div class="money"><span class="gem" style="width:22px;height:22px;margin:0 4px"></span><div><span>Điểm hoạt động</span><b id="pfDiem" style="color:#cdb4ff">'+fmt(VI.diem||0)+'</b></div><button class="b gray sm2" data-go="shopdiem">Vào shop</button></div>'
       +'<div class="money"><span class="coin"></span><div><span>Xu game</span><b>'+fmt(c.xu)+'</b></div></div>'
       +'<div class="money"><span class="coin lock"></span><div><span>Xu khóa</span><b>'+fmt(c.xuKhoa)+'</b></div></div>'
       +'<div class="money"><span class="coin gold2"></span><div><span>Vàng</span><b>'+fmt(c.vang)+'</b></div></div>'
@@ -492,11 +535,14 @@
 
   // ---------- vi ----------
   var VI={};
-  var LOAI={taixiu:'Tài xỉu',domin:'Dò mìn',latthe:'Lật thẻ',diemdanh:'Điểm danh',admin:'Admin',doixu:'Đổi sang game',rutxu:'Rút từ game'};
+  var LOAI={shop:'Shop web',phoban:'Phó bản',taixiu:'Tài xỉu',domin:'Dò mìn',latthe:'Lật thẻ',diemdanh:'Điểm danh',admin:'Admin',doixu:'Đổi sang game',rutxu:'Rút từ game'};
   function loadVi(){
     api('/api/vi').then(function(d){
       if(!d||!d.success) return;
-      VI=d.data; setBal(d.data.soDu);
+      VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem);
+      var ld=d.data.lichSuDiem||[];
+      $('diemLs').innerHTML=ld.length?ld.map(function(x){ return '<tr><td class="t">'+esc(x.tg.slice(5))+'</td><td>'+esc(LOAI[x.loai]||x.loai)+'<div class="muted">'+esc(x.gc||'')+'</div></td><td class="'+(x.d>=0?'p':'m')+'">'+(x.d>=0?'+':'')+fmt(x.d)+'</td></tr>'; }).join('')
+        :'<tr><td class="empty">Chưa có điểm. Điểm danh hoặc đánh xong boss phó bản để nhận.</td></tr>';
       var r=d.data.rut||{};
       if(r.ten) $('rutTen').textContent=r.ten;
       $('rutTile').textContent=(r.tile>1?String(r.tile).replace('.',',')+' xu game':'1 xu game')+' = 1 xu web';
@@ -553,7 +599,7 @@
       ddLoad(); refreshBal();
     });
   });
-  function refreshBal(){ api('/api/vi').then(function(d){ if(d&&d.success){ VI=d.data; setBal(d.data.soDu); } }); }
+  function refreshBal(){ api('/api/vi').then(function(d){ if(d&&d.success){ VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem); } }); }
 
   // ---------- lat the ----------
   var LT={ds:[],cur:null,busy:false};
@@ -729,6 +775,54 @@
     });
   });
   mRender();
+
+  // ---------- shop (A xu web / B diem hoat dong) ----------
+  var SHOP={ds:[]};
+  function giaHtml(x,sl){ return (x.tien==='diem'?'<span class="gem s"></span>':'<span class="coin s"></span>')+fmt(x.gia*(sl||1)); }
+  function shopCard(x){
+    var tags=[];
+    if(x.gh.tong!=null) tags.push('Mỗi tài khoản '+x.gh.tong+' (đã mua '+x.da.tong+')');
+    if(x.gh.tuan!=null) tags.push('Mỗi tuần '+x.gh.tuan+' (đã mua '+x.da.tuan+')');
+    if(x.gh.ngay!=null) tags.push('Mỗi ngày '+x.gh.ngay+' (hôm nay '+x.da.ngay+')');
+    if(x.kho!=null) tags.push('Còn '+fmt(x.kho)+' món toàn server');
+    tags.push(x.han?('Hạn '+x.han+' ngày'):'Vĩnh viễn'); if(x.khoa) tags.push('Khóa');
+    if(x.ketThuc) tags.push('Bán đến '+esc(x.ketThuc));
+    var het=x.con===0, nhieu=x.con===null||x.con>1;
+    return '<div class="si q'+x.q+'"><div class="top2"><div class="sic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
+      +'<div><b class="sit">'+esc(x.ten)+'</b><div class="sim">'+esc(x.moTa||'')+'</div></div></div>'
+      +'<div class="sil">'+tags.map(function(t,i){ return '<span'+(het&&i===0?' class="het"':'')+'>'+esc(t)+'</span>'; }).join('')+'</div>'
+      +'<div class="sif"><div class="price '+x.tien+'" data-p="'+x.id+'">'+giaHtml(x)+'</div>'
+      +(nhieu&&!het?'<input type="number" min="1" max="'+(x.con||99)+'" value="1" data-sl="'+x.id+'">':'')
+      +'<button class="b '+(x.tien==='diem'?'blue':'go')+'" data-mua="'+x.id+'"'+(het?' disabled':'')+'>'+(het?'HẾT':'MUA')+'</button></div></div>';
+  }
+  function shopRender(el,list){
+    if(!list.length){ el.innerHTML='<div class="empty">Kệ này chưa có hàng.</div>'; return; }
+    var ke={}, thuTu=[]; list.forEach(function(x){ if(!ke[x.ke]){ ke[x.ke]=[]; thuTu.push(x.ke); } ke[x.ke].push(x); });
+    el.innerHTML=thuTu.map(function(k){ return '<div class="kehd">'+esc(k)+'</div><div class="shopgrid">'+ke[k].map(shopCard).join('')+'</div>'; }).join('');
+    el.querySelectorAll('[data-sl]').forEach(function(i){ i.oninput=function(){ var x=SHOP.ds.filter(function(y){ return y.id===+i.dataset.sl; })[0]; var sl=Math.max(1,parseInt(i.value,10)||1); el.querySelector('[data-p="'+x.id+'"]').innerHTML=giaHtml(x,sl); }; });
+    el.querySelectorAll('[data-mua]').forEach(function(b){ b.onclick=function(){ shopBuy(+b.dataset.mua); }; });
+  }
+  function shopLoad(){
+    api('/api/shop').then(function(r){
+      if(!r||!r.success){ $('shopDiem').innerHTML=$('shopXu').innerHTML='<div class="empty">'+esc((r&&r.message)||'Không tải được shop.')+'</div>'; return; }
+      SHOP.ds=r.data.ds; setBal(r.data.xu); setDiem(r.data.diem);
+      if(!r.data.mo){ $('shopDiem').innerHTML=$('shopXu').innerHTML='<div class="empty"><b>Shop đang tạm đóng</b></div>'; return; }
+      shopRender($('shopDiem'),SHOP.ds.filter(function(x){ return x.tien==='diem'; }));
+      shopRender($('shopXu'),SHOP.ds.filter(function(x){ return x.tien==='xu'; }));
+    });
+  }
+  function shopBuy(id){
+    var x=SHOP.ds.filter(function(y){ return y.id===id; })[0]; if(!x) return;
+    var inp=document.querySelector('[data-sl="'+id+'"]'), sl=inp?Math.max(1,parseInt(inp.value,10)||1):1;
+    gConfirm('Mua <b>'+esc(x.ten)+'</b> x'+sl+' với giá <b>'+fmt(x.gia*sl)+' '+(x.tien==='diem'?'điểm hoạt động':'xu web')+'</b>?<br><span class="muted">Đồ vào Rương web, rút vào game khi cần.</span>').then(function(ok){
+      if(!ok) return;
+      api('/api/shop/mua',{id:id,sl:sl}).then(function(r){
+        toast((r&&r.message)||'Có lỗi xảy ra.',!(r&&r.success));
+        if(r&&r.success){ setBal(r.data.xu); setDiem(r.data.diem); rgCount(); }
+        shopLoad();
+      });
+    });
+  }
 
   // ---------- ruong ----------
   var RG={ds:[],sel:[]};

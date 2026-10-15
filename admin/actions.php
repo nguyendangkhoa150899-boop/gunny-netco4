@@ -161,6 +161,40 @@ function run_action($conn,$act,$P){
     exec_sql($conn,"UPDATE Db_Member.dbo.Web_The_PhoBan SET SoLanNgay=?,BatTat=? WHERE Khoa=?",[$sl===''?null:max(0,(int)$sl),!empty($P['bat'])?1:0,(string)($P['khoa']??'')]);
     return 'Đã lưu phó bản '.h($P['khoa']??'').'.';
 
+  /* ---------- shop web (Db_Member.Web_Shop, xem pages/shop.php) ---------- */
+  case 'shop_add':
+    $tid=(int)($P['tid']??0); $gia=(int)($P['gia']??0); $tien=($P['tien']??'')==='xu'?'xu':'diem'; $ke=trim($P['ke']??'');
+    if($tid<=0||$gia<=0||$ke==='') return 'Cần ID vật phẩm, kệ và giá.';
+    if(!scalar($conn,"SELECT COUNT(*) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid])) return 'Không có vật phẩm ID '.$tid.'.';
+    $nz=fn($x)=>($x===''||$x===null)?null:max(0,(int)$x);
+    $dt=fn($x)=>trim((string)$x)===''?null:date('Y-m-d H:i:s',strtotime($x));
+    $r=exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_Shop(Ke,TemplateID,[Count],ValidDate,StrengthenLevel,IsBind,Tien,Gia,GioiHanNgay,GioiHanTuan,GioiHanTong,Kho,BatDau,KetThuc,ThuTu,MoTa) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+      [mb_substr($ke,0,50),$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),!empty($P['bind'])?1:0,$tien,$gia,
+       $nz($P['ngay']??''),$nz($P['tuan']??''),$nz($P['tong']??''),$nz($P['kho']??''),$dt($P['bd']??''),$dt($P['kt']??''),(int)($P['thutu']??100),mb_substr(trim($P['mota']??''),0,200)]);
+    return $r===true?'Đã thêm hàng.':'Lỗi: '.h($r);
+
+  case 'shop_upd':
+    $nz=fn($x)=>($x===''||$x===null)?null:max(0,(int)$x);
+    exec_sql($conn,"UPDATE Db_Member.dbo.Web_Shop SET Gia=?,GioiHanNgay=?,GioiHanTuan=?,GioiHanTong=?,Kho=?,BatTat=? WHERE ID=?",
+      [max(1,(int)($P['gia']??1)),$nz($P['ngay']??''),$nz($P['tuan']??''),$nz($P['tong']??''),$nz($P['kho']??''),!empty($P['bat'])?1:0,(int)($P['id']??0)]);
+    return 'Đã lưu hàng #'.(int)($P['id']??0).'.';
+
+  case 'shop_del':
+    exec_sql($conn,"DELETE FROM Db_Member.dbo.Web_Shop WHERE ID=?",[(int)($P['id']??0)]);
+    return 'Đã xóa hàng. Đồ người chơi đã mua vẫn còn trong rương.';
+
+  case 'diem_give':
+    $em=strtolower(trim($P['user']??'')); $d=(int)($P['diem']??0);
+    if($em===''||!$d) return 'Cần tài khoản và số điểm khác 0.';
+    $mid=(int)scalar($conn,"SELECT UserID FROM Db_Member.dbo.Mem_Account WHERE Email=?",[$em]);
+    if(!$mid) return 'Không có tài khoản '.h($em).'.';
+    exec_sql($conn,"IF NOT EXISTS (SELECT 1 FROM Db_Member.dbo.Web_Diem WHERE MemberID=?) INSERT INTO Db_Member.dbo.Web_Diem(MemberID,Diem) VALUES(?,0)",[$mid,$mid]);
+    $st=sqlsrv_query($conn,"SET NOCOUNT ON; UPDATE Db_Member.dbo.Web_Diem SET Diem=Diem+? OUTPUT inserted.Diem WHERE MemberID=? AND Diem+?>=0",[$d,$mid,$d]);
+    $row=$st?sqlsrv_fetch_array($st,SQLSRV_FETCH_NUMERIC):null;
+    if(!$row) return 'Không đủ điểm để trừ.';
+    exec_sql($conn,"INSERT INTO Db_Member.dbo.Web_SoDiem(MemberID,Delta,SoDu,Loai,GhiChu) VALUES(?,?,?,'admin',?)",[$mid,$d,(int)$row[0],mb_substr(trim($P['note']??'') ?: 'Admin '.($d>0?'tặng':'trừ'),0,200)]);
+    return 'Đã '.($d>0?'cộng ':'trừ ').n(abs($d)).' điểm cho '.h($em).'. Số dư: '.n($row[0]).'.';
+
   /* ---------- he thong ---------- */
   case 'rate_add':
     $t=(int)($P['type']??0); $rate=(float)($P['rate']??1);

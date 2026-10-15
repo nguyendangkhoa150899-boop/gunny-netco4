@@ -69,3 +69,6 @@ Route::post('/latthe', "App\Http\Controllers\MiniGameController@latThe")->middle
 Route::post('/latthe/lat', "App\Http\Controllers\MiniGameController@latTheLat")->middleware('auth.bearer');
 Route::post('/ruong', "App\Http\Controllers\MiniGameController@ruong")->middleware('auth.bearer');
 Route::post('/ruong/rut', "App\Http\Controllers\MiniGameController@ruongRut")->middleware('auth.bearer');
+// shop web: xu web + diem hoat dong (_setup/sql/shop-web.sql)
+Route::post('/shop', "App\Http\Controllers\MiniGameController@shop")->middleware('auth.bearer');
+Route::post('/shop/mua', "App\Http\Controllers\MiniGameController@shopMua")->middleware('auth.bearer');

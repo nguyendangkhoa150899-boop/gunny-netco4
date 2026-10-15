@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Support\CauHinh;
+use App\Support\Diem;
 use App\Support\XuWeb;
 use Illuminate\Support\Facades\DB;
 
@@ -129,6 +131,12 @@ class DiemDanhController extends \App\Http\BaseController
         }
         // xu web cong thang vao vi (khong qua thu)
         if ($xuWeb > 0) XuWeb::doi((int)auth()->user()->UserID, $xuWeb, 'diemdanh', 'Điểm danh ngày ' . $now->d . '/' . $now->m);
+        // diem hoat dong (tien ke hiem shop web): moi ngay + diem_diemdanh, du 7/14/21/28 ngay them diem_moc
+        $diem = CauHinh::int('diem_diemdanh', 10) + (in_array($count, [7, 14, 21, 28], true) ? CauHinh::int('diem_moc', 20) : 0);
+        if ($diem > 0) {
+            Diem::doi((int)auth()->user()->UserID, $diem, 'diemdanh', 'Điểm danh ngày thứ ' . $count . ' trong tháng');
+            $got[] = $diem . ' điểm hoạt động';
+        }
         return $this->success('Điểm danh thành công! Quà đã gửi vào hộp thư trong game' . ($xuWeb ? ', xu web đã cộng vào ví' : '') . '.', ['songay' => $count, 'qua' => $got]);
     }
 
