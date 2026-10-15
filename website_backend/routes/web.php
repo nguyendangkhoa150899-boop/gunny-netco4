@@ -19,3 +19,7 @@ Route::get('/', function () {
 Route::get('/play2/{token}', "App\Http\Controllers\PlayController@play");
 Route::get('/getPlayVars', "App\Http\Controllers\PlayController@getPlayVars")->middleware('auth.bearer');
 Route::get('/getTopList', "App\Http\Controllers\TopListController@index");
+// trang ca nhan (dang nhap bang token luu o trinh duyet; du lieu lay qua /api/hoso, /api/diemdanh*)
+Route::get('/dashboard', function () {
+    return view('dashboard');
+});

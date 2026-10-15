@@ -1,0 +1,69 @@
+/* GunnyNetco4 portal: CSS chung cho trang chu (welcome.blade.php) va trang ca nhan (dashboard.blade.php) */
+:root{
+  --bg:#0b1120; --bg2:#111a2e; --card:#161f33; --line:#273450;
+  --accent:#ffb020; --accent2:#ff6a00; --text:#eaf1fb; --muted:#8ea2bf;
+  --ok:#36d07f; --err:#ff5d6c; --blue:#2563eb;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--text);
+  background:radial-gradient(1000px 560px at 50% -12%, #22345a, var(--bg)) fixed;
+  min-height:100vh; line-height:1.55;
+}
+a{color:var(--accent)}
+.wrap{max-width:960px; margin:0 auto; padding:34px 20px 70px}
+header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.brand{font-size:30px; font-weight:900; letter-spacing:.5px; text-decoration:none;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text; background-clip:text; color:transparent}
+.badge{font-size:12px; color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:999px}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:6px; box-shadow:0 0 8px var(--ok)}
+.dot.off{background:#56688a; box-shadow:none}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2)); border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:0 16px 50px rgba(0,0,0,.45)}
+.card h2{margin:0 0 6px; font-size:20px}
+.card h2 .ico{color:var(--accent)}
+.muted{color:var(--muted); font-size:14px}
+.btn{display:block; width:100%; text-align:center; text-decoration:none; cursor:pointer; border:0;
+  color:#1a1200; font-weight:800; font-size:17px; padding:15px; border-radius:12px; margin-top:16px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 8px 22px rgba(255,120,0,.35);
+  transition:transform .08s ease, box-shadow .2s ease}
+.btn:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,120,0,.5)}
+.btn[disabled]{opacity:.55; cursor:not-allowed; transform:none}
+.btn small{display:block; font-size:12px; font-weight:600; opacity:.75; margin-top:2px}
+.btn.mac{background:linear-gradient(90deg,#4f8cff,var(--blue)); color:#ffffff; box-shadow:0 8px 22px rgba(37,99,235,.35)}
+.btn.mac:hover{box-shadow:0 12px 30px rgba(37,99,235,.5)}
+.btn.ghost{background:#1d2740; color:var(--text); border:1px solid var(--line); box-shadow:none}
+.btn.ghost:hover{border-color:var(--accent)}
+.field{margin-top:12px}
+.field label{display:block; font-size:13px; color:var(--muted); margin-bottom:5px}
+.field input{width:100%; padding:12px 13px; border-radius:10px; border:1px solid var(--line);
+  background:#0d1626; color:var(--text); font-size:15px; outline:none}
+.field input:focus{border-color:var(--accent)}
+.msg{margin-top:14px; padding:11px 13px; border-radius:10px; font-size:14px; display:none}
+.msg.ok{display:block; background:rgba(54,208,127,.12); border:1px solid var(--ok); color:var(--ok)}
+.msg.err{display:block; background:rgba(255,93,108,.12); border:1px solid var(--err); color:var(--err)}
+.av{width:48px; height:48px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; color:#1a1200; background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.soon{font-size:11px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:1px 7px; display:inline-block}
+.switch{color:var(--muted); font-size:14px; text-align:center; margin-top:16px}
+.switch a{font-weight:700; cursor:pointer; text-decoration:none}
+.switch a:hover{text-decoration:underline}
+.note{background:#0e1829; border-left:3px solid var(--accent); padding:12px 14px; border-radius:8px; color:var(--muted); font-size:13px; margin-top:16px}
+code{background:#0a1120; padding:2px 7px; border-radius:6px; color:#ffd479; font-size:13px}
+.foot{text-align:center; color:#56688a; font-size:12px; margin-top:38px}
+
+/* diem danh */
+.ddgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px}
+.ddgrid div{aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:9px; font-size:13px; font-weight:700;
+  background:#121c30; border:1px solid var(--line); color:var(--muted)}
+.ddgrid div.done{background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#1a1000}
+.ddgrid div.today{border:2px solid var(--accent); color:var(--text)}
+.ddgrid div.miss{opacity:.4}
+.ddq{font-size:14px; color:var(--muted); margin-top:12px} .ddq b{color:var(--text)}
+.ddmoc{display:flex; flex-direction:column; gap:5px; margin-top:8px; font-size:13px}
+.ddmoc div{display:flex; gap:10px; color:var(--muted)} .ddmoc div.ok{color:var(--ok)}
+.ddmoc div span:first-child{min-width:70px; font-weight:700}
+
+@media (max-width:760px){
+  .wrap{padding:24px 16px 60px} .brand{font-size:26px}
+}

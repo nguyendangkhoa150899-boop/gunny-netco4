@@ -4,78 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GunnyNetco4 | Chơi miễn phí</title>
+<link rel="stylesheet" href="/css/portal.css?v=1">
 <style>
-  :root{
-    --bg:#0b1120; --bg2:#111a2e; --card:#161f33; --line:#273450;
-    --accent:#ffb020; --accent2:#ff6a00; --text:#eaf1fb; --muted:#8ea2bf;
-    --ok:#36d07f; --err:#ff5d6c;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--text);
-    background:radial-gradient(1000px 560px at 50% -12%, #22345a, var(--bg)) fixed;
-    min-height:100vh; line-height:1.55;
-  }
-  .wrap{max-width:960px; margin:0 auto; padding:34px 20px 70px}
-  header{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
-  .brand{font-size:30px; font-weight:900; letter-spacing:.5px;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));
-    -webkit-background-clip:text; background-clip:text; color:transparent}
-  .badge{font-size:12px; color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:999px}
-  .dot{display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:6px; box-shadow:0 0 8px var(--ok)}
   .hero{text-align:center; margin:44px 0 6px}
   .hero h1{font-size:42px; margin:0 0 10px; line-height:1.14}
   .hero h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent}
   .hero p{color:var(--muted); font-size:17px; margin:0}
   .grid{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:36px; align-items:start}
-  .card{background:linear-gradient(180deg,var(--card),var(--bg2)); border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:0 16px 50px rgba(0,0,0,.45)}
-  .card h2{margin:0 0 6px; font-size:20px}
-  .card h2 .ico{color:var(--accent)}
-  .muted{color:var(--muted); font-size:14px}
-  .btn{display:block; width:100%; text-align:center; text-decoration:none; cursor:pointer; border:0;
-    color:#1a1200; font-weight:800; font-size:17px; padding:15px; border-radius:12px; margin-top:16px;
-    background:linear-gradient(90deg,var(--accent),var(--accent2)); box-shadow:0 8px 22px rgba(255,120,0,.35);
-    transition:transform .08s ease, box-shadow .2s ease}
-  .btn:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(255,120,0,.5)}
-  .btn[disabled]{opacity:.55; cursor:not-allowed; transform:none}
-  .tabs{display:flex; gap:8px; background:#0d1626; border:1px solid var(--line); border-radius:12px; padding:5px; margin-bottom:6px}
-  .tab{flex:1; text-align:center; padding:10px; border-radius:9px; cursor:pointer; font-weight:700; color:var(--muted); user-select:none}
-  .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2)); color:#1a1200}
+  .dl2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+  .dl2 .btn{margin-top:0}
+  pre.cmd{background:#0a1120; color:#ffd479; border-radius:8px; padding:10px 12px; font-size:12px; margin:10px 0 8px; white-space:pre-wrap; word-break:break-all}
+  .copy{background:#1d2740; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer}
+  .copy:hover{border-color:var(--accent)}
   .pane{display:none} .pane.active{display:block}
-  .field{margin-top:12px}
-  .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:5px}
-  .field input{width:100%; padding:12px 13px; border-radius:10px; border:1px solid var(--line);
-    background:#0d1626; color:var(--text); font-size:15px; outline:none}
-  .field input:focus{border-color:var(--accent)}
-  .msg{margin-top:14px; padding:11px 13px; border-radius:10px; font-size:14px; display:none}
-  .msg.ok{display:block; background:rgba(54,208,127,.12); border:1px solid var(--ok); color:var(--ok)}
-  .msg.err{display:block; background:rgba(255,93,108,.12); border:1px solid var(--err); color:var(--err)}
-  #panel{display:none}
-  .acct{display:flex; align-items:center; gap:14px; padding:14px; background:#0d1626; border:1px solid var(--line); border-radius:12px}
-  .av{width:48px; height:48px; border-radius:12px; flex:none; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:22px; color:#1a1200; background:linear-gradient(135deg,var(--accent),var(--accent2))}
-  .acct .nm{font-weight:800; font-size:17px}
-  .acct .xu{color:var(--accent); font-size:13px; margin-top:2px}
-  .feat{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
-  .feat .f{background:#121c30; border:1px dashed var(--line); border-radius:11px; padding:13px; text-align:center; color:var(--muted); font-size:13px}
-  .feat .f b{display:block; color:var(--text); font-size:14px; margin-bottom:2px}
-  .dd{margin-top:14px; padding:14px; background:#0d1626; border:1px solid var(--line); border-radius:12px}
-  .dd .hd{display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:10px}
-  .dd .hd b{font-size:15px} .dd .hd span{color:var(--accent); font-size:13px; font-weight:700}
-  .ddgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:5px}
-  .ddgrid div{aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:12px; font-weight:700;
-    background:#121c30; border:1px solid var(--line); color:var(--muted)}
-  .ddgrid div.done{background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#1a1000}
-  .ddgrid div.today{border:2px solid var(--accent); color:var(--text)}
-  .ddgrid div.miss{opacity:.4}
-  .ddq{font-size:13px; color:var(--muted); margin-top:10px} .ddq b{color:var(--text)}
-  .ddmoc{display:flex; flex-direction:column; gap:4px; margin-top:6px; font-size:12px}
-  .ddmoc div{display:flex; gap:8px; color:var(--muted)} .ddmoc div.ok{color:var(--ok)}
-  .ddmoc div span:first-child{min-width:58px; font-weight:700}
-  .dd .btn{margin-top:12px}
-  .soon{font-size:11px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:1px 7px; margin-top:6px; display:inline-block}
-  .link{color:var(--muted); font-size:13px; text-align:center; margin-top:14px; cursor:pointer}
-  .link:hover{color:var(--text)}
+  .who{display:flex; align-items:center; gap:14px; padding:14px; background:#0d1626; border:1px solid var(--line); border-radius:12px; margin-top:12px}
+  .who .nm{font-weight:800; font-size:17px}
   .steps{margin-top:32px}
   .steps h2{text-align:center; font-size:22px}
   .stepgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:16px}
@@ -83,27 +26,16 @@
   .step .n{width:34px; height:34px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center;
     font-weight:800; color:#1a1200; background:linear-gradient(90deg,var(--accent),var(--accent2))}
   .step b{display:block; margin-bottom:4px}
-  .note{background:#0e1829; border-left:3px solid var(--accent); padding:12px 14px; border-radius:8px; color:var(--muted); font-size:13px; margin-top:16px}
-  code{background:#0a1120; padding:2px 7px; border-radius:6px; color:#ffd479; font-size:13px}
-  .dl2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
-  .dl2 .btn{margin-top:0}
-  .btn small{display:block; font-size:12px; font-weight:600; opacity:.75; margin-top:2px}
-  .btn.mac{background:linear-gradient(90deg,#4f8cff,#2563eb); color:#ffffff; box-shadow:0 8px 22px rgba(37,99,235,.35)}
-  .btn.mac:hover{box-shadow:0 12px 30px rgba(37,99,235,.5)}
-  pre.cmd{background:#0a1120; color:#ffd479; border-radius:8px; padding:10px 12px; font-size:12px; margin:10px 0 8px; white-space:pre-wrap; word-break:break-all}
-  .copy{background:#1d2740; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer}
-  .copy:hover{border-color:var(--accent)}
-  .foot{text-align:center; color:#56688a; font-size:12px; margin-top:38px}
   @@media (max-width:760px){
     .grid{grid-template-columns:1fr} .stepgrid{grid-template-columns:1fr} .dl2{grid-template-columns:1fr}
-    .hero h1{font-size:30px} .wrap{padding:24px 16px 60px} .brand{font-size:26px}
+    .hero h1{font-size:30px}
   }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">GUNNYNETCO4</div>
+    <a class="brand" href="/">GUNNYNETCO4</a>
     <div class="badge"><span class="dot"></span>Server đang mở</div>
   </header>
 
@@ -133,63 +65,50 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     </div>
 
     <div class="card">
-      <div id="auth">
-        <div class="tabs">
-          <div class="tab active" data-tab="reg">Đăng ký</div>
-          <div class="tab" data-tab="log">Đăng nhập</div>
-        </div>
-
-        <div class="pane active" id="pane-reg">
-          <form id="regForm" autocomplete="off">
-            <div class="field"><label>Tên tài khoản (5 đến 15 ký tự, không dấu, không khoảng trắng)</label>
-              <input id="r_user" maxlength="15" placeholder="vd: biabia"></div>
-            <div class="field"><label>Mật khẩu (tối thiểu 6 ký tự)</label>
-              <input id="r_pass" type="password" placeholder="••••••"></div>
-            <div class="field"><label>Nhập lại mật khẩu</label>
-              <input id="r_pass2" type="password" placeholder="••••••"></div>
-            <button class="btn" type="submit" id="regBtn">TẠO TÀI KHOẢN</button>
-          </form>
-        </div>
-
-        <div class="pane" id="pane-log">
-          <form id="logForm" autocomplete="off">
-            <div class="field"><label>Tên tài khoản</label>
-              <input id="l_user" placeholder="tài khoản của bạn"></div>
-            <div class="field"><label>Mật khẩu</label>
-              <input id="l_pass" type="password" placeholder="••••••"></div>
-            <button class="btn" type="submit" id="logBtn">ĐĂNG NHẬP</button>
-          </form>
-        </div>
-        <div class="msg" id="authMsg"></div>
+      <!-- dang nhap hien truoc; bam "Dang ky ngay" moi hien form dang ky -->
+      <div class="pane active" id="pane-log">
+        <h2><span class="ico">🔑</span> Đăng nhập</h2>
+        <div class="muted">Dùng tài khoản game để vào trang cá nhân.</div>
+        <form id="logForm" autocomplete="off">
+          <div class="field"><label>Tên tài khoản</label>
+            <input id="l_user" placeholder="tài khoản của bạn" autocomplete="username"></div>
+          <div class="field"><label>Mật khẩu</label>
+            <input id="l_pass" type="password" placeholder="••••••" autocomplete="current-password"></div>
+          <button class="btn" type="submit" id="logBtn">ĐĂNG NHẬP</button>
+        </form>
+        <div class="switch">Chưa có tài khoản? <a data-go="reg">Đăng ký ngay</a></div>
       </div>
 
-      <div id="panel">
-        <div class="acct">
-          <div class="av" id="p_av">G</div>
-          <div><div class="nm" id="p_name">Người chơi</div><div class="xu" id="p_xu">Xu: 0</div></div>
-        </div>
-        <div class="dd" id="dd">
-          <div class="hd"><b id="dd_title">Điểm danh</b><span id="dd_cnt"></span></div>
-          <div class="ddgrid" id="dd_grid"></div>
-          <div class="ddq" id="dd_daily"></div>
-          <div class="ddmoc" id="dd_moc"></div>
-          <button class="btn" id="dd_btn" disabled>ĐIỂM DANH HÔM NAY</button>
-          <div class="msg" id="dd_msg"></div>
-        </div>
-        <div class="feat">
-          <div class="f"><b>Đổi mật khẩu</b>bảo mật tài khoản<br><span class="soon">sắp có</span></div>
-          <div class="f"><b>Lịch sử</b>giao dịch của bạn<br><span class="soon">sắp có</span></div>
-          <div class="f"><b>Sự kiện</b>quà và giftcode<br><span class="soon">sắp có</span></div>
-        </div>
-        <div class="link" id="logout">Đăng xuất</div>
+      <div class="pane" id="pane-reg">
+        <h2><span class="ico">✚</span> Đăng ký</h2>
+        <div class="muted">Tạo tài khoản mới, dùng chung cho game và trang cá nhân.</div>
+        <form id="regForm" autocomplete="off">
+          <div class="field"><label>Tên tài khoản (5 đến 15 ký tự, không dấu, không khoảng trắng)</label>
+            <input id="r_user" maxlength="15" placeholder="vd: biabia"></div>
+          <div class="field"><label>Mật khẩu (tối thiểu 6 ký tự)</label>
+            <input id="r_pass" type="password" placeholder="••••••" autocomplete="new-password"></div>
+          <div class="field"><label>Nhập lại mật khẩu</label>
+            <input id="r_pass2" type="password" placeholder="••••••" autocomplete="new-password"></div>
+          <button class="btn" type="submit" id="regBtn">TẠO TÀI KHOẢN</button>
+        </form>
+        <div class="switch">Đã có tài khoản? <a data-go="log">Đăng nhập</a></div>
       </div>
+
+      <div class="pane" id="pane-in">
+        <h2><span class="ico">✔</span> Đã đăng nhập</h2>
+        <div class="who"><div class="av" id="w_av">G</div><div><div class="nm" id="w_name">Người chơi</div><div class="muted">Điểm danh, hồ sơ nhân vật và các tính năng khác ở trang cá nhân.</div></div></div>
+        <a class="btn" href="/dashboard">VÀO TRANG CÁ NHÂN</a>
+        <div class="switch"><a id="logout">Đăng xuất</a></div>
+      </div>
+
+      <div class="msg" id="authMsg"></div>
     </div>
   </div>
 
   <div class="steps">
     <h2>Chơi trong 3 bước</h2>
     <div class="stepgrid">
-      <div class="step"><div class="n">1</div><b>Đăng ký</b><span class="muted">Tạo tài khoản ở ô bên trên.</span></div>
+      <div class="step"><div class="n">1</div><b>Đăng ký</b><span class="muted">Bấm "Đăng ký ngay" ở khung đăng nhập.</span></div>
       <div class="step"><div class="n">2</div><b>Tải và mở launcher</b><span class="muted">Windows chạy netco4gunny.exe, MacBook mở GunnyNetco4.app.</span></div>
       <div class="step"><div class="n">3</div><b>Đăng nhập và chơi</b><span class="muted">Nhập tài khoản vừa tạo rồi bấm Chơi.</span></div>
     </div>
@@ -203,16 +122,12 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
   var authMsg=document.getElementById('authMsg');
   function show(type,text){ authMsg.className='msg '+type; authMsg.textContent=text; }
   function clearMsg(){ authMsg.className='msg'; authMsg.textContent=''; }
-
-  var tabs=document.querySelectorAll('.tab');
-  tabs.forEach(function(t){
-    t.addEventListener('click',function(){
-      tabs.forEach(function(x){x.classList.remove('active')}); t.classList.add('active');
-      document.getElementById('pane-reg').classList.toggle('active', t.dataset.tab==='reg');
-      document.getElementById('pane-log').classList.toggle('active', t.dataset.tab==='log');
-      clearMsg();
-    });
-  });
+  function pane(name){
+    ['log','reg','in'].forEach(function(n){ document.getElementById('pane-'+n).classList.toggle('active', n===name); });
+    clearMsg();
+    var f=document.querySelector('#pane-'+name+' input'); if(f) f.focus();
+  }
+  document.querySelectorAll('[data-go]').forEach(function(a){ a.addEventListener('click',function(){ pane(a.dataset.go); }); });
 
   function post(url,data){
     var body=new URLSearchParams(); Object.keys(data).forEach(function(k){ body.append(k,data[k]); });
@@ -231,21 +146,15 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     if(p!==rp){ show('err','Nhập lại mật khẩu không khớp.'); return; }
     var b=document.getElementById('regBtn'); b.disabled=true; b.textContent='Đang tạo...';
     post('/api/register',{username:u,password:p,repassword:rp,email:''}).then(function(d){
-      if(d&&d.success){ show('ok',(d.message||'Đăng ký thành công!')+' Chuyển qua tab Đăng nhập để vào.'); document.getElementById('regForm').reset(); }
-      else show('err',firstError(d));
+      if(d&&d.success){
+        document.getElementById('regForm').reset(); pane('log');
+        document.getElementById('l_user').value=u; document.getElementById('l_pass').focus();
+        show('ok',(d.message||'Đăng ký thành công!')+' Nhập mật khẩu để đăng nhập.');
+      } else show('err',firstError(d));
     }).catch(function(){ show('err','Không kết nối được máy chủ.'); })
     .finally(function(){ b.disabled=false; b.textContent='TẠO TÀI KHOẢN'; });
   });
 
-  function openPanel(info){
-    document.getElementById('auth').style.display='none';
-    document.getElementById('panel').style.display='block';
-    var name=(info&&info.UserName)||'Người chơi';
-    document.getElementById('p_name').textContent=name;
-    document.getElementById('p_av').textContent=(name[0]||'G').toUpperCase();
-    document.getElementById('p_xu').textContent='Xu: '+((info&&info.Money)||0);
-    ddMsg.className='msg'; ddLoad();
-  }
   document.getElementById('logForm').addEventListener('submit',function(e){
     e.preventDefault();
     var u=document.getElementById('l_user').value.trim(), p=document.getElementById('l_pass').value;
@@ -254,65 +163,15 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     post('/api/login131',{username:u,password:p}).then(function(d){
       if(d&&d.success){
         try{ localStorage.setItem('gn_token',(d.data&&d.data.token)||''); localStorage.setItem('gn_user',JSON.stringify((d.data&&d.data.userInfo)||{})); }catch(e){}
-        clearMsg(); openPanel(d.data&&d.data.userInfo);
-      } else show('err',firstError(d));
-    }).catch(function(){ show('err','Không kết nối được máy chủ.'); })
-    .finally(function(){ b.disabled=false; b.textContent='ĐĂNG NHẬP'; });
+        location.href='/dashboard';
+      } else { show('err',firstError(d)); b.disabled=false; b.textContent='ĐĂNG NHẬP'; }
+    }).catch(function(){ show('err','Không kết nối được máy chủ.'); b.disabled=false; b.textContent='ĐĂNG NHẬP'; });
   });
 
-  function logout(){
+  document.getElementById('logout').addEventListener('click',function(){
     try{ localStorage.removeItem('gn_token'); localStorage.removeItem('gn_user'); }catch(e){}
-    document.getElementById('panel').style.display='none';
-    document.getElementById('auth').style.display='block';
-    document.getElementById('logForm').reset();
-  }
-  document.getElementById('logout').addEventListener('click',logout);
-  // diem danh web: /api/diemdanh/info va /api/diemdanh (DiemDanhController), qua ve hop thu trong game
-  var ddMsg=document.getElementById('dd_msg'), ddBtn=document.getElementById('dd_btn');
-  function ddShow(type,text){ ddMsg.className='msg '+type; ddMsg.textContent=text; }
-  function authPost(url){
-    var t=''; try{ t=localStorage.getItem('gn_token')||''; }catch(e){}
-    return fetch(url,{method:'POST',headers:{'Accept':'application/json','Authorization':'Bearer '+t}})
-      .then(function(r){ if(r.status===403){ return {success:false,expired:true,message:'Phiên đăng nhập đã hết, vui lòng đăng nhập lại.'}; }
-        return r.json().catch(function(){ return {success:false,message:'Lỗi máy chủ, thử lại sau.'}; }); });
-  }
-  function ddRender(d){
-    document.getElementById('dd_title').textContent='Điểm danh tháng '+d.thang+' · '+d.nhanvat;
-    document.getElementById('dd_cnt').textContent=d.ngay.length+' ngày';
-    var g=document.getElementById('dd_grid'); g.innerHTML='';
-    for(var i=1;i<=d.songay;i++){
-      var c=document.createElement('div'); c.textContent=i;
-      if(d.ngay.indexOf(i)>=0) c.className='done';
-      else if(i===d.homnay) c.className='today';
-      else if(i<d.homnay) c.className='miss';
-      g.appendChild(c);
-    }
-    var dl=document.getElementById('dd_daily'); dl.innerHTML='';
-    if(d.quangay){ var b=document.createElement('b'); b.textContent=d.quangay; dl.appendChild(document.createTextNode('Mỗi ngày: ')); dl.appendChild(b); }
-    var m=document.getElementById('dd_moc'); m.innerHTML='';
-    (d.moc||[]).forEach(function(x){
-      var r=document.createElement('div'); if(x.dat) r.className='ok';
-      var a=document.createElement('span'); a.textContent=(x.dat?'✓ ':'')+'Đủ '+x.moc+' ngày';
-      var q=document.createElement('span'); q.textContent=x.qua;
-      r.appendChild(a); r.appendChild(q); m.appendChild(r);
-    });
-    ddBtn.disabled=!!d.dadiemdanh; ddBtn.textContent=d.dadiemdanh?'HÔM NAY ĐÃ ĐIỂM DANH':'ĐIỂM DANH HÔM NAY';
-  }
-  function ddLoad(){
-    authPost('/api/diemdanh/info').then(function(d){
-      if(d&&d.success&&d.data){ ddRender(d.data); }
-      else { ddBtn.disabled=true; ddShow('err',(d&&d.message)||'Không tải được điểm danh.'); if(d&&d.expired) setTimeout(logout,1500); }
-    }).catch(function(){ ddShow('err','Không kết nối được máy chủ.'); });
-  }
-  ddBtn.addEventListener('click',function(){
-    ddBtn.disabled=true; ddBtn.textContent='Đang gửi quà...';
-    authPost('/api/diemdanh').then(function(d){
-      if(d&&d.success){ ddShow('ok',d.message+((d.data&&d.data.qua&&d.data.qua.length)?' Nhận: '+d.data.qua.join('; ')+'.':'')); }
-      else ddShow('err',(d&&d.message)||'Có lỗi xảy ra.');
-      ddLoad();
-    }).catch(function(){ ddShow('err','Không kết nối được máy chủ.'); ddBtn.disabled=false; ddBtn.textContent='ĐIỂM DANH HÔM NAY'; });
+    document.getElementById('logForm').reset(); pane('log');
   });
-
 
   // Nguoi dung Mac: dua nut MacBook len truoc (moi nut giu mau rieng)
   if(/Mac/i.test(navigator.platform||navigator.userAgent)){
@@ -326,9 +185,13 @@ codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
     else { var r=document.createRange(); r.selectNodeContents(document.getElementById('macCmd')); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
   });
 
+  // da dang nhap: hien loi chao + nut vao trang ca nhan (trang chu van la trang tai game)
   try{
-    var t=localStorage.getItem('gn_token');
-    if(t){ openPanel(JSON.parse(localStorage.getItem('gn_user')||'{}')); }
+    if(localStorage.getItem('gn_token')){
+      var u=JSON.parse(localStorage.getItem('gn_user')||'{}'), n=u.UserName||'Người chơi';
+      document.getElementById('w_name').textContent=n; document.getElementById('w_av').textContent=(n[0]||'G').toUpperCase();
+      pane('in');
+    }
   }catch(e){}
 })();
 </script>
