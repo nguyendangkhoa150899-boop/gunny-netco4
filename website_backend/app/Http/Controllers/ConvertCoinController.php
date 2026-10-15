@@ -13,6 +13,7 @@ use App\Models\Player;
 use App\Models\ServerList;
 use App\Models\Setting;
 use App\Models\TwoFactor;
+use App\Support\XuWeb;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +26,8 @@ class ConvertCoinController extends \App\Http\BaseController
     public function index(ConvertCoinRequest $request)
     {
         $playerId = $request->input('player_id');
-        $lock = Cache::lock('convert-coin-for-'.$playerId, 10);
+        // khoa theo TAI KHOAN: khoa theo chuoi player_id thi gui "227"/"0227" song song la qua khoa (15/10)
+        $lock = Cache::lock('convert-coin-for-'.auth()->user()->UserID, 40);
         $status = false;
         try {
              $lock->get(function () use ($request, $playerId, &$status) {
@@ -104,10 +106,12 @@ class ConvertCoinController extends \App\Http\BaseController
         $member = $this->member;
         DB::connection('sqlsrv_mem')->beginTransaction();
         $memHistory = new MemberHistory();
+        // tru xu NGUYEN TU (UPDATE ... WHERE Money-coin>=0, giu khoa dong toi khi commit/rollback). Ban goc doc so du luc dang nhap
+        // roi Money -= coin; save(): gui song song thi lan nao cung qua kiem, game nhan xu nhieu lan (15/10).
+        $soDu = null;
         if(
-//            $memHistory->memberChargeMoneyLog($member->UserID, $coin, $server->ServerName, $request->ip()) && //Without AntiDDos.vn
             $memHistory->memberChargeMoneyLog($member->UserID, $coin, $server->ServerName, $ip) &&
-            $member->chargeMoney($coin)
+            ($soDu = XuWeb::doi((int)$member->UserID, -$coin, 'doi-game', 'Chuyển vào game: ' . $player->NickName)) !== null
         ){
             $chargeID = md5(uniqid());
 
@@ -130,7 +134,7 @@ class ConvertCoinController extends \App\Http\BaseController
                 ,false, $context);
             if (substr($content, 0, 1) === "0") {
                 DB::connection('sqlsrv_mem')->commit();
-                return $this->success('Chuyển xu thành công, nhận xu trong game nhé!', ['coin' => $member->Money]);
+                return $this->success('Chuyển xu thành công, nhận xu trong game nhé!', ['coin' => $soDu]);
 
             } else {
                 Log::error('Charge to '.$member->Email.' Error: '.$content);
@@ -138,6 +142,8 @@ class ConvertCoinController extends \App\Http\BaseController
                 return $this->error('Không thể nạp xu vào game, vui lòng thoát game và thử lại hoặc thông báo tới quản trị viên để được trợ giúp!');
             }
         }
+        DB::connection('sqlsrv_mem')->rollBack();
+        return $this->error('Không đủ coin để chuyển đổi!');
     }
 
     private function sendCode($serverId, $playerId, $coin)
@@ -184,7 +190,7 @@ class ConvertCoinController extends \App\Http\BaseController
     public function validatetfa(Validate2faExchangeRequest $request)
     {
         $code = $request->code;
-        $lock = Cache::lock('convert2fa-coin-for-'.$code, 10);
+        $lock = Cache::lock('convert-coin-for-'.auth()->user()->UserID, 40);
         $status = false;
         try {
             $lock->get(function () use ($request, $code, &$status) {
