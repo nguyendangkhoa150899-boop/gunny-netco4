@@ -71,9 +71,17 @@
   .step b{display:block; margin-bottom:4px}
   .note{background:#0e1829; border-left:3px solid var(--accent); padding:12px 14px; border-radius:8px; color:var(--muted); font-size:13px; margin-top:16px}
   code{background:#0a1120; padding:2px 7px; border-radius:6px; color:#ffd479; font-size:13px}
+  .dl2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:16px}
+  .dl2 .btn{margin-top:0}
+  .btn small{display:block; font-size:12px; font-weight:600; opacity:.75; margin-top:2px}
+  .btn.alt{background:#1d2740; color:var(--text); border:1px solid var(--line); box-shadow:none}
+  .btn.alt:hover{border-color:var(--accent)}
+  pre.cmd{background:#0a1120; color:#ffd479; border-radius:8px; padding:10px 12px; font-size:12px; margin:10px 0 8px; white-space:pre-wrap; word-break:break-all}
+  .copy{background:#1d2740; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:12px; cursor:pointer}
+  .copy:hover{border-color:var(--accent)}
   .foot{text-align:center; color:#56688a; font-size:12px; margin-top:38px}
   @@media (max-width:760px){
-    .grid{grid-template-columns:1fr} .stepgrid{grid-template-columns:1fr}
+    .grid{grid-template-columns:1fr} .stepgrid{grid-template-columns:1fr} .dl2{grid-template-columns:1fr}
     .hero h1{font-size:30px} .wrap{padding:24px 16px 60px} .brand{font-size:26px}
   }
 </style>
@@ -93,10 +101,20 @@
   <div class="grid">
     <div class="card">
       <h2><span class="ico">⬇</span> Tải Client</h2>
-      <div class="muted">Bản Windows &middot; ~145 MB &middot; đã kèm sẵn Flash, không cần cài gì thêm.</div>
-      <a class="btn" href="/downloads/GunnyNetco4-Launcher.zip">TẢI LAUNCHER (Windows)</a>
+      <div class="muted">Đã kèm sẵn Flash, không cần cài gì thêm.</div>
+      <div class="dl2" id="dl2">
+        <a class="btn" id="dlWin" href="/downloads/GunnyNetco4-Launcher.zip">WINDOWS<small>~145 MB</small></a>
+        <a class="btn alt" id="dlMac" href="/downloads/GunnyNetco4-Mac.zip">MACBOOK<small>~144 MB</small></a>
+      </div>
       <div class="note">
-        Giải nén rồi chạy <code>netco4gunny.exe</code>. Nếu SmartScreen chặn, bấm <b>More info</b> rồi <b>Run anyway</b>.
+        <b>Windows:</b> giải nén rồi chạy <code>netco4gunny.exe</code>. Nếu SmartScreen chặn, bấm <b>More info</b> rồi <b>Run anyway</b>.
+      </div>
+      <div class="note">
+        <b>MacBook:</b> mở file zip, kéo <code>GunnyNetco4.app</code> vào Applications. Mở Terminal, dán 2 lệnh dưới rồi mở app.
+        Máy chip Apple (M1 trở lên) sẽ hỏi cài Rosetta, bấm Cài đặt.
+        <pre class="cmd" id="macCmd">xattr -cr /Applications/GunnyNetco4.app
+codesign --force --deep --sign - /Applications/GunnyNetco4.app</pre>
+        <button type="button" class="copy" id="copyMac">Sao chép lệnh</button>
       </div>
     </div>
 
@@ -142,7 +160,6 @@
           <div class="f"><b>Lịch sử</b>giao dịch của bạn<br><span class="soon">sắp có</span></div>
           <div class="f"><b>Sự kiện</b>quà và giftcode<br><span class="soon">sắp có</span></div>
         </div>
-        <a class="btn" href="/downloads/GunnyNetco4-Launcher.zip" style="margin-top:14px">TẢI LAUNCHER VÀ VÀO CHƠI</a>
         <div class="link" id="logout">Đăng xuất</div>
       </div>
     </div>
@@ -152,7 +169,7 @@
     <h2>Chơi trong 3 bước</h2>
     <div class="stepgrid">
       <div class="step"><div class="n">1</div><b>Đăng ký</b><span class="muted">Tạo tài khoản ở ô bên trên.</span></div>
-      <div class="step"><div class="n">2</div><b>Tải và mở launcher</b><span class="muted">Giải nén, chạy netco4gunny.exe.</span></div>
+      <div class="step"><div class="n">2</div><b>Tải và mở launcher</b><span class="muted">Windows chạy netco4gunny.exe, MacBook mở GunnyNetco4.app.</span></div>
       <div class="step"><div class="n">3</div><b>Đăng nhập và chơi</b><span class="muted">Nhập tài khoản vừa tạo rồi bấm Chơi.</span></div>
     </div>
   </div>
@@ -226,6 +243,18 @@
     document.getElementById('panel').style.display='none';
     document.getElementById('auth').style.display='block';
     document.getElementById('logForm').reset();
+  });
+
+  // Nguoi dung Mac: dua nut MacBook len lam nut chinh
+  if(/Mac/i.test(navigator.platform||navigator.userAgent)){
+    var w=document.getElementById('dlWin'), m=document.getElementById('dlMac');
+    w.classList.add('alt'); m.classList.remove('alt'); m.parentNode.insertBefore(m,w);
+  }
+  document.getElementById('copyMac').addEventListener('click',function(){
+    var b=this, txt=document.getElementById('macCmd').textContent;
+    var done=function(){ b.textContent='Đã sao chép'; setTimeout(function(){ b.textContent='Sao chép lệnh'; },1800); };
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){}); }
+    else { var r=document.createRange(); r.selectNodeContents(document.getElementById('macCmd')); var s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }
   });
 
   try{
