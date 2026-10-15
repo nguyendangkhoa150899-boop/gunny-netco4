@@ -3,7 +3,7 @@
 -- Quy uoc cot Creator cua dong code goc (UserID=0) trong Db_Tank41.dbo.Active_Number:
 --   0        code 1 lan (ban goc game): nguoi dau nhap xong la het
 --   -1       moi nguoi 1 lan, khong gioi han so nguoi (giftcode-dung-chung.sql)
---   < -1     nhieu lan: tong so luot = -Creator - 1 (vd -51 = 50 luot), mot nguoi nhap lai duoc, bo qua IsOnly cua su kien
+--   < -1     nhieu lan: tong so luot = -Creator - 1 (vd -51 = 50 luot), mot nguoi nhap lai duoc; kieu -1 va < -1 khong bi IsOnly cua su kien chan
 -- Khoa chinh bang la (AwardID, UserID) nen moi nguoi chi co 1 dong nhan cho moi code:
 --   kieu -1: dong nhan Creator=0; kieu < -1: Creator cua dong nhan = so lan nguoi do da nhan (nhan lai thi +1).
 --   Da dung (tong luot) = SUM(IIF(Creator>0,Creator,1)) cac dong UserID<>0.
@@ -29,8 +29,8 @@ SET @d = REPLACE(@d, @dec, @dec + NCHAR(13)+NCHAR(10) + N'Declare @Multi Int' + 
 SET @d = REPLACE(@d, @sel,
   N'@Shared=IIF(Creator=-1,1,0),@Multi=IIF(Creator<-1,-Creator-1,0) From  Active_Number Where ActiveID=@ActiveID and AwardID =@AwardID Order By UserID'
   + NCHAR(13)+NCHAR(10) + N'       If @Multi>0 And (Select IsNull(Sum(IIF(Creator>0,Creator,1)),0) From Active_Number Where ActiveID=@ActiveID And AwardID=@AwardID And UserID<>0)>=@Multi Return 5');
--- code nhieu lan khong bi chan boi IsOnly (1 nguoi nhan lai duoc)
-SET @d = REPLACE(@d, @only, N'If @CanGet=1 And @Multi=0 ');
+-- IsOnly cua su kien (1 nguoi chi nhan 1 code trong su kien) chi ap cho code 1 lan kieu cu; code -1 / < -1 tu quan luot theo tung code
+SET @d = REPLACE(@d, @only, N'If @CanGet=1 And @Multi=0 And @Shared=0 ');
 -- nhan lan dau: them 1 dong (Creator=1 neu nhieu lan); nhan lai (nhieu lan): tang Creator cua dong do. Dong goc giu nguyen.
 DECLARE @val nvarchar(100) = N'Values(@AwardID,@ActiveID,1,Getdate(),@UserID,@Mark,0)';
 IF CHARINDEX(@val,@d)=0 BEGIN RAISERROR(N'SP khac ban da khao sat, khong va.',16,1); RETURN; END
