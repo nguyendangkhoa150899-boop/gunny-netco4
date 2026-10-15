@@ -262,7 +262,7 @@
         <h2>Tài xỉu</h2>
         <div id="stage">
           <div id="diceRow"></div>
-          <div id="paper" class="locked"><img src="/img/chen.png" alt="" draggable="false"></div>
+          <div id="paper" class="locked"><img src="/img/chen.png?v=1" alt="" draggable="false"></div>
           <div id="sumBadge"></div>
         </div>
         <div id="stageCap">Chọn cửa, chọn tiền rồi đặt cược</div>
