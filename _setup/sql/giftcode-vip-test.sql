@@ -7,12 +7,16 @@
 -- Mon CanStrengthen=1 duoc cuong hoa +12 (Server_Config.MaxStrengthLevel). Do nam/nu dung cot Sex (1 nam, 2 nu, 0 ca hai):
 --   SP_Active_PullDown chi gui mon co Sex = gioi tinh nhan vat hoac 0.
 -- Code mac dinh: NETCO4VIP (dung chung, moi nguoi nhap 1 lan; can _setup/sql/giftcode-dung-chung.sql). Them ten khac o admin > Giftcode.
+-- Chay: sqlcmd -S localhost -E -C -b -f 65001 -i giftcode-vip-test.sql   (-f 65001 BAT BUOC: file UTF-8, thieu la chu tieng Viet bi vo)
 -- Chay lai an toan: neu da co su kien cung ten thi bo qua.
 USE Db_Tank;
 GO
 SET NOCOUNT ON;
 DECLARE @title nvarchar(100) = N'Code VIP test phó bản';
-IF EXISTS(SELECT 1 FROM Active WHERE Title=@title) BEGIN PRINT N'Da co su kien, bo qua.'; RETURN; END
+IF EXISTS(SELECT 1 FROM Active WHERE Title=@title OR Title LIKE N'Code VIP test ph%') BEGIN
+  -- sua ten/mo ta neu lan truoc chay thieu -f 65001
+  UPDATE Active SET Title=@title, Description=N'Trọn bộ trang bị mạnh nhất (cường hóa +12) để test phó bản. Mỗi nhân vật nhận 1 lần.', Content=N'Trọn bộ trang bị mạnh nhất (cường hóa +12) để test phó bản. Mỗi nhân vật nhận 1 lần.', AwardContent=N'Trọn bộ trang bị mạnh nhất (cường hóa +12) để test phó bản. Mỗi nhân vật nhận 1 lần.' WHERE Title LIKE N'Code VIP test ph%';
+  PRINT N'Da co su kien, da cap nhat ten.'; RETURN; END
 DECLARE @id int = (SELECT ISNULL(MAX(ActiveID),0)+1 FROM Active);
 DECLARE @desc nvarchar(400) = N'Trọn bộ trang bị mạnh nhất (cường hóa +12) để test phó bản. Mỗi nhân vật nhận 1 lần.';
 INSERT INTO Active(ActiveID,Title,Description,Content,AwardContent,HasKey,StartDate,EndDate,IsOnly,Type,ActionTimeContent,IsAdvance,GoodsExchangeTypes,GoodsExchangeNum,limitType,limitValue,IsShow,ActiveType,IconID,CanGetCode,CodePrefix)
