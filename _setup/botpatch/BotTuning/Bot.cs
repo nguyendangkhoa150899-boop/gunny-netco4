@@ -9,10 +9,9 @@ namespace BotTuning
     ///   Game.Logic.dll   BotCommand.HandleCommand (truoc ShootPoint)                  -> Lech
     /// Tham so doc tu appSettings cua exe dang chay (Road.Service.exe.config / Fighting.Service.exe.config), sua xong restart:
     ///   BotPowerPercent    90   bot = 90% chi so nguoi choi duoc ghep
-    ///   BotAimErrorBase    6    do lech toi thieu (pixel)
-    ///   BotAimErrorPer1000 30   cong them moi 1000 pixel khoang cach
-    ///   BotAimErrorMax     45   do lech toi da
-    ///   BotAimMissPercent  5    % phat ban truot han (lech x3)
+    ///   BotHitPercent      70   % luot ban nham chuan (10 luot trung ~7)
+    ///   BotMissMin         90   luot truot: lech toi thieu (pixel)
+    ///   BotMissMax         180  luot truot: lech toi da (pixel)
     /// </summary>
     public static class Bot
     {
@@ -45,15 +44,30 @@ namespace BotTuning
         /// <summary>thay so chia 2.0 / 1.65 trong GetAutoBot: chia cho 1/p => ket qua = goc * p</summary>
         public static double ChiaGoc() => 1.0 / PhanTram;
 
-        /// <summary>do lech diem nham: x muc tieu, tu = x cua bot. Lech deu trong [-e, e], thinh thoang truot han.</summary>
+        // 1 luot ban co the goi Lech 1-3 lan (dao cu 3 tia): cac lan goi sat nhau cua cung 1 bot dung chung ket qua trung/truot
+        private static readonly object _k = new object();
+        private static int _lastTick, _lastTu = int.MinValue, _lastLech;
+
+        /// <summary>
+        /// TI LE TRUNG theo luot (vd 7/10): BotHitPercent % luot nham chuan (giu diem nham goc cua game),
+        /// con lai co tinh ban truot: lech BotMissMin..BotMissMax pixel sang trai/phai ngau nhien.
+        /// x = diem nham, tu = x cua bot (nhan dien bot trong luot).
+        /// </summary>
         public static int Lech(int x, int tu)
         {
-            double kc = Math.Abs(x - tu);
-            double e = Cfg("BotAimErrorBase", 6) + kc * Cfg("BotAimErrorPer1000", 30) / 1000.0;
-            e = Math.Min(e, Cfg("BotAimErrorMax", 45));
-            if (R.Next(100) < Cfg("BotAimMissPercent", 5)) e *= 3;
-            int d = (int)Math.Round((R.NextDouble() * 2 - 1) * e);
-            return x + d;
+            lock (_k)
+            {
+                int now = Environment.TickCount;
+                if (tu == _lastTu && unchecked(now - _lastTick) < 1500) { _lastTick = now; return x + _lastLech; }
+                int lech = 0;
+                if (R.Next(100) >= Cfg("BotHitPercent", 70))
+                {
+                    int mn = (int)Cfg("BotMissMin", 90), mx = Math.Max(mn, (int)Cfg("BotMissMax", 180));
+                    lech = R.Next(mn, mx + 1) * (R.Next(2) == 0 ? -1 : 1);
+                }
+                _lastTu = tu; _lastTick = now; _lastLech = lech;
+                return x + lech;
+            }
         }
     }
 }
