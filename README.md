@@ -387,3 +387,9 @@ Mọi file đều chạy lại an toàn, trừ `lat-the-can-bang.sql` (ghi đè 
 
 - Kiểm bản vá có được nạp: DLL thuần IL không hiện trong danh sách module (kể cả PowerShell 32-bit). Thử mở file độc quyền `[IO.File]::Open(f,'Open','ReadWrite','None')`: bị khóa = process đang dùng. `BotTuning.dll` chỉ nạp khi có bot đầu tiên.
 - Admin: `center_online()` (lib.php) đọc số người đang chơi thật từ Center (`ServerList.ashx` `total`); `State=1` trong DB có thể kẹt sau khi server game tắt ngang. Nút **Reset trạng thái** đặt hết về 0, người đang chơi thật được Road ghi lại `State=1` ở lần lưu tự động kế tiếp.
+
+## 26. Client: đổi chỗ nút Xác nhận / Hủy (15/10/2026)
+Mọi hộp thoại xác nhận dùng `com.pickgliss.ui.controls.alert.BaseAlerFrame`, vị trí nút viết cứng trong code (`BaseAlerFrame.as` dòng 331-332, Xác nhận trái / Hủy phải). Không có Flex SDK nên **vá thẳng bytecode**: `node _setup/va-nut/vanut.js <vào.swf> <ra.swf> [--ghi]`. Script tìm hàm có `customPos` + `buttonGape`, đổi chéo tham chiếu `_submitButton` ↔ `_cancelButton` giữa 3 lệnh `set x` cuối, tức nhánh mặc định có cả 2 nút, thành Hủy trái / Xác nhận phải. Nhánh `customPos` (vài khung tự đặt vị trí) giữ nguyên.
+- Lớp có trong **`Flash/2.png`** (game chính) và **`Flash/1.png`**: vá cả hai. Sau giải nén mỗi file chỉ khác 8 byte (`sosanh.js`). Muốn kiểm file nào chứa lớp nào: `swfinfo.js`.
+- md5: gốc 1.png `7a4a3f50…`, 2.png `240987fd…`; đã vá 1.png `8f18b66c…`, 2.png `6b76732f…`. Bản gốc trên VPS: `C:\inst2\flash-goc-20261015\`.
+- Người chơi phải tắt hẳn launcher rồi mở lại (launcher tạo thư mục dữ liệu mới mỗi lần mở, nên không còn cache cũ).
