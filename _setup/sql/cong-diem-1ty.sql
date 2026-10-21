@@ -29,5 +29,5 @@ COMMIT;
 
 DECLARE @n int = (SELECT COUNT(*) FROM @t WHERE Delta > 0), @tong int = (SELECT COUNT(*) FROM dbo.Mem_Account);
 PRINT N'Da cong diem cho ' + CAST(@n AS nvarchar(10)) + N' / ' + CAST(@tong AS nvarchar(10)) + N' tai khoan.';
-SELECT TOP 10 a.UserName, d.Diem FROM dbo.Web_Diem d JOIN dbo.Mem_Account a ON a.UserID = d.MemberID ORDER BY d.Diem DESC;
+SELECT TOP 10 a.Email, d.Diem FROM dbo.Web_Diem d JOIN dbo.Mem_Account a ON a.UserID = d.MemberID ORDER BY d.Diem DESC;
 GO
