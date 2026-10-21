@@ -146,7 +146,11 @@
   .qtrow .x{background:#3a1d22;color:#ff9a9a;border:1px solid #6b2a2a;border-radius:8px;width:30px;height:30px;cursor:pointer;font-weight:900}
   .qtempty{border:1px dashed var(--line);border-radius:12px;padding:16px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:8px}
   .qtto{display:flex;align-items:center;gap:8px;background:#1d1a10;border:1px solid #6b5520;border-radius:10px;padding:9px 12px;font-size:14px;margin-bottom:10px}
-  .qtsearch{display:flex;gap:8px} .qtsearch select{background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 10px;font-size:14px}
+  .qtsearch{display:flex;gap:8px} .qtsearch .in{flex:1 1 auto;min-width:0}
+  .qtsearch select{flex:0 0 210px;width:210px;min-width:0;text-overflow:ellipsis;background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 10px;font-size:14px}
+  .qtsearch .b{flex:0 0 auto;padding:0 18px;background:linear-gradient(180deg,#ffb347,#f08a1c);color:#2b1600}
+  .b.more{background:#2563eb;color:#fff}
+  @@media (max-width:640px){ .qtsearch{flex-wrap:wrap} .qtsearch .in{flex-basis:100%} .qtsearch select{flex:1 1 auto;width:auto} }
   .qtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:12px;max-height:560px;overflow-y:auto;padding-right:4px}
   .qtc{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;text-align:center;padding:2px}
   .qtc .ic{width:64px;height:64px;border-radius:10px;border:2px solid;background:radial-gradient(circle at 50% 35%,#1f2a44,#0d1220 70%);position:relative;transition:transform .1s,box-shadow .1s}
@@ -494,10 +498,10 @@
     <div class="card">
       <h2>Tìm vật phẩm</h2>
       <div class="qtsearch"><input class="in" id="qtQ" placeholder="Nhập ID hoặc tên, vd: 7194 hoặc Thương Cổ" autocomplete="off">
-        <select id="qtCat"><option value="0">Tất cả loại</option></select></div>
+        <select id="qtCat"><option value="0">Tất cả loại</option></select><button class="b" id="qtFind">Tìm</button></div>
       <div class="muted" id="qtInfo" style="margin-top:8px">Chọn loại hoặc gõ ID / tên để tìm, bấm vào ô để thêm.</div>
       <div class="qtgrid" id="qtRes"></div>
-      <button class="b" id="qtMore" style="display:none;margin-top:12px;width:100%">Xem thêm</button>
+      <button class="b more" id="qtMore" style="display:none;margin-top:12px;width:100%">Xem thêm</button>
     </div>
   </div></section>
 
@@ -983,6 +987,8 @@
   $('qtQ').addEventListener('input',function(){ clearTimeout(QT.t); QT.t=setTimeout(function(){ qtSearch(); },300); });
   $('qtCat').addEventListener('change',function(){ qtSearch(); });
   $('qtMore').addEventListener('click',function(){ qtSearch(true); });
+  $('qtFind').addEventListener('click',function(){ clearTimeout(QT.t); qtSearch(); });
+  $('qtQ').addEventListener('keydown',function(e){ if(e.key==='Enter'){ clearTimeout(QT.t); qtSearch(); } });
   $('qtBtn').addEventListener('click',function(){
     if(!QT.slots.length) return;
     $('qtBtn').disabled=true;
