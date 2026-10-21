@@ -67,3 +67,6 @@ Request/appsettings.secret.config
 # build cong cu va bot
 _setup/botpatch/**/bin/
 _setup/botpatch/**/obj/
+_setup/forgepatch/**/bin/
+_setup/forgepatch/**/obj/
+_setup/forgepatch/work/
