@@ -4,7 +4,7 @@ $acts = q($conn,"SELECT a.ActiveID,a.Title,a.Type,a.HasKey,a.StartDate,a.EndDate
   (SELECT ISNULL(SUM(IIF(n.Creator>0,n.Creator,1)),0) FROM Db_Tank41.dbo.Active_Number n WHERE n.ActiveID=a.ActiveID AND n.UserID<>0) used
   FROM Db_Tank.dbo.Active a ORDER BY a.ActiveID DESC");
 $sel = (int)($_GET['aid'] ?? 0);
-$awards = $sel ? q($conn,"SELECT w.ID,w.ItemID,w.Count,w.ValidDate,w.StrengthenLevel,w.Gold,w.Money,ISNULL(g.Name,'') Name,ISNULL(g.CategoryID,0) Cat,ISNULL(g.Pic,'') Pic,ISNULL(g.NeedSex,0) Sex,ISNULL(g.Quality,0) Q FROM Db_Tank.dbo.Active_Award w LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=w.ItemID WHERE w.ActiveID=? ORDER BY w.ID",[$sel]) : [];
+$awards = $sel ? q($conn,"SELECT w.ID,w.ItemID,w.Count,w.ValidDate,w.StrengthenLevel,w.Gold,w.Money,ISNULL(g.Name,'') Name,ISNULL(g.CategoryID,0) Cat,ISNULL(g.Pic,'') Pic,ISNULL(g.NeedSex,0) Sex,w.Sex AwSex,ISNULL(g.Quality,0) Q FROM Db_Tank.dbo.Active_Award w LEFT JOIN Db_Tank.dbo.Shop_Goods g ON g.TemplateID=w.ItemID WHERE w.ActiveID=? ORDER BY w.ID",[$sel]) : [];
 // moi code 1 dong: dong goc (UserID=0) cho biet kieu (Creator), cac dong UserID<>0 la luot da nhan
 $codeRows = $sel ? q($conn,"SELECT AwardID, MAX(CASE WHEN UserID=0 THEN Creator END) Creator, MAX(CASE WHEN UserID=0 THEN 1 ELSE 0 END) Alive,
   SUM(CASE WHEN UserID<>0 THEN IIF(Creator>0,Creator,1) ELSE 0 END) Used, COUNT(DISTINCT CASE WHEN UserID<>0 THEN UserID END) People
@@ -79,13 +79,19 @@ $maxStr = max_strength($conn);
 <?php endforeach; if(!$codeRows) echo '<tr><td colspan="5" class="muted">Chưa có code. Tạo ở khung bên trên.</td></tr>'; ?>
 </table>
 <h2>Quà của sự kiện #<?= $sel ?></h2>
-<table><tr><th>Vật phẩm</th><th>Số lượng</th><th>Hạn</th><th>Cường hóa</th><th>Vàng</th><th>Xu</th><th></th></tr>
-<?php foreach($awards as $w): ?>
+<p class="muted">Đồ nam chỉ phát cho nhân vật nam, đồ nữ chỉ phát cho nhân vật nữ (tự lấy theo giới tính của món). Món chỉ có một giới tính thì thêm cả bản nam và bản nữ.</p>
+<table><tr><th>Vật phẩm</th><th>Phát cho</th><th>Số lượng</th><th>Hạn</th><th>Cường hóa</th><th>Vàng</th><th>Xu</th><th></th></tr>
+<?php foreach($awards as $w):
+  $aw=(int)$w['AwSex']; $need=(int)$w['Sex'];
+  $phat=['Cả hai','Nam','Nữ'][$aw] ?? 'Sex='.$aw;
+  // lech: mon chi cho 1 gioi tinh nhung qua phat cho gioi tinh khac / ca hai -> nguoi nhan khong mac duoc
+  $lech=(int)$w['ItemID']>0 && $need>0 && $aw!==$need; ?>
   <tr><td><div style="display:flex;align-items:center;gap:10px">
     <?php if((int)$w['ItemID']>0): ?><img src="<?= h(item_icon_url($w['Cat'],$w['Pic'],$w['Sex'])) ?>" alt="" style="width:40px;height:40px;object-fit:contain;background:#0d1626;border:2px solid <?= quality_color($w['Q']) ?>;border-radius:8px"><?php endif; ?>
-    <span><?= h($w['Name'] ?: 'vàng / xu') ?><br><span class="muted">ID <?= (int)$w['ItemID'] ?></span></span></div></td><td><?= (int)$w['Count'] ?></td><td><?= (int)$w['ValidDate'] ?: 'vĩnh viễn' ?></td><td><?= (int)$w['StrengthenLevel'] ?></td><td><?= n($w['Gold']) ?></td><td><?= n($w['Money']) ?></td>
+    <span><?= h($w['Name'] ?: 'vàng / xu') ?><br><span class="muted">ID <?= (int)$w['ItemID'] ?></span></span></div></td>
+    <td><?= $lech ? '<span class="tag ban" title="Món là đồ '.($need===1?'nam':'nữ').' nhưng quà phát cho '.h(mb_strtolower($phat)).': người nhận không mặc được">'.h($phat).' (lệch, đồ '.($need===1?'nam':'nữ').')</span>' : h($phat) ?></td><td><?= (int)$w['Count'] ?></td><td><?= (int)$w['ValidDate'] ?: 'vĩnh viễn' ?></td><td><?= (int)$w['StrengthenLevel'] ?></td><td><?= n($w['Gold']) ?></td><td><?= n($w['Money']) ?></td>
     <td><form method="post" style="margin:0"><?= csrf() ?><input type="hidden" name="act" value="gc_award_del"><input type="hidden" name="id" value="<?= (int)$w['ID'] ?>"><button class="btn sm danger">Xóa</button></form></td></tr>
-<?php endforeach; if(!$awards) echo '<tr><td colspan="7" class="muted">Chưa có quà.</td></tr>'; ?>
+<?php endforeach; if(!$awards) echo '<tr><td colspan="8" class="muted">Chưa có quà.</td></tr>'; ?>
 </table>
 <?php endif; ?>
 <h2>Các sự kiện</h2>

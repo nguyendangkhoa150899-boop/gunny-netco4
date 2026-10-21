@@ -73,9 +73,13 @@ function run_action($conn,$act,$P){
     $aid=(int)($P['aid']??0); $tid=(int)($P['tid']??0);
     if(!$aid || (!$tid && empty($P['gold']) && empty($P['money']))) return 'Thiếu sự kiện hoặc vật phẩm.';
     if($tid>0 && !item_in_client($tid)) return item_khong_client_msg($tid);
-    $ok=exec_sql($conn,"INSERT INTO Db_Tank.dbo.Active_Award(ActiveID,ItemID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,LuckCompose,AgilityCompose,Gold,Money,Sex,Mark) VALUES(?,?,?,?,?,0,0,0,0,?,?,0,0)",
-      [$aid,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),max(0,(int)($P['gold']??0)),max(0,(int)($P['money']??0))]);
-    return $ok===true ? 'Đã thêm phần thưởng.' : 'Lỗi: '.h($ok);
+    // Sex cua qua = NeedSex cua mon (1 nam, 2 nu, 0 ca hai): SP_Active_PullDown chi gui mon Sex = gioi tinh nhan vat hoac 0
+    $sex=$tid>0 ? (int)scalar($conn,"SELECT ISNULL(NeedSex,0) FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?",[$tid]) : 0;
+    if($sex<0 || $sex>2) $sex=0;
+    $ok=exec_sql($conn,"INSERT INTO Db_Tank.dbo.Active_Award(ActiveID,ItemID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,LuckCompose,AgilityCompose,Gold,Money,Sex,Mark) VALUES(?,?,?,?,?,0,0,0,0,?,?,?,0)",
+      [$aid,$tid,max(1,(int)($P['cnt']??1)),max(0,(int)($P['day']??0)),min(max_strength($conn),max(0,(int)($P['str']??0))),max(0,(int)($P['gold']??0)),max(0,(int)($P['money']??0)),$sex]);
+    $ghi=['', ' Đồ nam: chỉ nhân vật nam nhận, nhớ thêm bản nữ.', ' Đồ nữ: chỉ nhân vật nữ nhận, nhớ thêm bản nam.'][$sex];
+    return $ok===true ? 'Đã thêm phần thưởng.'.$ghi : 'Lỗi: '.h($ok);
 
   case 'gc_award_del':
     exec_sql($conn,"DELETE FROM Db_Tank.dbo.Active_Award WHERE ID=?",[(int)$P['id']]);

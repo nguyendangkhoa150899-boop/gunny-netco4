@@ -213,9 +213,11 @@ Dựng lại SP từ đầu: hoàn tác về `SP_Active_PullDown_goc` (cuối `g
 | Vũ khí phụ | 17017 LEGEND-Thiên Sứ Ban Phúc +12 |
 | Nhẫn ×2 / Vòng tay ×2 | 95354 Nhẫn 12 Tuổi +10 / 85204 Vòng Tay 12 Tuổi +10 |
 | Dây chuyền / Cánh / Bộ | 14045 S-Côn Con Dục Thần / 15137 Cánh Huyền Diệu / 13890 Khắc Tên Top 2 |
-| Mũ +12 / Kính / Áo +12 | 1757 / 1858 Khải Hoàn Khôi; 2310 / 2407 Hoàng Long Khôi; 60000042 Sulan / 60000101 Minotaure [Cao Cấp] |
+| Mũ +12 / Kính / Áo +12 | 1757 / 1858 Khải Hoàn Khôi; 2310 / 2407 Hoàng Long Khôi; 60000042 Cơn thịnh nộ Sulan / 60000102 Áo Giáp Mathias nữ (Siêu cấp) |
 | Mặt / Tóc / Hiệu ứng mắt | 6352 / 6410; 3533 / 3671; 4360 / 4627 |
-Đã test nhận code trong transaction: mã 0, 3 thư, 15 món đúng giới tính, đúng +12. Đổi sự kiện/quà xong: admin > Hệ thống > xuất bản `ActiveList`, client phải tắt mở lại launcher.
+Đã test nhận code trong transaction: mã 0, 3 thư, 15 món, đúng +12. **Sửa 21/10** (`_setup/sql/giftcode-sua-gioi-tinh.sql`): áo nữ trước ghi nhầm 60000101 (Mathias bản **nam**, nữ không mặc được) → 60000102. Test cũ chỉ đếm `Sex` của quà, không đối chiếu `NeedSex` của món, nên không bắt được.
+
+**Giới tính quà:** `Active_Award.Sex` (1 nam, 2 nữ, 0 cả hai). Admin > Giftcode > Thêm quà tự lấy `Shop_Goods.NeedSex` của món (trước 21/10 luôn ghi 0, đồ nam/nữ phát cho cả hai). Bảng quà có cột "Phát cho", món lệch hiện đỏ. Món chỉ có một giới tính thì thêm cả bản nam và bản nữ. Đổi sự kiện/quà xong: admin > Hệ thống > xuất bản `ActiveList`, client phải tắt mở lại launcher.
 
 ## 12. Ảnh vật phẩm (admin)
 `admin/lib.php` `item_icon_rel()` chép công thức `PathManager.solveGoodsPath` của client (theo `CategoryID` + `Pic` + `NeedSex`, bảng `EquipType.TYPES`); không có thì thử `image/unfrightprop|prop|error/<pic>/icon.png`. `admin/icon.php` đọc file từ `C:\Gunny92\Resource.Server` và trả ảnh (chỉ admin đã đăng nhập), vì `res.netco4.click` không có HTTPS. Thử mẫu: 1.313/1.919 mẫu có ảnh, trang bị/vũ khí gần đủ; các loại client 3.0 không có (10, 37, 61, 62, 71, 74, 82 đến 91) hiện ô "?". DB có 19.122 vật phẩm nhưng client chỉ biết 13.047.
