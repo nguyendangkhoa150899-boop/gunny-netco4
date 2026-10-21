@@ -261,30 +261,30 @@
   <item ID="1269" Name="Pet đồng đội +10 điểm ma pháp" EffectPic="" Description="Pet đồng đội +10 điểm ma pháp" Pic="-1" />
   <item ID="1270" Name="Giảm 800 HP người chơi bị bắn trúng" EffectPic="" Description="Giảm 800 HP người chơi bị bắn trúng" Pic="-1" />
   <item ID="1271" Name="Giảm 1000 HP người chơi bị bắn trúng" EffectPic="" Description="Giảm 1000 HP người chơi bị bắn trúng" Pic="-1" />
-  <item ID="1272" Name="获得192技能" EffectPic="" Description="获得核爆技能192" Pic="-1" />
-  <item ID="1273" Name="获得193技能" EffectPic="" Description="获得核爆技能193" Pic="-1" />
-  <item ID="1274" Name="空技能" EffectPic="" Description="" Pic="-1" />
-  <item ID="2000" Name="血量增加300" EffectPic="" Description="" Pic="-1" />
-  <item ID="2001" Name="护甲增加30" EffectPic="" Description="" Pic="-1" />
-  <item ID="2002" Name="攻击+10" EffectPic="" Description="" Pic="-1" />
-  <item ID="2003" Name="伤害+30" EffectPic="" Description="" Pic="-1" />
-  <item ID="2004" Name="防御+50" EffectPic="" Description="" Pic="-1" />
-  <item ID="2005" Name="敏捷+50" EffectPic="" Description="" Pic="-1" />
-  <item ID="2006" Name="幸运+50" EffectPic="" Description="" Pic="-1" />
-  <item ID="2007" Name="攻击+30" EffectPic="" Description="" Pic="-1" />
-  <item ID="2008" Name="血量增加400" EffectPic="" Description="" Pic="-1" />
-  <item ID="2009" Name="血量增加350" EffectPic="" Description="" Pic="-1" />
-  <item ID="2010" Name="防御+15" EffectPic="" Description="" Pic="-1" />
-  <item ID="2011" Name="防御+35" EffectPic="" Description="" Pic="-1" />
-  <item ID="2012" Name="幸运+10" EffectPic="" Description="" Pic="-1" />
-  <item ID="2013" Name="防御+20" EffectPic="" Description="" Pic="-1" />
-  <item ID="2014" Name="敏捷+20" EffectPic="" Description="" Pic="-1" />
-  <item ID="2015" Name="血量增加310" EffectPic="" Description="" Pic="-1" />
-  <item ID="2016" Name="攻击+15" EffectPic="" Description="" Pic="-1" />
-  <item ID="2017" Name="敏捷+40" EffectPic="" Description="" Pic="-1" />
-  <item ID="2018" Name="降低被暴擊傷害5%" EffectPic="" Description="" Pic="-1" />
-  <item ID="2019" Name="幸运+80" EffectPic="" Description="" Pic="-1" />
-  <item ID="2020" Name="减5%减伤害" EffectPic="" Description="" Pic="-1" />
+  <item ID="1272" Name="Nhận kỹ năng 192" EffectPic="" Description="Nhận kỹ năng Hạt Nhân 192" Pic="-1" />
+  <item ID="1273" Name="Nhận kỹ năng 193" EffectPic="" Description="Nhận kỹ năng Hạt Nhân 193" Pic="-1" />
+  <item ID="1274" Name="Kỹ năng trống" EffectPic="" Description="" Pic="-1" />
+  <item ID="2000" Name="Máu +300" EffectPic="" Description="" Pic="-1" />
+  <item ID="2001" Name="Phòng thủ +30" EffectPic="" Description="" Pic="-1" />
+  <item ID="2002" Name="Tấn công +10" EffectPic="" Description="" Pic="-1" />
+  <item ID="2003" Name="Sát thương +30" EffectPic="" Description="" Pic="-1" />
+  <item ID="2004" Name="Phòng thủ +50" EffectPic="" Description="" Pic="-1" />
+  <item ID="2005" Name="Nhanh nhẹn +50" EffectPic="" Description="" Pic="-1" />
+  <item ID="2006" Name="May mắn +50" EffectPic="" Description="" Pic="-1" />
+  <item ID="2007" Name="Tấn công +30" EffectPic="" Description="" Pic="-1" />
+  <item ID="2008" Name="Máu +400" EffectPic="" Description="" Pic="-1" />
+  <item ID="2009" Name="Máu +350" EffectPic="" Description="" Pic="-1" />
+  <item ID="2010" Name="Phòng thủ +15" EffectPic="" Description="" Pic="-1" />
+  <item ID="2011" Name="Phòng thủ +35" EffectPic="" Description="" Pic="-1" />
+  <item ID="2012" Name="May mắn +10" EffectPic="" Description="" Pic="-1" />
+  <item ID="2013" Name="Phòng thủ +20" EffectPic="" Description="" Pic="-1" />
+  <item ID="2014" Name="Nhanh nhẹn +20" EffectPic="" Description="" Pic="-1" />
+  <item ID="2015" Name="Máu +310" EffectPic="" Description="" Pic="-1" />
+  <item ID="2016" Name="Tấn công +15" EffectPic="" Description="" Pic="-1" />
+  <item ID="2017" Name="Nhanh nhẹn +40" EffectPic="" Description="" Pic="-1" />
+  <item ID="2018" Name="Giảm 5% sát thương bạo kích phải nhận" EffectPic="" Description="" Pic="-1" />
+  <item ID="2019" Name="May mắn +80" EffectPic="" Description="" Pic="-1" />
+  <item ID="2020" Name="Giảm 5% sát thương phải nhận" EffectPic="" Description="" Pic="-1" />
   <item ID="3166" Name="Pet Tấn Công Lv1" EffectPic="" Description="Sát thương do Pet Tấn Công X% gây ra" Pic="-1" />
   <item ID="3167" Name="Pet Tấn Công Lv2" EffectPic="" Description="Sát thương do Pet Tấn Công X% gây ra" Pic="-1" />
   <item ID="3168" Name="Pet Tấn Công Lv3" EffectPic="" Description="Sát thương do Pet Tấn Công X% gây ra" Pic="-1" />
