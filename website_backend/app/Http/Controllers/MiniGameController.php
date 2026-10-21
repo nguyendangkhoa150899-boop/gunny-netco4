@@ -654,30 +654,52 @@ class MiniGameController extends \App\Http\BaseController
         if (CauHinh::int('quatest_mo', 0) !== 1) return $this->error('Gửi quà test đang tắt.');
         $q = trim((string)$r->input('q', ''));
         $cat = (int)$r->input('cat', 0);
-        $where = []; $par = [];
-        if ($q !== '') {
-            if (ctype_digit($q)) { $where[] = "(TemplateID=? OR CAST(TemplateID AS varchar(12)) LIKE ?)"; $par[] = (int)$q; $par[] = $q . '%'; }
-            else { $where[] = "Name LIKE ?"; $par[] = '%' . $q . '%'; }
+        $trang = max(0, (int)$r->input('trang', 0));
+        $moiTrang = 60;
+        // loc tren danh sach mon dua vao game duoc (client biet ID + co anh, VatPham::tatCaDungDuoc), khong phai TOP n cua DB
+        // (truoc 21/10: TOP 300 roi moi loc -> loai nhieu do la nhu Dao cu gan nhu khong ra mon nao)
+        $gt = $this->gioiTinh();   // chi do dung gioi tinh nhan vat (15/10: hoang nu tu gui ao nam, khong mac duoc)
+        $so = ctype_digit($q);
+        $khop = [];
+        foreach (VatPham::tatCaDungDuoc() as $x) {
+            if ($cat > 0 && $x[2] !== $cat) continue;
+            if ($gt && $x[3] !== 0 && $x[3] !== $gt) continue;
+            if ($q !== '') {
+                if ($so ? strpos((string)$x[0], $q) !== 0 : mb_stripos($x[1], $q) === false) continue;
+            }
+            $khop[] = $x;
         }
-        if ($cat > 0) { $where[] = "CategoryID=?"; $par[] = $cat; }
-        if (!$where) return $this->success('ok', ['ds' => []]);
-        // chi do dung gioi tinh nhan vat (15/10: hoang nu tu gui ao nam, khong mac duoc)
-        $gt = $this->gioiTinh();
-        if ($gt) { $where[] = "NeedSex IN (0,?)"; $par[] = $gt; }
-        $rows = DB::connection('sqlsrv_tank41')->select("SELECT TOP 300 TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,Description
-            FROM Db_Tank.dbo.Shop_Goods WHERE " . implode(' AND ', $where) . " ORDER BY CASE WHEN TemplateID=? THEN 0 ELSE 1 END, TemplateID",
-            array_merge($par, [ctype_digit($q) ? (int)$q : -1]));
+        if ($so) usort($khop, function ($a, $b) use ($q) { return ((string)$b[0] === $q) <=> ((string)$a[0] === $q) ?: $a[0] <=> $b[0]; });
         $ds = [];
-        foreach ($rows as $x) {
-            // chi tra mon client biet ID va co anh (mon la lam client loi dung sanh, xem VatPham::trongClient)
-            if (!VatPham::dungDuoc($x)) continue;
-            $ds[] = ['id' => (int)$x->TemplateID, 'ten' => $x->Name, 'cat' => (int)$x->CategoryID, 'mau' => VatPham::mau((int)$x->Quality), 'hinh' => '/hinh/' . (int)$x->TemplateID,
-                'cs' => (bool)$x->CanStrengthen, 'gt' => (int)$x->NeedSex, 'chiSo' => [(int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck],
-                'lv' => (int)$x->NeedLevel, 'q' => (int)$x->Quality,
-                'moTa' => mb_substr((string)$x->Description, 0, 120)];
-            if (count($ds) >= 60) break;
+        foreach (array_slice($khop, $trang * $moiTrang, $moiTrang) as $x) {
+            $ds[] = ['id' => $x[0], 'ten' => $x[1], 'cat' => $x[2], 'mau' => VatPham::mau($x[4]), 'hinh' => '/hinh/' . $x[0],
+                'cs' => $x[10], 'gt' => $x[3], 'chiSo' => [$x[6], $x[7], $x[8], $x[9]], 'lv' => $x[5], 'q' => $x[4], 'moTa' => $x[11]];
         }
-        return $this->success('ok', ['ds' => $ds]);
+        return $this->success('ok', ['ds' => $ds, 'tong' => count($khop), 'trang' => $trang, 'con' => ($trang + 1) * $moiTrang < count($khop)]);
+    }
+
+    /** cac loai co mon dua vao game duoc (dung gioi tinh nhan vat), kem so mon: cho o chon loai cua Gui qua test */
+    public function quaTestLoai(Request $r)
+    {
+        if (CauHinh::int('quatest_mo', 0) !== 1) return $this->error('Gửi quà test đang tắt.');
+        $gt = $this->gioiTinh();
+        $dem = []; $mau = [];
+        foreach (VatPham::tatCaDungDuoc() as $x) {
+            if ($gt && $x[3] !== 0 && $x[3] !== $gt) continue;
+            $dem[$x[2]] = ($dem[$x[2]] ?? 0) + 1;
+            if (!isset($mau[$x[2]])) $mau[$x[2]] = $x[1];
+        }
+        // trang bi truoc, roi den do khac theo so loai
+        $uuTien = [7, 17, 1, 5, 2, 3, 4, 6, 13, 15, 14, 9, 8, 27, 31, 28, 29, 19, 16, 50, 51, 52];
+        uksort($dem, function ($a, $b) use ($uuTien) {
+            $ia = array_search($a, $uuTien, true); $ib = array_search($b, $uuTien, true);
+            return [$ia === false ? 99 : $ia, $a] <=> [$ib === false ? 99 : $ib, $b];
+        });
+        $ds = [];
+        foreach ($dem as $c => $n) {
+            $ds[] = ['cat' => $c, 'ten' => VatPham::tenLoai($c) ?? ('Loại ' . $c . ' (vd: ' . trim($mau[$c]) . ')'), 'n' => $n];
+        }
+        return $this->success('ok', ['ds' => $ds, 'tong' => array_sum($dem)]);
     }
 
     public function quaTestGui(Request $r)

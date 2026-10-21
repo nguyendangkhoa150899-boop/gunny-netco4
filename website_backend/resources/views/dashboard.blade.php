@@ -494,9 +494,10 @@
     <div class="card">
       <h2>Tìm vật phẩm</h2>
       <div class="qtsearch"><input class="in" id="qtQ" placeholder="Nhập ID hoặc tên, vd: 7194 hoặc Thương Cổ" autocomplete="off">
-        <select id="qtCat"><option value="0">Tất cả</option><option value="7">Vũ khí</option><option value="17">Vũ khí phụ</option><option value="1">Nón</option><option value="5">Áo</option><option value="2">Kính</option><option value="3">Tóc</option><option value="4">Hiệu ứng mắt</option><option value="6">Mặt</option><option value="13">Bộ</option><option value="15">Cánh</option><option value="14">Dây chuyền</option><option value="9">Nhẫn</option><option value="8">Vòng tay</option><option value="11">Đạo cụ</option><option value="50">Vũ khí thú</option><option value="51">Mũ thú</option><option value="52">Áo thú</option></select></div>
-      <div class="muted" id="qtInfo" style="margin-top:8px">Gõ ID hoặc tên để tìm, bấm vào ô để thêm.</div>
+        <select id="qtCat"><option value="0">Tất cả loại</option></select></div>
+      <div class="muted" id="qtInfo" style="margin-top:8px">Chọn loại hoặc gõ ID / tên để tìm, bấm vào ô để thêm.</div>
       <div class="qtgrid" id="qtRes"></div>
+      <button class="b" id="qtMore" style="display:none;margin-top:12px;width:100%">Xem thêm</button>
     </div>
   </div></section>
 
@@ -556,7 +557,7 @@
     sn.innerHTML=NHOM[g].length>1?NHOM[g].map(function(x){ return '<button data-sub="'+x+'" class="'+(x===sec?'on':'')+'">'+TEN[x]+'</button>'; }).join(''):'';
     sn.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.dataset.sub); }; });
     if(location.hash!=='#'+sec) history.replaceState(null,'','#'+sec);
-    var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad,shopdiem:shopLoad,shopxu:shopLoad}[sec];
+    var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad,shopdiem:shopLoad,shopxu:shopLoad,quatest:qtLoaiLoad}[sec];
     if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||sec.indexOf('shop')===0||!loaded[sec])){ loaded[sec]=1; f(); }
     window.scrollTo(0,0);
     // dang mo Vi: 10 giay kiem tra thu rut xu 1 lan
@@ -915,7 +916,7 @@
   }
 
   // ---------- gui qua test ----------
-  var QT={slots:[],res:[],seq:0,t:0};
+  var QT={slots:[],res:[],seq:0,t:0,trang:0};
   var QT_LOAI={1:'Nón',2:'Kính',3:'Tóc',4:'Hiệu ứng mắt',5:'Áo',6:'Mặt',7:'Vũ khí',8:'Vòng tay',9:'Nhẫn',11:'Đạo cụ',13:'Bộ',14:'Dây chuyền',15:'Cánh',16:'Bóng chat',17:'Vũ khí phụ',27:'Vũ khí',31:'Vũ khí phụ',50:'Vũ khí thú',51:'Mũ thú',52:'Áo thú'};
   var QT_PC=['Thường','Thường','Tốt','Hiếm','Sử thi','Huyền thoại','Thần thoại','Tối thượng'];
   function qtTipShow(x,e){
@@ -949,23 +950,39 @@
     $('qtSlots').querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ QT.slots.splice(+b.dataset.del,1); qtTipHide(); qtRender(); }; });
     $('qtSlots').querySelectorAll('.qtrow .ic').forEach(function(ic,i){ ic.onmouseenter=function(e){ qtTipShow(QT.slots[i],e); }; ic.onmousemove=qtTipMove; ic.onmouseleave=qtTipHide; });
   }
-  function qtSearch(){
-    var q=$('qtQ').value.trim(), cat=$('qtCat').value, my=++QT.seq;
-    if(!q && cat==='0'){ $('qtRes').innerHTML=''; $('qtInfo').textContent='Gõ ID hoặc tên để tìm, bấm vào ô để thêm.'; return; }
-    $('qtInfo').textContent='Đang tìm...';
-    api('/api/quatest/tim',{q:q,cat:cat}).then(function(r){
+  // o chon loai: chi cac loai co mon dua vao game duoc, dung gioi tinh nhan vat, kem so mon (/api/quatest/loai)
+  function qtLoaiLoad(){
+    api('/api/quatest/loai',{}).then(function(r){
+      if(!r||!r.success) return;
+      var s=$('qtCat'), cu=s.value;
+      s.innerHTML='<option value="0">Tất cả loại ('+fmt(r.data.tong)+')</option>'+r.data.ds.map(function(x){ QT_LOAI[x.cat]=x.ten; return '<option value="'+x.cat+'">'+esc(x.ten)+' ('+fmt(x.n)+')</option>'; }).join('');
+      s.value=cu; if(s.value!==cu) s.value='0';
+      qtSearch();
+    });
+  }
+  function qtSearch(them){
+    var q=$('qtQ').value.trim(), cat=$('qtCat').value, my=++QT.seq, trang=them?QT.trang+1:0;
+    if(!them) $('qtInfo').textContent='Đang tìm...';
+    $('qtMore').disabled=true;
+    api('/api/quatest/tim',{q:q,cat:cat,trang:trang}).then(function(r){
       if(my!==QT.seq) return;
+      $('qtMore').disabled=false;
       if(!r||!r.success){ $('qtInfo').textContent=(r&&r.message)||'Lỗi khi tìm.'; return; }
-      QT.res=r.data.ds; $('qtInfo').textContent=QT.res.length?('Tìm thấy '+QT.res.length+(QT.res.length>=60?' (hiện 60 đầu)':'')+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
-      $('qtRes').innerHTML=QT.res.map(function(x,i){ return '<div class="qtc" data-i="'+i+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="" loading="lazy"><small>'+x.id+'</small></div><span>'+esc(x.ten)+'</span></div>'; }).join('');
-      $('qtRes').querySelectorAll('.qtc').forEach(function(el){ el.onclick=function(){
+      var d=r.data, tu=them?QT.res.length:0;
+      QT.trang=d.trang; QT.res=them?QT.res.concat(d.ds):d.ds;
+      $('qtInfo').textContent=d.tong?('Tìm thấy '+fmt(d.tong)+' món, đang hiện '+fmt(QT.res.length)+'. Bấm vào ô để thêm.'):'Không thấy vật phẩm nào.';
+      $('qtMore').style.display=d.con?'block':'none';
+      var h=d.ds.map(function(x,k){ return '<div class="qtc" data-i="'+(tu+k)+'"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt="" loading="lazy"><small>'+x.id+'</small></div><span>'+esc(x.ten)+'</span></div>'; }).join('');
+      if(them) $('qtRes').insertAdjacentHTML('beforeend',h); else $('qtRes').innerHTML=h;
+      $('qtRes').querySelectorAll('.qtc:not([data-on])').forEach(function(el){ el.dataset.on=1; el.onclick=function(){
         if(QT.slots.length>=5){ toast('Đã đủ 5 ô, bỏ bớt một món trước.',true); return; }
         var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,cat:x.cat,q:x.q,lv:x.lv,chiSo:x.chiSo,moTa:x.moTa,sl:1,cuong:x.cs?12:0,han:0}); qtTipHide(); qtRender(); };
         el.onmouseenter=function(e){ qtTipShow(QT.res[+el.dataset.i],e); }; el.onmousemove=qtTipMove; el.onmouseleave=qtTipHide; });
     });
   }
-  $('qtQ').addEventListener('input',function(){ clearTimeout(QT.t); QT.t=setTimeout(qtSearch,300); });
-  $('qtCat').addEventListener('change',qtSearch);
+  $('qtQ').addEventListener('input',function(){ clearTimeout(QT.t); QT.t=setTimeout(function(){ qtSearch(); },300); });
+  $('qtCat').addEventListener('change',function(){ qtSearch(); });
+  $('qtMore').addEventListener('click',function(){ qtSearch(true); });
   $('qtBtn').addEventListener('click',function(){
     if(!QT.slots.length) return;
     $('qtBtn').disabled=true;

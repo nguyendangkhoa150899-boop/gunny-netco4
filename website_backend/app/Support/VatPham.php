@@ -43,6 +43,36 @@ class VatPham
         return $i && self::trongClient((int)$i->TemplateID) && self::file($i->CategoryID, $i->Pic, $i->NeedSex) !== null;
     }
 
+    /**
+     * Moi mon dua vao game duoc (dungDuoc) de tim nhanh o Gui qua test, cache 6 gio (doi TemplateAlllist.xml la dung lai).
+     * Moi dong: [id, ten, cat, sex, q, lv, atk, def, agi, luck, cs, moTa]. Lan dau mat vai giay (kiem anh ~19k mon).
+     */
+    public static function tatCaDungDuoc(): array
+    {
+        $mt = (int)@filemtime(self::CLIENT_XML);
+        return Cache::remember('vp_dungduoc_' . $mt, 21600, function () {
+            $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
+            $out = [];
+            foreach ($rows as $x) {
+                if (!self::dungDuoc($x)) continue;
+                $out[] = [(int)$x->TemplateID, (string)$x->Name, (int)$x->CategoryID, (int)$x->NeedSex, (int)$x->Quality, (int)$x->NeedLevel,
+                    (int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck, (bool)$x->CanStrengthen, mb_substr((string)$x->Description, 0, 120)];
+            }
+            return $out;
+        });
+    }
+
+    /** ten loai (Shop_Goods.CategoryID) theo EquipType cua client; loai khong ro ten tra null */
+    public static function tenLoai(int $cat): ?string
+    {
+        return [1 => 'Nón', 2 => 'Kính', 3 => 'Tóc', 4 => 'Hiệu ứng mắt', 5 => 'Áo', 6 => 'Mặt', 7 => 'Vũ khí', 8 => 'Vòng tay', 9 => 'Nhẫn',
+            10 => 'Đạo cụ chiến đấu', 11 => 'Đạo cụ', 12 => 'Vật phẩm nhiệm vụ', 13 => 'Bộ trang phục', 14 => 'Dây chuyền', 15 => 'Cánh',
+            16 => 'Bóng chat', 17 => 'Vũ khí phụ', 18 => 'Hộp thẻ', 19 => 'Bùa hộ thân', 20 => 'Kinh nghiệm', 23 => 'Sách tu luyện',
+            24 => 'Đạo cụ khác', 25 => 'Hộp quà', 26 => 'Thẻ', 27 => 'Vũ khí đặc biệt', 28 => 'Vòng tay đặc biệt', 29 => 'Nhẫn đặc biệt',
+            30 => 'Đồ ăn', 31 => 'Vũ khí phụ đặc biệt', 32 => 'Hạt giống', 33 => 'Phân bón', 34 => 'Thức ăn thú', 35 => 'Trứng thú cưng',
+            50 => 'Vũ khí thú', 51 => 'Mũ thú', 52 => 'Áo thú'][$cat] ?? null;
+    }
+
     /** [TemplateID => {Name, CategoryID, Pic, NeedSex, Quality}] */
     public static function thongTin(array $ids): array
     {
