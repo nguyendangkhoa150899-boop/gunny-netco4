@@ -1,0 +1,503 @@
+                                                method
+                                                   name "consortion.view.selfConsortia:ConsortionUpGradeFrame/private:checkGoldOrLevel"
+                                                   returns QName(PackageNamespace(""),"Boolean")
+                                                   
+                                                   body
+                                                      maxstack 9
+                                                      localcount 3
+                                                      initscopedepth 11
+                                                      maxscopedepth 12
+                                                      
+                                                      code
+                                                         debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;consortion\\view\\selfConsortia;ConsortionUpGradeFrame.as"
+                                                         debugline 346
+                                                         getlocal0
+                                                         pushscope
+                                                         debug 1, "_loc1_", 0, 348
+                                                         debugline 348
+                                                         pushnull
+                                                         coerce QName(PackageNamespace("com.pickgliss.ui.controls.alert"),"BaseAlerFrame")
+                                                         setlocal1
+                                                         jump ofs02aa
+                                                ofs0019:
+                                                         label
+                                                         debugline 352
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace(""),"CONSORTION_MAX_LEVEL")
+                                                         ifnge ofs0050
+                                                         debugline 354
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.consortiaLevel"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 355
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs0050:
+                                                         debugline 357
+                                                         jump ofs0329
+                                                ofs0057:
+                                                         label
+                                                         debugline 359
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"ShopLevel")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace(""),"SHOP_MAX_LEVEL")
+                                                         ifnge ofs008e
+                                                         debugline 361
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.consortiaShopLevel"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 362
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs008e:
+                                                         debugline 364
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"ShopLevel")
+                                                         pushbyte 1
+                                                         add
+                                                         pushbyte 2
+                                                         multiply
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         greaterthan
+                                                         convert_b
+                                                         dup
+                                                         convert_b
+                                                         iffalse ofs00c9
+                                                         pop
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         pushbyte 10
+                                                         equals
+                                                         not
+                                                         convert_b
+                                                ofs00c9:
+                                                         iffalse ofs00ea
+                                                         debugline 366
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.pleaseUpgrade"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 367
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs00ea:
+                                                         debugline 369
+                                                         jump ofs0329
+                                                ofs00f1:
+                                                         label
+                                                         debugline 371
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"StoreLevel")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace(""),"BANK_MAX_LEVEL")
+                                                         ifnge ofs0128
+                                                         debugline 373
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.smith"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 374
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs0128:
+                                                         debugline 376
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"StoreLevel")
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         greaterequals
+                                                         convert_b
+                                                         dup
+                                                         convert_b
+                                                         iffalse ofs015d
+                                                         pop
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         pushbyte 10
+                                                         equals
+                                                         not
+                                                         convert_b
+                                                ofs015d:
+                                                         iffalse ofs017e
+                                                         debugline 378
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.pleaseUpgrade"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 379
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs017e:
+                                                         debugline 381
+                                                         jump ofs0329
+                                                ofs0185:
+                                                         label
+                                                         debugline 383
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"SmithLevel")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace(""),"STORE_MAX_LEVEL")
+                                                         ifnge ofs01bc
+                                                         debugline 385
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.store"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 386
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs01bc:
+                                                         debugline 388
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"SmithLevel")
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         greaterequals
+                                                         convert_b
+                                                         dup
+                                                         convert_b
+                                                         iffalse ofs01f1
+                                                         pop
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         pushbyte 10
+                                                         equals
+                                                         not
+                                                         convert_b
+                                                ofs01f1:
+                                                         iffalse ofs0212
+                                                         debugline 390
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.pleaseUpgrade"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 391
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs0212:
+                                                         debugline 393
+                                                         jump ofs0329
+                                                ofs0219:
+                                                         label
+                                                         debugline 395
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"BufferLevel")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModel")
+                                                         getproperty QName(PackageNamespace(""),"SKILL_MAX_LEVEL")
+                                                         ifnge ofs024f
+                                                         debugline 397
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.skill"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs024f:
+                                                         debugline 399
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"BufferLevel")
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         greaterequals
+                                                         convert_b
+                                                         dup
+                                                         convert_b
+                                                         iffalse ofs0284
+                                                         pop
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         pushbyte 10
+                                                         equals
+                                                         not
+                                                         convert_b
+                                                ofs0284:
+                                                         iffalse ofs02a5
+                                                         debugline 401
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                                                         callproperty QName(PackageNamespace(""),"getInstance"), 0
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.consortia.myconsortia.frame.MyConsortiaUpgrade.pleaseUpgrade"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         callproperty QName(PackageNamespace(""),"show"), 1
+                                                         pop
+                                                         debugline 402
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs02a5:
+                                                         label
+                                                         jump ofs0329
+                                                ofs02aa:
+                                                         debugline 349
+                                                         getlocal0
+                                                         getproperty QName(PrivateNamespace("consortion.view.selfConsortia:ConsortionUpGradeFrame"),"_btnGroup")
+                                                         getproperty QName(PackageNamespace(""),"selectIndex")
+                                                         setlocal2
+                                                         debugline 351
+                                                         pushbyte 0
+                                                         getlocal2
+                                                         ifstrictne ofs02c3
+                                                         pushshort 0
+                                                         jump ofs0310
+                                                ofs02c3:
+                                                         debugline 358
+                                                         pushbyte 2
+                                                         getlocal2
+                                                         ifstrictne ofs02d3
+                                                         pushshort 1
+                                                         jump ofs0310
+                                                ofs02d3:
+                                                         debugline 370
+                                                         pushbyte 3
+                                                         getlocal2
+                                                         ifstrictne ofs02e3
+                                                         pushshort 2
+                                                         jump ofs0310
+                                                ofs02e3:
+                                                         debugline 382
+                                                         pushbyte 1
+                                                         getlocal2
+                                                         ifstrictne ofs02f3
+                                                         pushshort 3
+                                                         jump ofs0310
+                                                ofs02f3:
+                                                         debugline 394
+                                                         pushbyte 4
+                                                         getlocal2
+                                                         ifstrictne ofs0303
+                                                         pushshort 4
+                                                         jump ofs0310
+                                                ofs0303:
+                                                         pushfalse
+                                                         iffalse ofs030e
+                                                         pushshort 5
+                                                         jump ofs0310
+                                                ofs030e:
+                                                         pushshort 5
+                                                ofs0310:
+                                                         kill 2
+                                                         lookupswitch ofs02a5, [ofs0019, ofs0057, ofs00f1, ofs0185, ofs0219, ofs02a5]
+                                                ofs0329:
+                                                         debugline 405
+                                                         getlocal0
+                                                         getproperty QName(PrivateNamespace("consortion.view.selfConsortia:ConsortionUpGradeFrame"),"_btnGroup")
+                                                         getproperty QName(PackageNamespace(""),"selectIndex")
+                                                         pushbyte 0
+                                                         equals
+                                                         convert_b
+                                                         dup
+                                                         convert_b
+                                                         iffalse ofs0364
+                                                         pop
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"Gold")
+                                                         findpropstrict QName(PackageNamespace("consortion"),"ConsortionModelControl")
+                                                         getproperty QName(PackageNamespace("consortion"),"ConsortionModelControl")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"model")
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"consortiaInfo")
+                                                         getproperty QName(PackageNamespace(""),"Level")
+                                                         pushbyte 1
+                                                         add
+                                                         callproperty QName(PackageNamespace(""),"getLevelData"), 1
+                                                         getproperty QName(PackageNamespace(""),"NeedGold")
+                                                         lessthan
+                                                         convert_b
+                                                ofs0364:
+                                                         iffalse ofs03e7
+                                                         debugline 407
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         getproperty QName(PackageNamespace(""),"Self")
+                                                         getproperty QName(PackageNamespace(""),"bagLocked")
+                                                         iffalse ofs038b
+                                                         debugline 409
+                                                         findpropstrict QName(PackageNamespace("baglocked"),"BaglockedManager")
+                                                         getproperty QName(PackageNamespace("baglocked"),"BaglockedManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         callproperty QName(PackageNamespace(""),"show"), 0
+                                                         pop
+                                                         debugline 410
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs038b:
+                                                         debugline 412
+                                                         findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"AlertManager")
+                                                         getproperty QName(PackageNamespace("com.pickgliss.ui"),"AlertManager")
+                                                         getproperty QName(PackageNamespace(""),"Instance")
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "AlertDialog.Info"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "tank.view.GoldInadequate"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "ok"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                                         pushstring "cancel"
+                                                         callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                                         pushfalse
+                                                         pushfalse
+                                                         pushfalse
+                                                         findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"LayerManager")
+                                                         getproperty QName(PackageNamespace("com.pickgliss.ui"),"LayerManager")
+                                                         getproperty QName(PackageNamespace(""),"BLCAK_BLOCKGOUND")
+                                                         callproperty QName(PackageNamespace(""),"simpleAlert"), 8
+                                                         coerce QName(PackageNamespace("com.pickgliss.ui.controls.alert"),"BaseAlerFrame")
+                                                         setlocal1
+                                                         debugline 413
+                                                         getlocal1
+                                                         pushfalse
+                                                         setproperty QName(PackageNamespace(""),"moveEnable")
+                                                         debugline 414
+                                                         getlocal1
+                                                         findpropstrict QName(PackageNamespace("com.pickgliss.events"),"FrameEvent")
+                                                         getproperty QName(PackageNamespace("com.pickgliss.events"),"FrameEvent")
+                                                         getproperty QName(PackageNamespace(""),"RESPONSE")
+                                                         getlocal0
+                                                         getproperty QName(PrivateNamespace("consortion.view.selfConsortia:ConsortionUpGradeFrame"),"__quickBuyResponse")
+                                                         callproperty QName(PackageNamespace(""),"addEventListener"), 2
+                                                         pop
+                                                         debugline 415
+                                                         pushfalse
+                                                         returnvalue
+                                                ofs03e7:
+                                                         debugline 417
+                                                         pushtrue
+                                                         returnvalue
+                                                      end ; code
+                                                   end ; body
+                                                end ; method

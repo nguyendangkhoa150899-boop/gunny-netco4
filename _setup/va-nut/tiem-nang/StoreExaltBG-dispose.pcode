@@ -1,0 +1,160 @@
+                                                                                                                           method
+                                                                                                                              name "store.view.exalt:StoreExaltBG/dispose"
+                                                                                                                              returns QName(PackageNamespace(""),"void")
+                                                                                                                              
+                                                                                                                              body
+                                                                                                                                 maxstack 2
+                                                                                                                                 localcount 1
+                                                                                                                                 initscopedepth 9
+                                                                                                                                 maxscopedepth 10
+                                                                                                                                 
+                                                                                                                                 code
+                                                                                                                                    debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;store\\view\\exalt;StoreExaltBG.as"
+                                                                                                                                    debugline 701
+                                                                                                                                    getlocal0
+                                                                                                                                    pushscope
+                                                                                                                                    debugline 703
+                                                                                                                                    getlocal0
+                                                                                                                                    callproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"disposeTimer"), 0
+                                                                                                                                    pop
+                                                                                                                                    debugline 704
+                                                                                                                                    getlocal0
+                                                                                                                                    callproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"removeEvent"), 0
+                                                                                                                                    pop
+                                                                                                                                    debugline 705
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_buyBtn")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 706
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_buyBtn")
+                                                                                                                                    debugline 707
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_exaltBtn")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 708
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_exaltBtn")
+                                                                                                                                    debugline 709
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_progressBar")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 710
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_progressBar")
+                                                                                                                                    debugline 711
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_equipmentCellBg")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 712
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_equipmentCellBg")
+                                                                                                                                    debugline 713
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_goodCellBg")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 714
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_goodCellBg")
+                                                                                                                                    debugline 715
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_equipmentCellText")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 716
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_equipmentCellText")
+                                                                                                                                    debugline 717
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_rockText")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 718
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_rockText")
+                                                                                                                                    debugline 719
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_area")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 720
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_area")
+                                                                                                                                    debugline 721
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_quick")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 722
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_quick")
+                                                                                                                                    debugline 723
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_continuous")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    debugline 724
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_continuous")
+                                                                                                                                    debugline 725
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_items")
+                                                                                                                                    debugline 726
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_bagList")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_bagList")
+                                                                                                                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                                                                                                                    getlocal0
+                                                                                                                                    getproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_proBagList")
+                                                                                                                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                                                                                                                    pop
+                                                                                                                                    getlocal0
+                                                                                                                                    pushnull
+                                                                                                                                    setproperty QName(PrivateNamespace("store.view.exalt:StoreExaltBG"),"_proBagList")
+                                                                                                                                    returnvoid
+                                                                                                                                 end ; code
+                                                                                                                              end ; body
+                                                                                                                           end ; method

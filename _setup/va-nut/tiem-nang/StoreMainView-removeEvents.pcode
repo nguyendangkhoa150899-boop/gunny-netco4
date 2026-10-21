@@ -1,0 +1,103 @@
+                              method
+                                 name "store:StoreMainView/private:removeEvents"
+                                 returns QName(PackageNamespace(""),"void")
+                                 
+                                 body
+                                    maxstack 3
+                                    localcount 1
+                                    initscopedepth 9
+                                    maxscopedepth 10
+                                    
+                                    code
+                                       debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;store;StoreMainView.as"
+                                       debugline 160
+                                       getlocal0
+                                       pushscope
+                                       debugline 162
+                                       findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                       getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                       getproperty QName(PackageNamespace(""),"Instance")
+                                       getproperty QName(PackageNamespace(""),"Self")
+                                       getproperty QName(PackageNamespace(""),"StoreBag")
+                                       findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                       getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                       getproperty QName(PackageNamespace(""),"UPDATE")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"__updateStoreBag")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 163
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"strength_btn")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace(""),"CLICK")
+                                       getlocal0
+                                       getproperty QName(PackageNamespace(""),"__strengthClick")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 164
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"compose_btn")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace(""),"CLICK")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"__composeClick")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 165
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"fusion_btn")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace(""),"CLICK")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"__fusionClick")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 166
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"embed_btn")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace(""),"CLICK")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"__embedBtnClick")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 167
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"transf_Btn")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                       getproperty QName(PackageNamespace(""),"CLICK")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"__transferClick")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 168
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"_embedPanel")
+                                       findpropstrict QName(PackageNamespace("store.events"),"StoreIIEvent")
+                                       getproperty QName(PackageNamespace("store.events"),"StoreIIEvent")
+                                       getproperty QName(PackageNamespace(""),"EMBED_INFORCHANGE")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"embedInfoChangeHandler")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 169
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"_strengthPanel")
+                                       findpropstrict QName(PackageNamespace("flash.events"),"Event")
+                                       getproperty QName(PackageNamespace("flash.events"),"Event")
+                                       getproperty QName(PackageNamespace(""),"CHANGE")
+                                       getlocal0
+                                       getproperty QName(PrivateNamespace("store:StoreMainView"),"changeHandler")
+                                       callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                       pop
+                                       debugline 170
+                                       returnvoid
+                                    end ; code
+                                 end ; body
+                              end ; method

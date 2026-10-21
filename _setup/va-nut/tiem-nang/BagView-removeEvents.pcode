@@ -1,0 +1,387 @@
+                                                                                                   method
+                                                                                                      name "bagAndInfo.bag:BagView/protected:removeEvents"
+                                                                                                      returns QName(PackageNamespace(""),"void")
+                                                                                                      
+                                                                                                      body
+                                                                                                         maxstack 3
+                                                                                                         localcount 1
+                                                                                                         initscopedepth 9
+                                                                                                         maxscopedepth 10
+                                                                                                         
+                                                                                                         code
+                                                                                                            debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;bagAndInfo\\bag;BagView.as"
+                                                                                                            debugline 575
+                                                                                                            getlocal0
+                                                                                                            pushscope
+                                                                                                            debugline 577
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_sellBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__sellClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 578
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_breakBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__breakClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 579
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_equiplist")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"ITEM_CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 580
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_equiplist")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace(""),"CHANGE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__listChange")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 581
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_equiplist")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"DOUBLE_CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellDoubleClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 582
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_proplist")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"ITEM_CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 583
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_proplist")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace(""),"CHANGE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__listChange")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 584
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_petlist")
+                                                                                                            convert_b
+                                                                                                            iffalse ofs00ce
+                                                                                                            debugline 586
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_petlist")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"CellEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"ITEM_CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                   ofs00ce:
+                                                                                                            debugline 588
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_btnGroup")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace(""),"CHANGE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__tabClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 589
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_sortBagBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__sortBagClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 590
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_trieveBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"___trieveBtnClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 591
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_trieveBtnSprite")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"MOUSE_OVER")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"___trieveBtnOver")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 592
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_trieveBtnSprite")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"MOUSE_OUT")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"___trieveBtnOut")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 593
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"instance")
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"ADDPRICE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__cellAddPrice")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 594
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"instance")
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"MOVE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__cellMove")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 595
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"instance")
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"OPEN_CellMenu")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellOpen")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 596
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"instance")
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"USE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__cellUse")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 597
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"instance")
+                                                                                                            findpropstrict QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace("bagAndInfo.bag"),"CellMenu")
+                                                                                                            getproperty QName(PackageNamespace(""),"OPEN_BATCH")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__cellOpenBatch")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 598
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_settingLockBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__openSettingLock")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 599
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_settedLockBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__openModifyLock")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 600
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"_keySetBtn")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"MouseEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLICK")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__keySetFrameClick")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 601
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CLEAR")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__clearHandler")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 602
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"AFTERDEL")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__clearHandler")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 603
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"CHANGEPSW")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__clearHandler")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 604
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            getproperty QName(PackageNamespace(""),"cardBagDic")
+                                                                                                            findpropstrict QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"ADD")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__upData")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 605
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            getproperty QName(PackageNamespace(""),"cardBagDic")
+                                                                                                            findpropstrict QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"UPDATE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__upData")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 606
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            getproperty QName(PackageNamespace(""),"Self")
+                                                                                                            getproperty QName(PackageNamespace(""),"cardBagDic")
+                                                                                                            findpropstrict QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace("road7th.data"),"DictionaryEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"REMOVE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__remove")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 607
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_info")
+                                                                                                            convert_b
+                                                                                                            iffalse ofs0349
+                                                                                                            debugline 609
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_info")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"PlayerPropertyEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"PlayerPropertyEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"PROPERTY_CHANGE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__propertyChange")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 610
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_info")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.data"),"BagInfo")
+                                                                                                            getproperty QName(PackageNamespace("ddt.data"),"BagInfo")
+                                                                                                            getproperty QName(PackageNamespace(""),"EQUIPBAG")
+                                                                                                            callproperty QName(PackageNamespace(""),"getBag"), 1
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"UPDATE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__onBagUpdateEQUIPBAG")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 611
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_info")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.data"),"BagInfo")
+                                                                                                            getproperty QName(PackageNamespace("ddt.data"),"BagInfo")
+                                                                                                            getproperty QName(PackageNamespace(""),"PROPBAG")
+                                                                                                            callproperty QName(PackageNamespace(""),"getBag"), 1
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"BagEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"UPDATE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__onBagUpdatePROPBAG")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                   ofs0349:
+                                                                                                            debugline 613
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_bagLockControl")
+                                                                                                            convert_b
+                                                                                                            iffalse ofs036b
+                                                                                                            debugline 615
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"_bagLockControl")
+                                                                                                            findpropstrict QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace("flash.events"),"Event")
+                                                                                                            getproperty QName(PackageNamespace(""),"COMPLETE")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(PrivateNamespace("bagAndInfo.bag:BagView"),"__onLockComplete")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                   ofs036b:
+                                                                                                            debugline 617
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.manager"),"SocketManager")
+                                                                                                            getproperty QName(PackageNamespace("ddt.manager"),"SocketManager")
+                                                                                                            getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                            findpropstrict QName(PackageNamespace("ddt.events"),"CrazyTankSocketEvent")
+                                                                                                            getproperty QName(PackageNamespace("ddt.events"),"CrazyTankSocketEvent")
+                                                                                                            getproperty QName(PackageNamespace(""),"USE_COLOR_SHELL")
+                                                                                                            getlocal0
+                                                                                                            getproperty QName(ProtectedNamespace("bagAndInfo.bag:BagView"),"__useColorShell")
+                                                                                                            callproperty QName(PackageNamespace(""),"removeEventListener"), 2
+                                                                                                            pop
+                                                                                                            debugline 618
+                                                                                                            returnvoid
+                                                                                                         end ; code
+                                                                                                      end ; body
+                                                                                                   end ; method

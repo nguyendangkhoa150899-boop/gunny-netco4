@@ -12,3 +12,7 @@ Hoan tac tren VPS: copy C:\Gunny92\Flash\2.png.bak20261022 de len 2.png.
 Dot 2 (cung ngay): 2 loi Gia Cong, dung bang dung-pcode-giacong.js tu P-code xuat cua 2 lop:
   ffdec-cli -replace 2.png 2-moi.png ddt.bagStore.BagStoreFrame BagStoreFrame-changeHandler.pcode 4 store.fineStore.view.FineGhostView FineGhostView-initView.pcode 6
 md5 sau ca 2 dot: 679c5940... (chi 3 tag DoABC doi: ForgeMainView, FineGhostView, BagStoreFrame).
+
+Dot 3 (cung ngay): 6 loi nho, dung bang dung-pcode-dot3.js (tham so ffdec trong dot3-args.txt):
+  mapfile -t A < dot3-args.txt; ffdec-cli -replace 2.png 2-moi.png "${A[@]}"
+md5 sau dot 3: ca60180e... (9 tag DoABC doi so voi 2.png.bak20261022).

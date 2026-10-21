@@ -1,0 +1,84 @@
+                                                                                             method
+                                                                                                name "store.view.fusion:StoreIIFusionBG/updateData"
+                                                                                                returns QName(PackageNamespace(""),"void")
+                                                                                                
+                                                                                                body
+                                                                                                   maxstack 5
+                                                                                                   localcount 3
+                                                                                                   initscopedepth 9
+                                                                                                   maxscopedepth 10
+                                                                                                   
+                                                                                                   code
+                                                                                                      debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;store\\view\\fusion;StoreIIFusionBG.as"
+                                                                                                      debugline 666
+                                                                                                      getlocal0
+                                                                                                      pushscope
+                                                                                                      debug 1, "_loc1_", 0, 668
+                                                                                                      debug 1, "_loc2_", 1, 674
+                                                                                                      debugline 668
+                                                                                                      pushbyte 0
+                                                                                                      convert_i
+                                                                                                      setlocal1
+                                                                                                      jump ofs0041
+                                                                                             ofs001e:
+                                                                                                      label
+                                                                                                      debugline 671
+                                                                                                      getlocal0
+                                                                                                      getproperty QName(PrivateNamespace("store.view.fusion:StoreIIFusionBG"),"_items")
+                                                                                                      getlocal1
+                                                                                                      getproperty MultinameL([PrivateNamespace("store.view.fusion:StoreIIFusionBG"),PackageNamespace(""),Namespace("http://adobe.com/AS3/2006/builtin"),PrivateNamespace("StoreIIFusionBG.as$2172"),PackageNamespace("store.view.fusion"),PackageInternalNs("store.view.fusion"),ProtectedNamespace("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                                                                                      findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                      getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                      getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                      getproperty QName(PackageNamespace(""),"Self")
+                                                                                                      getproperty QName(PackageNamespace(""),"StoreBag")
+                                                                                                      getproperty QName(PackageNamespace(""),"items")
+                                                                                                      getlocal1
+                                                                                                      getproperty MultinameL([PrivateNamespace("store.view.fusion:StoreIIFusionBG"),PackageNamespace(""),Namespace("http://adobe.com/AS3/2006/builtin"),PrivateNamespace("StoreIIFusionBG.as$2172"),PackageNamespace("store.view.fusion"),PackageInternalNs("store.view.fusion"),ProtectedNamespace("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                                                                                      setproperty Multiname("info",[PrivateNamespace("store.view.fusion:StoreIIFusionBG"),PackageNamespace(""),Namespace("http://adobe.com/AS3/2006/builtin"),PrivateNamespace("StoreIIFusionBG.as$2172"),PackageNamespace("store.view.fusion"),PackageInternalNs("store.view.fusion"),ProtectedNamespace("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                                                                                      debugline 672
+                                                                                                      getlocal1
+                                                                                                      increment_i
+                                                                                                      convert_i
+                                                                                                      setlocal1
+                                                                                             ofs0041:
+                                                                                                      debugline 669
+                                                                                                      getlocal1
+                                                                                                      pushbyte 5
+                                                                                                      iflt ofs001e
+                                                                                                      debugline 674
+                                                                                                      pushbyte 5
+                                                                                                      convert_i
+                                                                                                      setlocal2
+                                                                                                      jump ofs007c
+                                                                                             ofs0056:
+                                                                                                      label
+                                                                                                      debugline 677
+                                                                                                      getlocal0
+                                                                                                      getproperty QName(PrivateNamespace("store.view.fusion:StoreIIFusionBG"),"_accessoryFrameII")
+                                                                                                      getlocal2
+                                                                                                      findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                      getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                                                                                                      getproperty QName(PackageNamespace(""),"Instance")
+                                                                                                      getproperty QName(PackageNamespace(""),"Self")
+                                                                                                      getproperty QName(PackageNamespace(""),"StoreBag")
+                                                                                                      getproperty QName(PackageNamespace(""),"items")
+                                                                                                      getlocal2
+                                                                                                      getproperty MultinameL([PrivateNamespace("store.view.fusion:StoreIIFusionBG"),PackageNamespace(""),Namespace("http://adobe.com/AS3/2006/builtin"),PrivateNamespace("StoreIIFusionBG.as$2172"),PackageNamespace("store.view.fusion"),PackageInternalNs("store.view.fusion"),ProtectedNamespace("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("store.view.fusion:StoreIIFusionBG"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                                                                                      callproperty QName(PackageNamespace(""),"setItemInfo"), 2
+                                                                                                      pop
+                                                                                                      debugline 678
+                                                                                                      getlocal2
+                                                                                                      increment_i
+                                                                                                      convert_i
+                                                                                                      setlocal2
+                                                                                             ofs007c:
+                                                                                                      debugline 675
+                                                                                                      getlocal2
+                                                                                                      pushbyte 11
+                                                                                                      iflt ofs0056
+                                                                                                      debugline 680
+                                                                                                      returnvoid
+                                                                                                   end ; code
+                                                                                                end ; body
+                                                                                             end ; method
