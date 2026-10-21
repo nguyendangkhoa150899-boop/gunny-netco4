@@ -85,22 +85,67 @@ function item_icon_file($cat,$pic,$sex){
 /* Mon co trong TemplateAlllist.xml cua client (nen zlib) khong. Co anh chua du: do admin cu tu che (352xxxxx...) dung lai anh do that
    nhung client khong biet ID -> nguoi nhan ket man hinh giay khi vao game (15/10: hoang). Cache theo mtime trong thu muc tam. */
 define('CLIENT_XML', 'C:\\Gunny92\\Request\\TemplateAlllist.xml');
+define('PET_XML', 'C:\\Gunny92\\Request\\pettemplateinfo.xml');
+// = PathManager.solveGoodsPath(cat, pic, NeedSex == 1, "icon") cua client (giong website_backend VatPham::duongDanClient, _setup/kiem-anh/kiem-anh.js)
+function item_client_path($cat,$pic,$needSex){
+  $T=['','head','glass','hair','eff','cloth','face','arm','armlet','ring','','','','suits','necklace','wing','chatBall','','','','','','','','','','','','armlet','ring'];
+  $c=(int)$cat; $p=$pic;
+  if($c==7||$c==27) return "image/arm/$p/1/icon.png";
+  if(in_array($c,[11,24,65,68,69,72],true)) return "image/unfrightprop/$p/icon.png";
+  if($c==12) return "image/task/$p/icon.png";
+  if($c==16) return "image/specialprop/chatBall/$p/icon.png";
+  if($c<10||in_array($c,[13,14,28,29],true)){
+    $t=$T[$c]??'';
+    if(in_array($c,[8,9,14,28,29],true)) return "image/equip/$t/$p/icon.png";
+    return 'image/equip/'.((int)$needSex===1?'m':'f')."/$t/$p/icon_1.png";
+  }
+  if($c==15) return "image/equip/wing/$p/icon.png";
+  if($c==17||$c==31) return "image/equip/offhand/$p/icon.png";
+  if($c==25) return "image/gift/$p/icon.png";
+  if($c==26) return "image/card/$p/icon.jpg";
+  if($c==18) return "image/cardbox/$p/icon.png";
+  if($c==19) return "image/equip/recover/$p/icon.png";
+  if(in_array($c,[20,23,30,40,34,35],true)) return "image/unfrightprop/$p/icon.png";
+  if($c==32||$c==36) return "image/farm/Crops/$p/seed.png";
+  if($c==33) return "image/farm/Fertilizer/$p/icon.png";
+  if($c==52) return "image/petequip/cloth/$p/icon.png";
+  if($c==50) return "image/petequip/arm/$p/icon.png";
+  if($c==51) return "image/petequip/hat/$p/icon.png";
+  return "image/prop/$p/icon.png";
+}
+// Mon dua vao game duoc, xet DUNG nhu client (22/10): client biet ID (do tu che 352xxxxx -> ket man hinh giay, 15/10 hoang)
+// + co anh o dung duong client xin (khong thu duong du phong) + trung: thu cung ben trong co trong pettemplateinfo.xml.
 function item_in_client($tid){
   static $ds = null;
   if ($ds === null) {
     $mt = @filemtime(CLIENT_XML); $ds = [];
     if ($mt) {
-      $cf = sys_get_temp_dir().'\\gn_client_tpl_'.$mt.'.json';
+      $cf = sys_get_temp_dir().'\\gn_client_ok_'.$mt.'_'.(int)@filemtime(PET_XML).'.json';
       $c = @file_get_contents($cf); $ds = $c !== false ? json_decode($c, true) : null;
       if (!is_array($ds)) {
         $raw = @file_get_contents(CLIENT_XML); $xml = $raw === false ? false : @gzuncompress($raw); $ds = [];
-        if ($xml !== false && preg_match_all('/<Item [^>]*?TemplateID="(\d+)"/', $xml, $m)) { $ds = array_fill_keys($m[1], 1); @file_put_contents($cf, json_encode($ds)); }
+        $pet = [];
+        if (preg_match_all('/<item [^>]*>/i', (string)@file_get_contents(PET_XML), $pm))
+          foreach ($pm[0] as $t) if (preg_match('/ TemplateID="(\d+)"/',$t,$a) && preg_match('/ Pic="([^"]*)"/',$t,$b)) $pet[$a[1]] = $b[1];
+        $co = function($rel){ return is_file(RES_DIR.str_replace('/','\\',$rel)); };
+        if ($xml !== false && preg_match_all('/<Item [^>]*>/', $xml, $m)) {
+          foreach ($m[0] as $t) {
+            $g = function($k) use ($t){ return preg_match('/ '.$k.'="([^"]*)"/',$t,$x) ? $x[1] : ''; };
+            $pic = $g('Pic');
+            if ($pic === '' || $pic === 'null' || !preg_match('#^[A-Za-z0-9_\- ]+$#', $pic)) continue;
+            $cat = (int)$g('CategoryID');
+            if (!$co(item_client_path($cat,$pic,(int)$g('NeedSex')))) continue;
+            if ($cat === 35) { $pp = $pet[$g('Property5')] ?? null; if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue; }
+            $ds[$g('TemplateID')] = 1;
+          }
+          @file_put_contents($cf, json_encode($ds));
+        }
       }
     }
   }
   return isset($ds[(string)(int)$tid]);
 }
-function item_khong_client_msg($tid){ return 'Món ID '.(int)$tid.' không có trong client (đồ tự chế của admin cũ): người nhận sẽ kẹt màn hình khi vào game. Không thêm.'; }
+function item_khong_client_msg($tid){ return 'Món ID '.(int)$tid.' vào game sẽ lỗi (client không có món này, không có hình, hoặc trứng chứa thú cưng client không có). Không thêm.'; }
 function item_icon_url($cat,$pic,$sex){ return 'icon.php?c='.(int)$cat.'&p='.rawurlencode((string)$pic).'&s='.(int)$sex; }
 // Mau vien theo pham chat (Shop_Goods.Quality)
 function quality_color($q){ return [0=>'#6b7a90',1=>'#9aa7b8',2=>'#3fbf6f',3=>'#3b8cff',4=>'#a35bff',5=>'#ff9a1f',6=>'#ff4d5e'][(int)$q] ?? '#6b7a90'; }

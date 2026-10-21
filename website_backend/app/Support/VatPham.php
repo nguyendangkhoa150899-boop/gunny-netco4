@@ -17,30 +17,80 @@ class VatPham
 
     private static $dsClient = null;
 
+    const PET_XML = 'C:\\Gunny92\\Request\\pettemplateinfo.xml';
+
     /**
-     * Mon co trong TemplateAlllist.xml cua client khong. CO ANH CHUA DU: do admin cu tu che (352xxxxx...) dung lai anh do that
-     * nhung client khong biet ID -> nam trong tui la client loi khi dung sanh, ket man hinh giay (15/10: hoang).
-     * Khong doc duoc file -> coi nhu khong co mon nao (chan het, khong cho lot).
+     * Mon dua vao game duoc khong, xet DUNG nhu client (22/10). Phai du:
+     *  1. client biet ID (TemplateAlllist.xml): do admin cu tu che (352xxxxx...) client khong biet -> ket man hinh giay (15/10: hoang);
+     *  2. co anh o DUNG duong client xin (duongDanClient, lay Pic/loai/gioi tinh tu XML client, khong thu duong du phong):
+     *     truoc day thu ca prop/unfrightprop/doi m-f nen lot ~300 mon vao game khong co hinh (vd do noi that bed402);
+     *  3. trung (loai 35): thu cung ben trong (Property5) co trong pettemplateinfo.xml + co anh (trung cua Vinhvinh 22/10 ra pet null).
+     * Kiem tren may: node _setup/kiem-anh/kiem-anh.js. Khong doc duoc file -> chan het, khong cho lot.
      */
     public static function trongClient(int $tid): bool
     {
         if (self::$dsClient === null) {
-            $mt = @filemtime(self::CLIENT_XML);
-            self::$dsClient = !$mt ? [] : Cache::rememberForever('client_tpl_' . $mt, function () {
+            $mt = (int)@filemtime(self::CLIENT_XML);
+            self::$dsClient = !$mt ? [] : Cache::rememberForever('client_ok_' . $mt . '_' . (int)@filemtime(self::PET_XML), function () {
                 $raw = @file_get_contents(self::CLIENT_XML);
                 $xml = $raw === false ? false : @gzuncompress($raw);
                 if ($xml === false) return [];
-                preg_match_all('/<Item [^>]*?TemplateID="(\d+)"/', $xml, $m);
-                return array_fill_keys(array_map('intval', $m[1]), 1);
+                $pet = [];
+                if (preg_match_all('/<item [^>]*>/i', (string)@file_get_contents(self::PET_XML), $pm))
+                    foreach ($pm[0] as $t) if (preg_match('/ TemplateID="(\d+)"/', $t, $a) && preg_match('/ Pic="([^"]*)"/', $t, $b)) $pet[$a[1]] = $b[1];
+                $co = function ($rel) { return is_file(self::RES_DIR . str_replace('/', '\\', $rel)); };
+                $ok = [];
+                preg_match_all('/<Item [^>]*>/', $xml, $m);
+                foreach ($m[0] as $t) {
+                    $g = function ($k) use ($t) { return preg_match('/ ' . $k . '="([^"]*)"/', $t, $x) ? $x[1] : ''; };
+                    $pic = $g('Pic');
+                    if ($pic === '' || $pic === 'null' || !preg_match('#^[A-Za-z0-9_\- ]+$#', $pic)) continue;
+                    $cat = (int)$g('CategoryID');
+                    if (!$co(self::duongDanClient($cat, $pic, (int)$g('NeedSex')))) continue;
+                    if ($cat === 35) {
+                        $pp = $pet[$g('Property5')] ?? null;
+                        if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue;
+                    }
+                    $ok[(int)$g('TemplateID')] = 1;
+                }
+                return $ok;
             });
         }
         return isset(self::$dsClient[$tid]);
     }
 
-    /** dua vao game duoc: client biet ID va co anh. $i = dong tu thongTin() */
+    /** = PathManager.solveGoodsPath(cat, pic, NeedSex == 1, "icon") cua client: anh icon trong tui (giong _setup/kiem-anh/kiem-anh.js) */
+    public static function duongDanClient(int $cat, string $pic, int $needSex): string
+    {
+        $T = ['', 'head', 'glass', 'hair', 'eff', 'cloth', 'face', 'arm', 'armlet', 'ring', '', '', '', 'suits', 'necklace', 'wing', 'chatBall', '', '', '', '', '', '', '', '', '', '', '', 'armlet', 'ring'];
+        if ($cat == 7 || $cat == 27) return "image/arm/$pic/1/icon.png";
+        if (in_array($cat, [11, 24, 65, 68, 69, 72], true)) return "image/unfrightprop/$pic/icon.png";
+        if ($cat == 12) return "image/task/$pic/icon.png";
+        if ($cat == 16) return "image/specialprop/chatBall/$pic/icon.png";
+        if ($cat < 10 || in_array($cat, [13, 14, 28, 29], true)) {
+            $t = $T[$cat] ?? '';
+            if (in_array($cat, [8, 9, 14, 28, 29], true)) return "image/equip/$t/$pic/icon.png";
+            return 'image/equip/' . ($needSex === 1 ? 'm' : 'f') . "/$t/$pic/icon_1.png";
+        }
+        if ($cat == 15) return "image/equip/wing/$pic/icon.png";
+        if ($cat == 17 || $cat == 31) return "image/equip/offhand/$pic/icon.png";
+        if ($cat == 25) return "image/gift/$pic/icon.png";
+        if ($cat == 26) return "image/card/$pic/icon.jpg";
+        if ($cat == 18) return "image/cardbox/$pic/icon.png";
+        if ($cat == 19) return "image/equip/recover/$pic/icon.png";
+        if (in_array($cat, [20, 23, 30, 40, 34, 35], true)) return "image/unfrightprop/$pic/icon.png";
+        if ($cat == 32 || $cat == 36) return "image/farm/Crops/$pic/seed.png";
+        if ($cat == 33) return "image/farm/Fertilizer/$pic/icon.png";
+        if ($cat == 52) return "image/petequip/cloth/$pic/icon.png";
+        if ($cat == 50) return "image/petequip/arm/$pic/icon.png";
+        if ($cat == 51) return "image/petequip/hat/$pic/icon.png";
+        return "image/prop/$pic/icon.png";
+    }
+
+    /** dua vao game duoc (xem trongClient: xet theo du lieu client, khong theo DB). $i = dong co TemplateID */
     public static function dungDuoc($i): bool
     {
-        return $i && self::trongClient((int)$i->TemplateID) && self::file($i->CategoryID, $i->Pic, $i->NeedSex) !== null;
+        return $i && self::trongClient((int)$i->TemplateID);
     }
 
     /**
@@ -50,7 +100,7 @@ class VatPham
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc_' . $mt, 21600, function () {
+        return Cache::remember('vp_dungduoc2_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $out = [];
             foreach ($rows as $x) {
