@@ -42,7 +42,7 @@ SELECT w.ActiveID, w.ID, w.ItemID, g.Name, g.NeedSex, w.Sex AS PhatCho
 
 -- 4. nhan vat NU da nhap NETCO4VIP truoc khi sua (da nhan 60000101): gui bu 60000062 +12 qua SendMailAndItem / admin > Gui qua
 --    (khong INSERT thang: nguoi online du lieu nam trong RAM Road). Sys_Users_Detail.Sex: 1 nam, 0 nu.
---    21/10: chi co biabia (UserID 227), da gui bu.
+--    21/10: chi co biabia (UserID 227), gui bu o admin > Gui qua.
 SELECT d.UserID, d.NickName, n.AwardID AS Code, n.[GetDate] AS NgayNhan
   FROM Db_Tank41.dbo.Active_Number n JOIN Db_Tank41.dbo.Sys_Users_Detail d ON d.UserID = n.UserID
   WHERE n.ActiveID = @vip AND n.UserID <> 0 AND d.Sex = 0
