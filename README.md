@@ -402,3 +402,23 @@ Mọi hộp thoại xác nhận dùng `com.pickgliss.ui.controls.alert.BaseAlerF
   - `quetnut.js` + `doixml.js`: tìm các khung tự đặt nút trong XML, theo tên biến hoặc chữ trên nút (`ok`/`cancel`), rồi đổi `x` của 14 cặp trong `Flash/ui/spain/xml/xml.png`. Đó là bán đồ, khóa túi, kết hôn, tạo/rời/chuyển/nâng cấp bang, thuế bang, nhận thành viên, mua ruộng. File zip được ghi lại: entry không sửa giữ nguyên byte, entry sửa thì nén lại và cập nhật CRC.
   - md5 sau đợt 2: 1.png `f942a1c8…`, 2.png `41b2ace9…`, xml.png `15908ed9…`. Bản gốc của cả 3 nằm trong `C:\inst2\flash-goc-20261015\`.
   - **Còn sót:** khung tự đặt `.x` trong code (`quetnut.js` đánh dấu `+code`), và khung có nút vẽ sẵn trong swf. Gặp khung nào thì sửa riêng khung đó.
+
+## 27. Tiệm rèn 100% (để test, 22/10/2026)
+Tỉ lệ tiệm rèn phần lớn **ghi cứng trong `Game.Server.dll`** (hợp thành `0.8/0.5/0.3/0.1/0.05`, tăng cấp `random.Next(4000,7500)`...), chỉ dát vàng (`WishBeadRate`) và cường hóa (`Db_Tank.Item_Strengthen.Rock*`) chỉnh được ngoài code. Nên vá IL như bot (mục 25): `_setup/forgepatch/` thay các lời gọi `random.Next` bằng `ForgeTuning.Ren.*`, bật/tắt bằng **`Forge100`** trong `Road.Service.exe.config` (1 = 100%, 0 = y như game gốc, hàm gọi lại `Next` thật).
+
+| Chức năng | Chỗ vá (đã quét DLL đang chạy) | Khi Forge100=1 |
+|---|---|---|
+| Cường hóa | `ItemStrengthenHandler` `num7 > Next(10000)` | luôn thành công (vẫn cần ≥1 đá, tối đa +12) |
+| Hợp thành | `ItemComposeHandler` `num3 > Next(100)` | luôn thành công |
+| Dát vàng | `WishBeadEquipHandler` `WishBeadRate >= Next(100000)` | luôn thành công |
+| Tăng cấp (+13..+15) | `ItemAdvanceHandler` `StrengthenExp >= Next(a,b)` ×3 | lên cấp ngay lần đầu |
+| Chiến hồn | `EquipGhostHandler` `tỉ lệ*2000 >= Next(0,100000)` | luôn thành công |
+| Tiềm năng | `LatentEnergyHandler` `Next(P2,P3)` ×2 | chỉ số tối đa |
+| Đục lỗ 5/6 | `OpenFiveSixHoleHandler` `Next(P7,P8)` ×2 | điểm tối đa |
+| Dung luyện | `FusionMgr.Fusion` 3 chỗ | luôn thành công, ra món tốt hơn |
+| Luyện hóa / Gia công | `RefineryMgr.Refinery` `Next(100) < xác suất` | luôn thành công |
+
+Client vẫn **hiển thị** % gốc (client tự tính), kết quả do server quyết.
+- Bật: `GUNNY_KEY=... ./_setup/forgepatch/forge.sh bat` (cần .NET 8 SDK). Tự sao lưu `Game.Server.dll.bak-forge` + `Road.Service.exe.config.bak-forge` (lần đầu), có người online thì bảo trì `KitoffUser` 6 phút rồi mới tắt Road.
+- Về tỉ lệ gốc, giữ bản vá: `forge.sh tat`. **Hoàn tác hẳn**: `forge.sh go` (trả 2 file `.bak-forge`, xóa `ForgeTuning.dll`).
+- **Mở server thật: chạy `forge.sh go`** (hoặc ít nhất `tat`).
