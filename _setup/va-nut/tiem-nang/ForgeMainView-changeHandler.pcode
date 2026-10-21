@@ -1,0 +1,375 @@
+                                 method
+                                    name "store.forge:ForgeMainView/changeHandler"
+                                    flag HAS_PARAM_NAMES
+                                    param QName(PackageNamespace("flash.events"),"Event")
+                                    paramname "param1"
+                                    returns QName(PackageNamespace(""),"void")
+                                    
+                                    body
+                                       maxstack 3
+                                       localcount 3
+                                       initscopedepth 9
+                                       maxscopedepth 10
+                                       
+                                       code
+                                          debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;store\\forge;ForgeMainView.as"
+                                          debugline 150
+                                          getlocal0
+                                          pushscope
+                                          debug 1, "param1", 0, 150
+                                          debugline 152
+                                          findproperty QName(PackageNamespace(""),"IsExalt")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"IsExalt")
+                                          debugline 153
+                                          findpropstrict QName(PackageNamespace("ddt.manager"),"SocketManager")
+                                          getproperty QName(PackageNamespace("ddt.manager"),"SocketManager")
+                                          getproperty QName(PackageNamespace(""),"Instance")
+                                          getproperty QName(PackageNamespace(""),"out")
+                                          callproperty QName(PackageNamespace(""),"sendClearStoreBag"), 0
+                                          pop
+                                          debugline 154
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_tabVbox")
+                                          callproperty QName(PackageNamespace(""),"arrange"), 0
+                                          pop
+                                          debugline 155
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          convert_b
+                                          iffalse ofs0042
+                                          debugline 157
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                 ofs0042:
+                                          debugline 159
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          convert_b
+                                          iffalse ofs0056
+                                          debugline 161
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                 ofs0056:
+                                          debugline 163
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          convert_b
+                                          iffalse ofs006a
+                                          debugline 165
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                 ofs006a:
+                                          debugline 167
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          convert_b
+                                          iffalse ofs007e
+                                          debugline 169
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                 ofs007e:
+                                          jump ofs0250
+                                 ofs0082:
+                                          label
+                                          debugline 174
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          not
+                                          iffalse ofs00b5
+                                          debugline 176
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store.forge.wishBead"),"WishBeadMainView")
+                                          constructprop QName(PackageNamespace("store.forge.wishBead"),"WishBeadMainView"), 0
+                                          setproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          debugline 177
+                                          findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          pushstring "forgeMainView.latentEnergyViewPos"
+                                          callproperty QName(PackageNamespace(""),"setPos"), 2
+                                          pop
+                                          debugline 178
+                                          findpropstrict QName(PackageNamespace(""),"addChild")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          callproperty QName(PackageNamespace(""),"addChild"), 1
+                                          pop
+                                 ofs00b5:
+                                          debugline 180
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_wishBeadView")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 181
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushstring "forgeMainView.wishBead.equipTipTxt"
+                                          pushstring "forgeMainView.wishBead.itemTipTxt"
+                                          callproperty QName(PackageNamespace(""),"showStoreBagViewText"), 2
+                                          pop
+                                          debugline 182
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 183
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"bg")
+                                          pushbyte 1
+                                          callproperty QName(PackageNamespace(""),"setFrame"), 1
+                                          pop
+                                          debugline 184
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace(""),"WISHBEAD")
+                                          setproperty QName(PackageNamespace(""),"currentPanelIndex")
+                                          debugline 185
+                                          jump ofs02bc
+                                 ofs00f4:
+                                          label
+                                          debugline 187
+                                          findproperty QName(PackageNamespace(""),"IsExalt")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"IsExalt")
+                                          debugline 188
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          convert_b
+                                          iffalse ofs011d
+                                          debugline 190
+                                          findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                          getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                          pop
+                                          debugline 191
+                                          getlocal0
+                                          pushnull
+                                          setproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                 ofs011d:
+                                          debugline 193
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          pushnull
+                                          ifne ofs0150
+                                          debugline 195
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store.view.exalt"),"StoreExaltBG")
+                                          constructprop QName(PackageNamespace("store.view.exalt"),"StoreExaltBG"), 0
+                                          setproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          debugline 196
+                                          findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          pushstring "forgeMainView.exaltPanelPos"
+                                          callproperty QName(PackageNamespace(""),"setPos"), 2
+                                          pop
+                                          debugline 197
+                                          findpropstrict QName(PackageNamespace(""),"addChild")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          callproperty QName(PackageNamespace(""),"addChild"), 1
+                                          pop
+                                 ofs0150:
+                                          debugline 199
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_exaltPanel")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 200
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 201
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"bg")
+                                          pushbyte 1
+                                          callproperty QName(PackageNamespace(""),"setFrame"), 1
+                                          pop
+                                          debugline 202
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace(""),"EXALT")
+                                          setproperty QName(PackageNamespace(""),"currentPanelIndex")
+                                          debugline 203
+                                          jump ofs02bc
+                                 ofs0181:
+                                          label
+                                          debugline 205
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          not
+                                          iffalse ofs01b4
+                                          debugline 207
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("latentEnergy"),"LatentEnergyMainView")
+                                          constructprop QName(PackageNamespace("latentEnergy"),"LatentEnergyMainView"), 0
+                                          setproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          debugline 208
+                                          findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          pushstring "forgeMainView.latentEnergyViewPos"
+                                          callproperty QName(PackageNamespace(""),"setPos"), 2
+                                          pop
+                                          debugline 209
+                                          findpropstrict QName(PackageNamespace(""),"addChild")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          callproperty QName(PackageNamespace(""),"addChild"), 1
+                                          pop
+                                 ofs01b4:
+                                          debugline 211
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_latentEnergyView")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 212
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushstring "forgeMainView.latentEnergy.equipTipTxt"
+                                          pushstring "forgeMainView.latentEnergy.itemTipTxt"
+                                          callproperty QName(PackageNamespace(""),"showStoreBagViewText"), 2
+                                          pop
+                                          debugline 213
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 214
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"bg")
+                                          pushbyte 1
+                                          callproperty QName(PackageNamespace(""),"setFrame"), 1
+                                          pop
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace(""),"WISHBEAD")
+                                          setproperty QName(PackageNamespace(""),"currentPanelIndex")
+                                          debugline 215
+                                          jump ofs02bc
+                                 ofs01e9:
+                                          label
+                                          debugline 217
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          not
+                                          iffalse ofs022d
+                                          debugline 219
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("gemstone"),"GemstoneFrame")
+                                          constructprop QName(PackageNamespace("gemstone"),"GemstoneFrame"), 0
+                                          setproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          debugline 220
+                                          findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          pushstring "forgeMainView.gemstoneFramePos"
+                                          callproperty QName(PackageNamespace(""),"setPos"), 2
+                                          pop
+                                          debugline 221
+                                          findpropstrict QName(PackageNamespace(""),"addChild")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          callproperty QName(PackageNamespace(""),"addChild"), 1
+                                          pop
+                                          debugline 222
+                                          findpropstrict QName(PackageNamespace("gemstone"),"GemstoneManager")
+                                          getproperty QName(PackageNamespace("gemstone"),"GemstoneManager")
+                                          getproperty QName(PackageNamespace(""),"Instance")
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          callproperty QName(PackageNamespace(""),"initFrame"), 1
+                                          pop
+                                 ofs022d:
+                                          debugline 224
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_gemstoneFrame")
+                                          pushtrue
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 225
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_rightBgView")
+                                          pushfalse
+                                          setproperty QName(PackageNamespace(""),"visible")
+                                          debugline 226
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"bg")
+                                          pushbyte 1
+                                          callproperty QName(PackageNamespace(""),"setFrame"), 1
+                                          pop
+                                          getlocal0
+                                          findpropstrict QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace("store"),"StoreMainView")
+                                          getproperty QName(PackageNamespace(""),"WISHBEAD")
+                                          setproperty QName(PackageNamespace(""),"currentPanelIndex")
+                                 ofs024b:
+                                          label
+                                          jump ofs02bc
+                                 ofs0250:
+                                          debugline 171
+                                          getlocal0
+                                          getproperty QName(PrivateNamespace("store.forge:ForgeMainView"),"_tabSBG")
+                                          getproperty QName(PackageNamespace(""),"selectIndex")
+                                          setlocal2
+                                          debugline 173
+                                          pushbyte 0
+                                          getlocal2
+                                          ifstrictne ofs0269
+                                          pushshort 0
+                                          jump ofs02a6
+                                 ofs0269:
+                                          debugline 186
+                                          pushbyte 1
+                                          getlocal2
+                                          ifstrictne ofs0279
+                                          pushshort 1
+                                          jump ofs02a6
+                                 ofs0279:
+                                          debugline 204
+                                          pushbyte 2
+                                          getlocal2
+                                          ifstrictne ofs0289
+                                          pushshort 2
+                                          jump ofs02a6
+                                 ofs0289:
+                                          debugline 216
+                                          pushbyte 3
+                                          getlocal2
+                                          ifstrictne ofs0299
+                                          pushshort 3
+                                          jump ofs02a6
+                                 ofs0299:
+                                          pushfalse
+                                          iffalse ofs02a4
+                                          pushshort 4
+                                          jump ofs02a6
+                                 ofs02a4:
+                                          pushshort 4
+                                 ofs02a6:
+                                          kill 2
+                                          lookupswitch ofs024b, [ofs0082, ofs00f4, ofs0181, ofs01e9, ofs024b]
+                                 ofs02bc:
+                                          debugline 228
+                                          returnvoid
+                                       end ; code
+                                    end ; body
+                                 end ; method
