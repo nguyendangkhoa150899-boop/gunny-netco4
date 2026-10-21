@@ -26,12 +26,17 @@ IF COLUMNPROPERTY(OBJECT_ID('dbo.Pet_Skill_Info'), 'ID', 'IsIdentity') = 1 SET @
 EXEC sp_executesql @sql;
 PRINT N'Them ky nang ban sao: ' + CAST(@@ROWCOUNT AS nvarchar(10));
 
--- 2. 4 loai pet tro sang ma rieng (SkillID va DeleteSkillIDs "a,b,")
-UPDATE t SET
-  t.DeleteSkillIDs = ISNULL((SELECT STRING_AGG(CAST(IIF(TRY_CAST(v.value AS int) BETWEEN 1 AND 99, 90000 + t.KindID * 100 + TRY_CAST(v.value AS int), TRY_CAST(v.value AS int)) AS nvarchar(12)), ',')
-                             FROM STRING_SPLIT(t.DeleteSkillIDs, ',') v WHERE v.value <> '') + ',', ''),
-  t.SkillID = 90000 + t.KindID * 100 + t.SkillID
-  FROM dbo.Pet_Skill_Template_Info t WHERE t.KindID IN (19, 20, 22, 23) AND t.SkillID BETWEEN 1 AND 99;
+-- 2. 4 loai pet tro sang ma rieng (SkillID va DeleteSkillIDs "a,b,"). DeleteSkillIDs moi tinh truoc vao #del
+--    (STRING_AGG trong subquery cua UPDATE bi loi 130).
+SELECT d.KindID, d.DeleteSkillIDs Cu,
+  STRING_AGG(CAST(IIF(TRY_CAST(v.value AS int) BETWEEN 1 AND 99, 90000 + d.KindID * 100 + TRY_CAST(v.value AS int), TRY_CAST(v.value AS int)) AS nvarchar(12)), ',') + ',' Moi
+  INTO #del
+  FROM (SELECT DISTINCT KindID, DeleteSkillIDs FROM dbo.Pet_Skill_Template_Info WHERE KindID IN (19, 20, 22, 23) AND SkillID BETWEEN 1 AND 99) d
+  CROSS APPLY STRING_SPLIT(d.DeleteSkillIDs, ',') v WHERE v.value <> ''
+  GROUP BY d.KindID, d.DeleteSkillIDs;
+UPDATE t SET t.DeleteSkillIDs = ISNULL(x.Moi, t.DeleteSkillIDs), t.SkillID = 90000 + t.KindID * 100 + t.SkillID
+  FROM dbo.Pet_Skill_Template_Info t LEFT JOIN #del x ON x.KindID = t.KindID AND x.Cu = t.DeleteSkillIDs
+  WHERE t.KindID IN (19, 20, 22, 23) AND t.SkillID BETWEEN 1 AND 99;
 PRINT N'Doi dong template: ' + CAST(@@ROWCOUNT AS nvarchar(10));
 COMMIT;
 
