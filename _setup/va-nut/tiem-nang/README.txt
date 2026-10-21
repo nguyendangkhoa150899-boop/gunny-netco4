@@ -8,3 +8,7 @@ Cach lam lai (can JRE + JPEXS FFDec, winget install JPEXS.FFDec):
   ffdec-cli -replace 2.png 2-moi.png store.forge.ForgeMainView ForgeMainView-changeHandler.pcode 9
 Kiem: chi 1 tag DoABC (store/forge/ForgeMainView) doi, +18 byte. md5 goc (da va nut) 41b2ace9..., sau va ae83726e...
 Hoan tac tren VPS: copy C:\Gunny92\Flash\2.png.bak20261022 de len 2.png.
+
+Dot 2 (cung ngay): 2 loi Gia Cong, dung bang dung-pcode-giacong.js tu P-code xuat cua 2 lop:
+  ffdec-cli -replace 2.png 2-moi.png ddt.bagStore.BagStoreFrame BagStoreFrame-changeHandler.pcode 4 store.fineStore.view.FineGhostView FineGhostView-initView.pcode 6
+md5 sau ca 2 dot: 679c5940... (chi 3 tag DoABC doi: ForgeMainView, FineGhostView, BagStoreFrame).

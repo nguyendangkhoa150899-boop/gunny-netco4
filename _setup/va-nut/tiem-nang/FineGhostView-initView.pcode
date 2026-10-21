@@ -1,0 +1,359 @@
+                        method
+                           name "store.fineStore.view:FineGhostView/private:initView"
+                           returns QName(PackageNamespace(""),"void")
+                           
+                           body
+                              maxstack 9
+                              localcount 5
+                              initscopedepth 9
+                              maxscopedepth 10
+                              
+                              code
+                                 debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;store\\fineStore\\view;FineGhostView.as"
+                                 debugline 162
+                                 getlocal0
+                                 pushscope
+                                 debug 1, "_loc1_", 0, 164
+                                 debug 1, "_loc2_", 1, 165
+                                 debug 1, "_loc3_", 2, 166
+                                 debug 1, "_loc4_", 3, 182
+                                 debugline 164
+                                 pushbyte 0
+                                 convert_i
+                                 setlocal1
+                                 debugline 165
+                                 pushnull
+                                 coerce_a
+                                 setlocal2
+                                 debugline 166
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.leftBg"
+                                 callproperty QName(PackageNamespace(""),"creatBitmap"), 1
+                                 coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                 setlocal3
+                                 debugline 167
+                                 findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getlocal3
+                                 pushstring "equipGhost.leftBgPos"
+                                 callproperty QName(PackageNamespace(""),"setPos"), 2
+                                 pop
+                                 debugline 168
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal3
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 169
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.LuckySymbolCell"
+                                 callproperty QName(PackageNamespace(""),"creatCustomObject"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_luckyStoneCell")
+                                 debugline 170
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_luckyStoneCell")
+                                 findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 pushstring "equipGhost.luck"
+                                 callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                 setproperty QName(PackageNamespace(""),"label")
+                                 debugline 171
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_luckyStoneCell")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 172
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.StrengthenStoneCell"
+                                 callproperty QName(PackageNamespace(""),"creatCustomObject"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostStoneCell")
+                                 debugline 173
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostStoneCell")
+                                 findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 pushstring "equipGhost.stone"
+                                 callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                 setproperty QName(PackageNamespace(""),"label")
+                                 debugline 174
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostStoneCell")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 175
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.EquipmentCell"
+                                 callproperty QName(PackageNamespace(""),"creatCustomObject"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_equipmentCell")
+                                 debugline 176
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_equipmentCell")
+                                 findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 pushstring "store.Strength.StrengthenEquipmentCellText"
+                                 callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                 setproperty QName(PackageNamespace(""),"label")
+                                 debugline 177
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_equipmentCell")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 178
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.ghostButton"
+                                 callproperty QName(PackageNamespace(""),"creatComponentByStylename"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostBtn")
+                                 debugline 179
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostBtn")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 180
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("ddt.utils"),"HelpFrameUtils")
+                                 getproperty QName(PackageNamespace("ddt.utils"),"HelpFrameUtils")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 getlocal0
+                                 pushstring "ddtstore.HelpButton"
+                                 pushnull
+                                 findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 pushstring "store.StoreIIGhost.say"
+                                 callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                 pushstring "ddtstore.HelpFrame.GhostText"
+                                 pushshort 404
+                                 pushshort 484
+                                 callproperty QName(PackageNamespace(""),"simpleHelpButton"), 7
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostHelpBtn")
+                                 debugline 181
+                                 findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ghostHelpBtn")
+                                 pushstring "equipGhost.helpBtnPos"
+                                 callproperty QName(PackageNamespace(""),"setPos"), 2
+                                 pop
+                                 debugline 182
+                                 pushnull
+                                 coerce QName(PackageNamespace("flash.geom"),"Point")
+                                 setlocal 4
+                                 debugline 183
+                                 getlocal0
+                                 newarray 0
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_items")
+                                 debugline 184
+                                 pushbyte 0
+                                 convert_i
+                                 setlocal1
+                                 jump ofs01df
+                        ofs014b:
+                                 label
+                                 debugline 187
+                                 getlocal1
+                                 pushbyte 0
+                                 ifne ofs0169
+                                 debugline 189
+                                 findpropstrict QName(PackageNamespace("store.fineStore.view"),"GhostStoneCell")
+                                 pushstring "117"
+                                 newarray 1
+                                 getlocal1
+                                 constructprop QName(PackageNamespace("store.fineStore.view"),"GhostStoneCell"), 2
+                                 coerce_a
+                                 setlocal2
+                                 jump ofs019b
+                        ofs0169:
+                                 debugline 191
+                                 getlocal1
+                                 pushbyte 1
+                                 ifne ofs0182
+                                 debugline 193
+                                 findpropstrict QName(PackageNamespace("store.fineStore.view"),"GhostItemCell")
+                                 getlocal1
+                                 constructprop QName(PackageNamespace("store.fineStore.view"),"GhostItemCell"), 1
+                                 coerce_a
+                                 setlocal2
+                                 jump ofs019b
+                        ofs0182:
+                                 debugline 195
+                                 getlocal1
+                                 pushbyte 2
+                                 ifne ofs019b
+                                 debugline 197
+                                 findpropstrict QName(PackageNamespace("store.fineStore.view"),"GhostStoneCell")
+                                 pushstring "118"
+                                 newarray 1
+                                 getlocal1
+                                 constructprop QName(PackageNamespace("store.fineStore.view"),"GhostStoneCell"), 2
+                                 coerce_a
+                                 setlocal2
+                        ofs019b:
+                                 debugline 199
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.ghostPos"
+                                 getlocal1
+                                 add
+                                 callproperty QName(PackageNamespace(""),"creatCustomObject"), 1
+                                 coerce QName(PackageNamespace("flash.geom"),"Point")
+                                 setlocal 4
+                                 debugline 200
+                                 getlocal2
+                                 getlocal 4
+                                 getproperty QName(PackageNamespace(""),"x")
+                                 setproperty Multiname("x",[PrivateNamespace("store.fineStore.view:FineGhostView"),PackageNamespace(""),PrivateNamespace("FineGhostView.as$719"),PackageNamespace("store.fineStore.view"),PackageInternalNs("store.fineStore.view"),Namespace("http://adobe.com/AS3/2006/builtin"),ProtectedNamespace("store.fineStore.view:FineGhostView"),StaticProtectedNs("store.fineStore.view:FineGhostView"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                 debugline 201
+                                 getlocal2
+                                 getlocal 4
+                                 getproperty QName(PackageNamespace(""),"y")
+                                 setproperty Multiname("y",[PrivateNamespace("store.fineStore.view:FineGhostView"),PackageNamespace(""),PrivateNamespace("FineGhostView.as$719"),PackageNamespace("store.fineStore.view"),PackageInternalNs("store.fineStore.view"),Namespace("http://adobe.com/AS3/2006/builtin"),ProtectedNamespace("store.fineStore.view:FineGhostView"),StaticProtectedNs("store.fineStore.view:FineGhostView"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                                 debugline 202
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal2
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 203
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_items")
+                                 getlocal2
+                                 callproperty QName(Namespace("http://adobe.com/AS3/2006/builtin"),"push"), 1
+                                 pop
+                                 debugline 204
+                                 getlocal1
+                                 increment_i
+                                 convert_i
+                                 setlocal1
+                        ofs01df:
+                                 debugline 185
+                                 getlocal1
+                                 pushbyte 3
+                                 iflt ofs014b
+                                 debugline 206
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.successRatioTxt"
+                                 callproperty QName(PackageNamespace(""),"creatComponentByStylename"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ratioTxt")
+                                 debugline 207
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ratioTxt")
+                                 findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                                 pushstring "equipGhost.ratioLowTxt"
+                                 callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                                 setproperty QName(PackageNamespace(""),"htmlText")
+                                 debugline 208
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_ratioTxt")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 209
+                                 getlocal0
+                                 findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                 getproperty QName(PackageNamespace(""),"Instance")
+                                 pushstring "equipGhost.continuousBtn"
+                                 callproperty QName(PackageNamespace(""),"creatComponentByStylename"), 1
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_continuesBtn")
+                                 debugline 210
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_continuesBtn")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 211
+                                 getlocal0
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_controller")
+                                 callproperty QName(PackageNamespace(""),"getView"), 0
+                                 setproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 debugline 212
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 pushtrue
+                                 setproperty QName(PackageNamespace(""),"visible")
+                                 debugline 213
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 findpropstrict QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 getproperty QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 astypelate
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_controller")
+                                 getproperty QName(PackageNamespace(""),"model")
+                                 callpropvoid QName(PackageNamespace(""),"setData"), 1
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 findpropstrict QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 getproperty QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 astypelate
+                                 getproperty QName(PackageNamespace(""),"EquipList")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_controller")
+                                 getproperty QName(PackageNamespace(""),"model")
+                                 getproperty QName(PackageNamespace(""),"canGhostEquipList")
+                                 callproperty QName(PackageNamespace(""),"setData"), 1
+                                 pop
+                                 debugline 214
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 findpropstrict QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 getproperty QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 astypelate
+                                 getproperty QName(PackageNamespace(""),"PropList")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_controller")
+                                 getproperty QName(PackageNamespace(""),"model")
+                                 getproperty QName(PackageNamespace(""),"canGhostPropList")
+                                 callproperty QName(PackageNamespace(""),"setData"), 1
+                                 pop
+                                 debugline 215
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 findpropstrict QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 getproperty QName(PackageNamespace("store.view.storeBag"),"StoreBagView")
+                                 astypelate
+                                 pushtrue
+                                 getlocal0
+                                 getproperty QName(PackageNamespace(""),"dragDrop")
+                                 callproperty QName(PackageNamespace(""),"enableCellDoubleClick"), 2
+                                 pop
+                                 debugline 216
+                                 findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 pushstring "equipGhost.rightViewPos"
+                                 callproperty QName(PackageNamespace(""),"setPos"), 2
+                                 pop
+                                 debugline 217
+                                 findpropstrict QName(PackageNamespace(""),"addChild")
+                                 getlocal0
+                                 getproperty QName(PrivateNamespace("store.fineStore.view:FineGhostView"),"_view")
+                                 callproperty QName(PackageNamespace(""),"addChild"), 1
+                                 pop
+                                 debugline 218
+                                 returnvoid
+                              end ; code
+                           end ; body
+                        end ; method

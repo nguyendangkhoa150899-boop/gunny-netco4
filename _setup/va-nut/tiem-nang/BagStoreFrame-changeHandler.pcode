@@ -1,0 +1,238 @@
+                  method
+                     name "ddt.bagStore:BagStoreFrame/private:__changeHandler"
+                     flag HAS_PARAM_NAMES
+                     param QName(PackageNamespace("flash.events"),"Event")
+                     paramname "param1"
+                     returns QName(PackageNamespace(""),"void")
+                     
+                     body
+                        maxstack 5
+                        localcount 3
+                        initscopedepth 11
+                        maxscopedepth 12
+                        
+                        code
+                           debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;ddt\\bagStore;BagStoreFrame.as"
+                           debugline 77
+                           getlocal0
+                           pushscope
+                           debug 1, "param1", 0, 77
+                           findpropstrict QName(PackageNamespace("store.forge"),"ForgeMainView")
+                           getproperty QName(PackageNamespace("store.forge"),"ForgeMainView")
+                           pushfalse
+                           setproperty QName(PackageNamespace(""),"IsExalt")
+                           debugline 79
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"SocketManager")
+                           getproperty QName(PackageNamespace("ddt.manager"),"SocketManager")
+                           getproperty QName(PackageNamespace(""),"Instance")
+                           getproperty QName(PackageNamespace(""),"out")
+                           callproperty QName(PackageNamespace(""),"sendClearStoreBag"), 0
+                           pop
+                           debugline 80
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           convert_b
+                           iffalse ofs002b
+                           debugline 82
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           pushfalse
+                           setproperty QName(PackageNamespace(""),"visible")
+                  ofs002b:
+                           jump ofs0147
+                  ofs002f:
+                           label
+                           debugline 87
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           pushtrue
+                           setproperty QName(PackageNamespace(""),"visible")
+                           debugline 88
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           findpropstrict QName(PackageNamespace("store.states"),"BaseStoreView")
+                           getproperty QName(PackageNamespace("store.states"),"BaseStoreView")
+                           astypelate
+                           pushbyte 0
+                           callproperty QName(PackageNamespace(""),"showForeView"), 1
+                           pop
+                           debugline 89
+                           jump ofs019c
+                  ofs004e:
+                           label
+                           debugline 91
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                           getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                           getproperty QName(PackageNamespace(""),"Instance")
+                           getproperty QName(PackageNamespace(""),"Self")
+                           getproperty QName(PackageNamespace(""),"Grade")
+                           pushbyte 20
+                           ifnlt ofs0083
+                           debugline 93
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_btnGroup")
+                           pushbyte 0
+                           setproperty QName(PackageNamespace(""),"selectIndex")
+                           debugline 94
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                           getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                           callproperty QName(PackageNamespace(""),"getInstance"), 0
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                           getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                           pushstring "ShowForeView.NoLevelTip"
+                           callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                           callproperty QName(PackageNamespace(""),"show"), 1
+                           pop
+                           debugline 95
+                           returnvoid
+                  ofs0083:
+                           debugline 97
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           pushtrue
+                           setproperty QName(PackageNamespace(""),"visible")
+                           debugline 98
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           findpropstrict QName(PackageNamespace("store.states"),"BaseStoreView")
+                           getproperty QName(PackageNamespace("store.states"),"BaseStoreView")
+                           astypelate
+                           pushbyte 1
+                           callproperty QName(PackageNamespace(""),"showForeView"), 1
+                           pop
+                           debugline 99
+                           jump ofs019c
+                  ofs00a1:
+                           label
+                           debugline 101
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                           getproperty QName(PackageNamespace("ddt.manager"),"PlayerManager")
+                           getproperty QName(PackageNamespace(""),"Instance")
+                           getproperty QName(PackageNamespace(""),"Self")
+                           getproperty QName(PackageNamespace(""),"Grade")
+                           pushbyte 30
+                           ifnge ofs0120
+                           debugline 103
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           not
+                           iffalse ofs010c
+                           debugline 105
+                           getlocal0
+                           findpropstrict QName(PackageNamespace("store.fineStore.view"),"FineStoreView")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_controller")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_controller")
+                           getproperty QName(PackageNamespace(""),"selectedIndex")
+                           pushstring "fine_store"
+                           getproperty MultinameL([PrivateNamespace("ddt.bagStore:BagStoreFrame"),PackageNamespace(""),PrivateNamespace("BagStoreFrame.as$2281"),PackageNamespace("ddt.bagStore"),PackageInternalNs("ddt.bagStore"),Namespace("http://adobe.com/AS3/2006/builtin"),ProtectedNamespace("ddt.bagStore:BagStoreFrame"),StaticProtectedNs("ddt.bagStore:BagStoreFrame"),StaticProtectedNs("com.pickgliss.ui.controls:Frame"),StaticProtectedNs("com.pickgliss.ui.core:Component"),StaticProtectedNs("flash.display:Sprite"),StaticProtectedNs("flash.display:DisplayObjectContainer"),StaticProtectedNs("flash.display:InteractiveObject"),StaticProtectedNs("flash.display:DisplayObject"),StaticProtectedNs("flash.events:EventDispatcher")])
+                           constructprop QName(PackageNamespace("store.fineStore.view"),"FineStoreView"), 2
+                           setproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           debugline 106
+                           findpropstrict QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                           getproperty QName(PackageNamespace("ddt.utils"),"PositionUtils")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           pushstring "ddtstore.BagStoreViewPos"
+                           callproperty QName(PackageNamespace(""),"setPos"), 2
+                           pop
+                           debugline 107
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           getproperty QName(PackageNamespace(""),"x")
+                           pushbyte 5
+                           subtract
+                           setproperty QName(PackageNamespace(""),"x")
+                           debugline 108
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           getproperty QName(PackageNamespace(""),"y")
+                           pushbyte 10
+                           subtract
+                           setproperty QName(PackageNamespace(""),"y")
+                           debugline 109
+                           findpropstrict QName(PackageNamespace(""),"addToContent")
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           callproperty QName(PackageNamespace(""),"addToContent"), 1
+                           pop
+                  ofs010c:
+                           debugline 111
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_fineStoreView")
+                           pushtrue
+                           setproperty QName(PackageNamespace(""),"visible")
+                           debugline 112
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_view")
+                           pushfalse
+                           setproperty QName(PackageNamespace(""),"visible")
+                           jump ofs0142
+                  ofs0120:
+                           debugline 116
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_btnGroup")
+                           pushbyte 0
+                           setproperty QName(PackageNamespace(""),"selectIndex")
+                           debugline 117
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                           getproperty QName(PackageNamespace("ddt.manager"),"MessageTipManager")
+                           callproperty QName(PackageNamespace(""),"getInstance"), 0
+                           findpropstrict QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                           getproperty QName(PackageNamespace("ddt.manager"),"LanguageMgr")
+                           pushstring "FineForeView.NoLevelTip"
+                           callproperty QName(PackageNamespace(""),"GetTranslation"), 1
+                           callproperty QName(PackageNamespace(""),"show"), 1
+                           pop
+                           debugline 118
+                           returnvoid
+                  ofs0142:
+                           label
+                           jump ofs019c
+                  ofs0147:
+                           debugline 84
+                           getlocal0
+                           getproperty QName(PrivateNamespace("ddt.bagStore:BagStoreFrame"),"_btnGroup")
+                           getproperty QName(PackageNamespace(""),"selectIndex")
+                           setlocal2
+                           debugline 86
+                           pushbyte 0
+                           getlocal2
+                           ifstrictne ofs015e
+                           pushshort 0
+                           jump ofs0189
+                  ofs015e:
+                           debugline 90
+                           pushbyte 1
+                           getlocal2
+                           ifstrictne ofs016d
+                           pushshort 1
+                           jump ofs0189
+                  ofs016d:
+                           debugline 100
+                           pushbyte 2
+                           getlocal2
+                           ifstrictne ofs017c
+                           pushshort 2
+                           jump ofs0189
+                  ofs017c:
+                           pushfalse
+                           iffalse ofs0187
+                           pushshort 3
+                           jump ofs0189
+                  ofs0187:
+                           pushshort 3
+                  ofs0189:
+                           kill 2
+                           lookupswitch ofs0142, [ofs002f, ofs004e, ofs00a1, ofs0142]
+                  ofs019c:
+                           debugline 121
+                           returnvoid
+                        end ; code
+                     end ; body
+                  end ; method
