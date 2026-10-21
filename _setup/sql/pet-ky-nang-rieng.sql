@@ -40,8 +40,10 @@ UPDATE t SET t.DeleteSkillIDs = ISNULL(x.Moi, t.DeleteSkillIDs), t.SkillID = 900
 PRINT N'Doi dong template: ' + CAST(@@ROWCOUNT AS nvarchar(10));
 COMMIT;
 
+-- (SUM(IIF(EXISTS(...))) bi loi 130 -> dung LEFT JOIN)
 SELECT t.KindID, COUNT(*) dong, SUM(IIF(t.MinLevel = 1, 1, 0)) cap1, MIN(t.SkillID) tu, MAX(t.SkillID) den,
-  SUM(IIF(EXISTS (SELECT 1 FROM dbo.Pet_Skill_Info s WHERE s.ID = t.SkillID), 0, 1)) thieu_skill
-  FROM dbo.Pet_Skill_Template_Info t WHERE t.KindID IN (19, 20, 22, 23) GROUP BY t.KindID;
+  SUM(IIF(s.ID IS NULL, 1, 0)) thieu_skill
+  FROM dbo.Pet_Skill_Template_Info t LEFT JOIN dbo.Pet_Skill_Info s ON s.ID = t.SkillID
+  WHERE t.KindID IN (19, 20, 22, 23) GROUP BY t.KindID;
 -- Hoan tac: xoa Pet_Skill_Info ID 91900..92399 roi chep lai Pet_Skill_Template_Info tu bak20261022_pet_skill_template
 GO
