@@ -35,8 +35,9 @@ INSERT INTO @a VALUES
  (13890,1,0),   -- Bo: Khac Ten Top 2                              A70x4
  (1757,1,1),(1858,1,2),         -- Mu: Khai Hoan Khoi nam / nu      A20x4, P7 65
  (2310,1,1),(2407,1,2),         -- Kinh: Hoang Long Khoi nam / nu   A20x4
- (60000042,1,1),(60000102,1,2), -- Ao (Sieu cap): Con thinh no Sulan nam / Ao Giap Mathias nu  A25 D25 N15 M15, P7 66
-                                -- (truoc 21/10 ghi nham 60000101 = Mathias ban NAM, nhan vat nu khong mac duoc; sua: giftcode-sua-gioi-tinh.sql)
+ (60000042,1,1),(60000062,1,2), -- Ao [Cao Cap]: Con thinh no Sulan nam / Tieu ma tien nu  A23x4, P7 72
+                                -- (truoc 21/10 la 60000101: DB ghi nu nhung client ghi "Ao Giap Mathias" NAM -> nu khong mac duoc;
+                                --  sua: giftcode-sua-gioi-tinh.sql. Chon do phai khop NeedSex ca DB lan TemplateAlllist.xml)
  (6352,1,1),(6410,1,2),         -- Mat                              A10x4
  (3533,1,1),(3671,1,2),         -- Toc                              A10x4
  (4360,1,1),(4627,1,2);         -- Hieu ung mat                     A10x4
