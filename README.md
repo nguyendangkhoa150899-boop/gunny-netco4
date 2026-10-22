@@ -353,7 +353,7 @@ Mỗi dòng dưới đây từng làm mất thời gian ít nhất 1 lần.
 | `diem_diemdanh` / `diem_moc` / `diem_phoban` / `diem_phoban_tran` | 10 / 20 / 5 / 50 | Điểm hoạt động |
 | `rut_mo` / `rut_ten` / `rut_tile` / `rut_tran_ngay` | 1 / NganHang / 1 / 2.000.000 | Rút xu game ra web |
 | `shop_mo` | 1 | Shop web |
-| `quatest_mo` / `quatest_luot_ngay` / `quatest_sl_max` | 1 / 50 / 999 | Gửi quà test (**mở thật đặt 0**) |
+| `quatest_mo` / `quatest_luot_ngay` / `quatest_sl_max` | 1 / 0 / 999 | Gửi quà test (**mở thật đặt `quatest_mo` 0**). Lượt/ngày 0 = không giới hạn (tắt 22/10). Số lượng tối đa chỉ áp cho món chồng được |
 
 Ngoài ra: `DB_Admin.dbo.settings` `he-so-doi-coin` = **1** (nạp xu web → xu game 1:1, phải bằng `rut_tile`). `Server_Config`: `MaxStrengthLevel` 12, `MAXLevel` 60, `WishBeadRate` (Road .config) 5000.
 
