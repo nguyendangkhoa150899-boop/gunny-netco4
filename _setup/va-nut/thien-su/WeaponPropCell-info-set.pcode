@@ -164,6 +164,18 @@
                                     callproperty QName(PackageNamespace(""),"getSmallContent"), 0
                                     coerce QName(PackageNamespace("flash.display"),"DisplayObject")
                                     setlocal 4
+                                    getlocal 4
+                                    pushbyte 3
+                                    setproperty QName(PackageNamespace(""),"x")
+                                    getlocal 4
+                                    pushbyte 3
+                                    setproperty QName(PackageNamespace(""),"y")
+                                    getlocal 4
+                                    pushbyte 32
+                                    setproperty QName(PackageNamespace(""),"width")
+                                    getlocal 4
+                                    pushbyte 32
+                                    setproperty QName(PackageNamespace(""),"height")
                                     findpropstrict QName(PackageNamespace(""),"addChildAt")
                                     getlocal 4
                                     findpropstrict QName(PackageNamespace(""),"getChildIndex")
