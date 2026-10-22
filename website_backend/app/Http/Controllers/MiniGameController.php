@@ -667,7 +667,8 @@ class MiniGameController extends \App\Http\BaseController
             if ($cat > 0 && $x[2] !== $cat) continue;
             if ($gt && $x[3] !== 0 && $x[3] !== $gt) continue;
             if ($q !== '') {
-                if ($so ? strpos((string)$x[0], $q) !== 0 : mb_stripos($x[1], $q) === false) continue;
+                // tim ca ten trong game (client) lan ten DB: 7024 game "SUPER-Boomerang", DB "VIP-Boomerang"
+                if ($so ? strpos((string)$x[0], $q) !== 0 : mb_stripos($x[12], $q) === false) continue;
             }
             $khop[] = $x;
         }

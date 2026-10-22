@@ -11,7 +11,12 @@ if ($_GET['ajax'] === 'items') {
   $where = []; $par = [];
   if ($q !== '') {
     if (ctype_digit($q)) { $where[] = "(TemplateID=? OR CAST(TemplateID AS varchar(12)) LIKE ?)"; $par[] = (int)$q; $par[] = $q.'%'; }
-    else { $where[] = "(Name LIKE ? OR Description LIKE ?)"; $par[] = '%'.$q.'%'; $par[] = '%'.$q.'%'; }
+    else {
+      // tim ca ten trong game (client): 7024 game "SUPER-Boomerang" nhung DB ghi "VIP-Boomerang"
+      $theoTen = [];
+      foreach (item_client_names() as $id => $n) if ((int)$id > 0 && mb_stripos($n, $q) !== false) { $theoTen[] = (int)$id; if (count($theoTen) >= 400) break; }
+      $where[] = "(Name LIKE ? OR Description LIKE ?".($theoTen ? " OR TemplateID IN (".implode(',', $theoTen).")" : "").")"; $par[] = '%'.$q.'%'; $par[] = '%'.$q.'%';
+    }
   }
   if ($cat > 0) { $where[] = "CategoryID=?"; $par[] = $cat; }
   // img: 'co' (mac dinh, an mon khong anh) | 'all' | 'khong' (chi mon client khong co anh, de test)
@@ -42,9 +47,9 @@ if ($_GET['ajax'] === 'items') {
     }
     foreach (q($conn, "SELECT DISTINCT OldTemplateId FROM Db_Tank.dbo.GoldEquipTemplateLoad WHERE OldTemplateId IN ($in)") as $g) $gold[(int)$g['OldTemplateId']] = 1;
   }
-  $out = [];
+  $out = []; $tenC = item_client_names();
   foreach ($rows as $r) {
-    $out[] = ['id'=>(int)$r['TemplateID'], 'name'=>$r['Name'], 'cat'=>(int)$r['CategoryID'], 'q'=>(int)$r['Quality'], 'lv'=>(int)$r['NeedLevel'],
+    $out[] = ['id'=>(int)$r['TemplateID'], 'name'=>$tenC[(string)(int)$r['TemplateID']] ?? $r['Name'], 'cat'=>(int)$r['CategoryID'], 'q'=>(int)$r['Quality'], 'lv'=>(int)$r['NeedLevel'],
               'sex'=>(int)$r['NeedSex'], 'atk'=>(int)$r['Attack'], 'def'=>(int)$r['Defence'], 'agi'=>(int)$r['Agility'], 'luck'=>(int)$r['Luck'],
               'desc'=>mb_substr((string)$r['Description'],0,140), 'color'=>quality_color($r['Quality']), 'icon'=>item_icon_url($r['CategoryID'],$r['Pic'],$r['NeedSex']),
               'box'=>$box[(int)$r['TemplateID']] ?? null, 'gold'=>isset($gold[(int)$r['TemplateID']]), 'img'=>$r['img']];

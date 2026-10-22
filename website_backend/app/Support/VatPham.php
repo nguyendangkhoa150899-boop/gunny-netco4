@@ -92,6 +92,33 @@ class VatPham
         return "image/prop/$pic/icon.png";
     }
 
+    private static $tenClient = null;
+
+    /**
+     * [TemplateID => ten] theo client (TemplateAlllist.xml) = ten nguoi choi thay trong game. DB co the khac
+     * (7024: DB "VIP-Boomerang", game "SUPER-Boomerang"), nen web hien ten client, tim duoc ca 2 ten.
+     */
+    public static function tenClient(): array
+    {
+        if (self::$tenClient === null) {
+            $mt = (int)@filemtime(self::CLIENT_XML);
+            self::$tenClient = !$mt ? [] : Cache::rememberForever('client_ten_' . $mt, function () {
+                $raw = @file_get_contents(self::CLIENT_XML);
+                $xml = $raw === false ? false : @gzuncompress($raw);
+                if ($xml === false) return [];
+                $out = [];
+                preg_match_all('/<Item [^>]*>/', $xml, $m);
+                foreach ($m[0] as $t) {
+                    if (!preg_match('/ TemplateID="(-?\d+)"/', $t, $a) || !preg_match('/ Name="([^"]*)"/', $t, $b)) continue;
+                    $ten = trim(html_entity_decode($b[1], ENT_QUOTES, 'UTF-8'));
+                    if ($ten !== '') $out[(int)$a[1]] = $ten;
+                }
+                return $out;
+            });
+        }
+        return self::$tenClient;
+    }
+
     /** dua vao game duoc (xem trongClient: xet theo du lieu client, khong theo DB). $i = dong co TemplateID */
     public static function dungDuoc($i): bool
     {
@@ -100,19 +127,23 @@ class VatPham
 
     /**
      * Moi mon dua vao game duoc (dungDuoc) de tim nhanh o Gui qua test, cache 6 gio (doi TemplateAlllist.xml la dung lai).
-     * Moi dong: [id, ten, cat, sex, q, lv, atk, def, agi, luck, cs, moTa]. Lan dau mat vai giay (kiem anh ~19k mon).
+     * Moi dong: [id, ten (theo client), cat, sex, q, lv, atk, def, agi, luck, cs, moTa, chuoi tim (ten client + ten DB)].
+     * Lan dau mat vai giay (kiem anh ~19k mon).
      */
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc4_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
+        return Cache::remember('vp_dungduoc5_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $bac = self::banBac();
+            $tenC = self::tenClient();
             $out = [];
             foreach ($rows as $x) {
                 if (!self::dungDuoc($x) || isset($bac[(int)$x->TemplateID])) continue;
-                $out[] = [(int)$x->TemplateID, (string)$x->Name, (int)$x->CategoryID, (int)$x->NeedSex, (int)$x->Quality, (int)$x->NeedLevel,
-                    (int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck, (bool)$x->CanStrengthen, mb_substr((string)$x->Description, 0, 120)];
+                $ten = $tenC[(int)$x->TemplateID] ?? trim((string)$x->Name);
+                $out[] = [(int)$x->TemplateID, $ten, (int)$x->CategoryID, (int)$x->NeedSex, (int)$x->Quality, (int)$x->NeedLevel,
+                    (int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck, (bool)$x->CanStrengthen, mb_substr((string)$x->Description, 0, 120),
+                    $ten . ' | ' . trim((string)$x->Name)];
             }
             return $out;
         });
@@ -157,7 +188,11 @@ class VatPham
         if (!$ids) return [];
         $out = [];
         $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID IN (" . implode(',', $ids) . ")");
-        foreach ($rows as $r) $out[(int)$r->TemplateID] = $r;
+        $tenC = self::tenClient();   // ten nguoi choi thay trong game (DB co the khac, vd 7024)
+        foreach ($rows as $r) {
+            if (isset($tenC[(int)$r->TemplateID])) $r->Name = $tenC[(int)$r->TemplateID];
+            $out[(int)$r->TemplateID] = $r;
+        }
         return $out;
     }
 

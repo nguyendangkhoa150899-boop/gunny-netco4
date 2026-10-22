@@ -150,6 +150,24 @@ function item_in_client($tid){
   }
   return isset($ds[(string)(int)$tid]);
 }
+// [TemplateID => ten] theo client = ten trong game. DB co the khac (7024: DB "VIP-Boomerang", game "SUPER-Boomerang"). Cache json theo mtime.
+function item_client_names(){
+  static $ds = null;
+  if ($ds !== null) return $ds;
+  $mt = @filemtime(CLIENT_XML); $ds = [];
+  if (!$mt) return $ds;
+  $cf = sys_get_temp_dir().'\\gn_client_ten_'.$mt.'.json';
+  $c = @file_get_contents($cf); $ds = $c !== false ? json_decode($c, true) : null;
+  if (is_array($ds)) return $ds;
+  $ds = [];
+  $raw = @file_get_contents(CLIENT_XML); $xml = $raw === false ? false : @gzuncompress($raw);
+  if ($xml !== false && preg_match_all('/<Item [^>]*>/', $xml, $m)) {
+    foreach ($m[0] as $t)
+      if (preg_match('/ TemplateID="(-?\d+)"/',$t,$a) && preg_match('/ Name="([^"]*)"/',$t,$b) && ($n = trim(html_entity_decode($b[1], ENT_QUOTES, 'UTF-8'))) !== '') $ds[$a[1]] = $n;
+    @file_put_contents($cf, json_encode($ds, JSON_UNESCAPED_UNICODE));
+  }
+  return $ds;
+}
 function item_khong_client_msg($tid){ return 'Món ID '.(int)$tid.' vào game sẽ lỗi (client không có món này, không có hình, hoặc trứng chứa thú cưng client không có). Không thêm.'; }
 function item_icon_url($cat,$pic,$sex){ return 'icon.php?c='.(int)$cat.'&p='.rawurlencode((string)$pic).'&s='.(int)$sex; }
 // Mau vien theo pham chat (Shop_Goods.Quality)
