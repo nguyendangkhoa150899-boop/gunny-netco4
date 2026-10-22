@@ -153,7 +153,7 @@ class VatPham
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc8_' . $mt . '_' . (int)@filemtime(self::PET_XML) . '_' . (int)@filemtime(self::VO_DUNG_JSON), 21600, function () {
+        return Cache::remember('vp_dungduoc9_' . $mt . '_' . (int)@filemtime(self::PET_XML) . '_' . (int)@filemtime(self::VO_DUNG_JSON), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,MaxCount,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $bac = self::banBac();
             $tenC = self::tenClient();
@@ -178,11 +178,23 @@ class VatPham
      */
     public static function banBac(): array
     {
-        return Cache::remember('vp_banbac', 21600, function () {
+        return Cache::remember('vp_banbac2', 21600, function () {
             $t = DB::connection('sqlsrv_tank41');
             $ds = [];
             foreach ($t->select("SELECT DISTINCT GainEquip i FROM Db_Tank.dbo.Item_Strengthen_Goods WHERE GainEquip <> OrginEquip") as $r) $ds[(int)$r->i] = 1;
             foreach ($t->select("SELECT DISTINCT NewTemplateId i FROM Db_Tank.dbo.GoldEquipTemplateLoad WHERE NewTemplateId <> OldTemplateId AND NewTemplateId > 0") as $r) $ds[(int)$r->i] = 1;
+            // ban KHOA tiem ren (CanStrengthen=0) cua vu khi co ban cung ten (bo dau *) cuong hoa duoc -> chi de ban lam duoc viec
+            // (chu server 22/10): 70244 Hoang kim vu / 70245 Hoang Kim Vu*, 70274 Chien than / 70275 Chien than*,
+            // 70246/70266/70276 SUPER-...* (bac 2 khoa) / ban goc 7024/7026/7027. Ten theo client (DB co the khac).
+            $tenC = self::tenClient();
+            $nhom = [];
+            foreach ($t->select("SELECT TemplateID, CanStrengthen FROM Db_Tank.dbo.Shop_Goods WHERE CategoryID IN (7, 27)") as $r) {
+                $ten = $tenC[(int)$r->TemplateID] ?? null;
+                if ($ten === null) continue;
+                $k = mb_strtolower(trim(rtrim(trim($ten), '*')), 'UTF-8');
+                $nhom[$k][(int)$r->TemplateID] = (bool)$r->CanStrengthen;
+            }
+            foreach ($nhom as $ma) if (in_array(true, $ma, true)) foreach ($ma as $id => $cuong) if (!$cuong) $ds[$id] = 1;
             return $ds;
         });
     }

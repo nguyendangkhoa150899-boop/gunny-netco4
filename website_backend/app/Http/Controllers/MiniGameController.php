@@ -837,7 +837,7 @@ class MiniGameController extends \App\Http\BaseController
             $tid = (int)($x['id'] ?? 0);
             $i = $tt[$tid] ?? null;
             if (!VatPham::dungDuoc($i)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
-            if (isset(VatPham::banBac()[$tid])) return $this->error('Món ID ' . $tid . ' là bản nâng bậc của vũ khí. Gửi bản gốc rồi cường hóa trong game để lên bậc.');
+            if (isset(VatPham::banBac()[$tid])) return $this->error('Món ID ' . $tid . ' là bản nâng bậc hoặc bản khóa tiệm rèn của vũ khí. Chọn bản cường hóa được (bản gốc, hoặc bản có dấu *) rồi cường hóa trong game.');
             if (in_array((int)$i->NeedSex, [1, 2], true) && (int)$i->NeedSex !== $this->gioiTinh($nv))
                 return $this->error('Món ' . $i->Name . ' dành cho nhân vật ' . ((int)$i->NeedSex === 1 ? 'nam' : 'nữ') . ', ' . $nv->NickName . ' không mặc được.');
             // 22/10: mon goc tron (khong cuong hoa / han / khoa). So luong chon duoc, kep quatest_sl_max;
