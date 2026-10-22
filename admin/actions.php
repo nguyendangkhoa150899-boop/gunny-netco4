@@ -45,10 +45,9 @@ function run_action($conn,$act,$P){
     for($i=0;$i<5;$i++){
       $tid=(int)($P['tid'][$i]??0); if($tid<=0) continue;
       if(!item_in_client($tid)) return item_khong_client_msg($tid);
-      $cnt=max(1,(int)($P['cnt'][$i]??1)); $day=max(0,(int)($P['day'][$i]??0)); $str=min(max_strength($conn),max(0,(int)($P['str'][$i]??0)));
-      $bind=!empty($P['bind'][$i]) ? 'true' : 'false';
+      // 22/10 chu server: moi mon vao game la MON GOC TRON, 1 cai (khong cuong hoa, vinh vien, khong khoa) cho do loi.
       // TemplateID,Count,ValidDate(ngay, 0=vinh vien),StrengthenLevel,AttackCompose,DefendCompose,AgilityCompose,LuckCompose,IsBind
-      $items[] = "$tid,$cnt,$day,$str,0,0,0,0,$bind";
+      $items[] = "$tid,1,0,0,0,0,0,0,false";
     }
     $gold=max(0,(int)($P['gold']??0)); $money=max(0,(int)($P['money']??0));
     if(!$items && !$gold && !$money) return 'Chưa chọn vật phẩm, vàng hay xu nào.';

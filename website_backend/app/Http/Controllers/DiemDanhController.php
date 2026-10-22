@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Player;
 use App\Support\CauHinh;
 use App\Support\Diem;
+use App\Support\GameMail;
 use App\Support\XuWeb;
 use Illuminate\Support\Facades\DB;
 
@@ -108,8 +109,8 @@ class DiemDanhController extends \App\Http\BaseController
         foreach ($this->rewards() as $r) {
             if ((int)$r->Moc !== 0 && (int)$r->Moc !== $count) continue;
             if ($r->TemplateID > 0) {
-                // TemplateID,Count,ValidDate,StrengthenLevel,AttackCompose,DefendCompose,AgilityCompose,LuckCompose,IsBind
-                $items[] = implode(',', [(int)$r->TemplateID, max(1, (int)$r->Cnt), (int)$r->ValidDate, (int)$r->StrengthenLevel, 0, 0, 0, 0, $r->IsBind ? 'true' : 'false']);
+                // gui qua GameMail: mon goc tron (khong cuong hoa / han / khoa), so luong kep theo MaxCount
+                $items[] = [(int)$r->TemplateID, max(1, (int)$r->Cnt)];
             }
             $gold += (int)$r->Gold;
             $money += (int)$r->Money;
@@ -122,7 +123,7 @@ class DiemDanhController extends \App\Http\BaseController
         foreach ($chunks as $i => $chunk) {
             if (!$chunk && !$gold && !$money) continue;
             $title = 'Quà điểm danh ngày ' . $now->d . '/' . $now->m . ' (ngày thứ ' . $count . ' trong tháng)';
-            $r = $this->sendMail($p->UserID, $title, $chunk, $i === 0 ? $gold : 0, $i === 0 ? $money : 0);
+            $r = GameMail::send((int)$p->UserID, $title, $chunk, $i === 0 ? $gold : 0, $i === 0 ? $money : 0);
             if ($r !== '1') { $ok = false; break; }
         }
         if (!$ok) {
@@ -138,15 +139,5 @@ class DiemDanhController extends \App\Http\BaseController
             $got[] = $diem . ' điểm hoạt động';
         }
         return $this->success('Điểm danh thành công! Quà đã gửi vào hộp thư trong game' . ($xuWeb ? ', xu web đã cộng vào ví' : '') . '.', ['songay' => $count, 'qua' => $got]);
-    }
-
-    private function sendMail($uid, $title, $items, $gold, $money)
-    {
-        $q = http_build_query(['title' => $title, 'content' => $title, 'user_id' => $uid, 'gold' => $gold, 'money' => $money,
-            'str' => implode('|', $items)], '', '&', PHP_QUERY_RFC3986);
-        $ctx = stream_context_create(['http' => ['timeout' => 30, 'ignore_errors' => true]]);
-        $r = @file_get_contents('http://127.0.0.1/SendMailAndItem.aspx?' . $q, false, $ctx);
-        if ($r === false) return 'khong goi duoc';
-        return preg_match('/^\s*(-?\d+)/', $r, $m) ? $m[1] : trim($r);
     }
 }

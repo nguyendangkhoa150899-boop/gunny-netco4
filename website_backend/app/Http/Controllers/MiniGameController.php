@@ -567,7 +567,9 @@ class MiniGameController extends \App\Http\BaseController
      */
     private function vaoRuong(int $mid, int $tid, int $sl, int $han, int $cuong, bool $khoa, string $nguon): void
     {
-        $mx = (int)(DB::connection('sqlsrv_tank41')->selectOne("SELECT MaxCount m FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?", [$tid])->m ?? 1);
+        // 22/10: do vao game la mon goc tron (GameMail::send) nen ruong cung luu tron, hien dung va cong don duoc voi nhau
+        $han = 0; $cuong = 0; $khoa = false;
+        $mx =(int)(DB::connection('sqlsrv_tank41')->selectOne("SELECT MaxCount m FROM Db_Tank.dbo.Shop_Goods WHERE TemplateID=?", [$tid])->m ?? 1);
         $mx = max(1, $mx);
         $nguon = mb_substr($nguon, 0, 100);
         if ($mx > 1) {
@@ -713,8 +715,6 @@ class MiniGameController extends \App\Http\BaseController
         $ds = json_decode((string)$r->input('ds', '[]'), true);
         if (!is_array($ds) || !$ds) return $this->error('Chọn ít nhất 1 món.');
         $ds = array_slice($ds, 0, 5);
-        $slMax = CauHinh::int('quatest_sl_max', 999);
-        $maxStr = (int)(DB::connection('sqlsrv_tank41')->selectOne("SELECT TOP 1 CAST(Value AS nvarchar(20)) v FROM Server_Config WHERE Name='MaxStrengthLevel'")->v ?? 12) ?: 12;
         $tt = VatPham::thongTin(array_map(function ($x) { return (int)($x['id'] ?? 0); }, $ds));
         $items = []; $nk = [];
         foreach ($ds as $x) {
@@ -723,11 +723,9 @@ class MiniGameController extends \App\Http\BaseController
             if (!VatPham::dungDuoc($i)) return $this->error('Món ID ' . $tid . ' không có trong client, không gửi được.');
             if (in_array((int)$i->NeedSex, [1, 2], true) && (int)$i->NeedSex !== $this->gioiTinh($nv))
                 return $this->error('Món ' . $i->Name . ' dành cho nhân vật ' . ((int)$i->NeedSex === 1 ? 'nam' : 'nữ') . ', ' . $nv->NickName . ' không mặc được.');
-            $cnt = max(1, min($slMax, (int)($x['sl'] ?? 1)));
-            $str = max(0, min($maxStr, (int)($x['cuong'] ?? 0)));
-            $han = max(0, min(3650, (int)($x['han'] ?? 0)));
-            $items[] = [$tid, $cnt, $han, $str, !empty($x['khoa'])];
-            $nk[] = $tid . ' x' . $cnt . ($str ? ' +' . $str : '') . ($han ? ' (' . $han . 'n)' : '');
+            // 22/10: mon goc tron, 1 cai (khong so luong / cuong hoa / han / khoa) cho do loi
+            $items[] = [$tid, 1];
+            $nk[] = (string)$tid;
         }
         $kq = GameMail::send((int)$nv->UserID, 'Quà test từ GunnyNetco4', $items);
         if ($kq !== '1') return $this->error('Máy chủ game đang bận, chưa gửi được (mã ' . $kq . '). Thử lại sau.');

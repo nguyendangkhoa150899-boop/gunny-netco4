@@ -573,7 +573,7 @@
       <div id="qtSlots"></div>
       <button class="b go" id="qtBtn" disabled>GỬI VÀO THƯ GAME</button>
       <div class="msg" id="qtMsg"></div>
-      <div class="muted" style="margin-top:8px">Tối đa 5 món mỗi lần, đồ vào <b>hộp thư trong game</b> (đang online cũng nhận). Chỉ hiện món client có ảnh. Tính năng cho giai đoạn test, mở server thật sẽ tắt.</div>
+      <div class="muted" style="margin-top:8px">Tối đa 5 món mỗi lần, mỗi món <b>1 cái, bản gốc</b> (không cường hóa, vĩnh viễn, không khóa), đồ vào <b>hộp thư trong game</b> (đang online cũng nhận). Chỉ hiện món client có ảnh. Tính năng cho giai đoạn test, mở server thật sẽ tắt.</div>
     </div>
     <div class="card">
       <h2>Tìm vật phẩm</h2>
@@ -960,7 +960,7 @@
     if(x.gh.tuan!=null) tags.push('Mỗi tuần '+x.gh.tuan+' (đã mua '+x.da.tuan+')');
     if(x.gh.ngay!=null) tags.push('Mỗi ngày '+x.gh.ngay+' (hôm nay '+x.da.ngay+')');
     if(x.kho!=null) tags.push('Còn '+fmt(x.kho)+' món toàn server');
-    tags.push(x.han?('Hạn '+x.han+' ngày'):'Vĩnh viễn'); if(x.khoa) tags.push('Khóa');
+    tags.push('Vĩnh viễn');   // 22/10: do vao game la mon goc tron (khong han, khong khoa), GameMail::send
     if(x.ketThuc) tags.push('Bán đến '+esc(x.ketThuc));
     var het=x.con===0, nhieu=x.con===null||x.con>1;
     return '<div class="si q'+x.q+'"><div class="top2"><div class="sic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
@@ -1024,13 +1024,10 @@
   function qtRender(){
     var h=QT.slots.map(function(x,i){ return '<div class="qtrow"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
       +'<div class="nm"><b>'+esc(x.ten)+'</b><span>ID '+x.id+(x.gt===1?' · nam':x.gt===2?' · nữ':'')+'</span></div>'
-      +'<label>Số lượng<input type="number" min="1" max="999" value="'+x.sl+'" data-k="sl" data-i="'+i+'"></label>'
-      +(x.cs?'<label>Cường hóa<input type="number" min="0" max="12" value="'+x.cuong+'" data-k="cuong" data-i="'+i+'"></label>':'')
-      +'<label>Hạn (ngày)<input type="number" min="0" value="'+x.han+'" data-k="han" data-i="'+i+'" title="0 = vĩnh viễn"></label>'
+      +'<span class="muted" style="white-space:nowrap">x1 · vĩnh viễn</span>'
       +'<button class="x" data-del="'+i+'" title="Bỏ">×</button></div>'; }).join('');
     for(var k=QT.slots.length;k<5;k++) h+='<div class="qtempty">Ô '+(k+1)+': bấm vào vật phẩm bên phải để thêm</div>';
     $('qtSlots').innerHTML=h; $('qtBtn').disabled=!QT.slots.length;
-    $('qtSlots').querySelectorAll('input[data-k]').forEach(function(inp){ inp.oninput=function(){ QT.slots[+inp.dataset.i][inp.dataset.k]=Math.max(0,parseInt(inp.value,10)||0); }; });
     $('qtSlots').querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ QT.slots.splice(+b.dataset.del,1); qtTipHide(); qtRender(); }; });
     $('qtSlots').querySelectorAll('.qtrow .ic').forEach(function(ic,i){ ic.onmouseenter=function(e){ qtTipShow(QT.slots[i],e); }; ic.onmousemove=qtTipMove; ic.onmouseleave=qtTipHide; });
   }
@@ -1060,7 +1057,7 @@
       if(them) $('qtRes').insertAdjacentHTML('beforeend',h); else $('qtRes').innerHTML=h;
       $('qtRes').querySelectorAll('.qtc:not([data-on])').forEach(function(el){ el.dataset.on=1; el.onclick=function(){
         if(QT.slots.length>=5){ toast('Đã đủ 5 ô, bỏ bớt một món trước.',true); return; }
-        var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,cat:x.cat,q:x.q,lv:x.lv,chiSo:x.chiSo,moTa:x.moTa,sl:1,cuong:x.cs?12:0,han:0}); qtTipHide(); qtRender(); };
+        var x=QT.res[+el.dataset.i]; QT.slots.push({id:x.id,ten:x.ten,mau:x.mau,hinh:x.hinh,cs:x.cs,gt:x.gt,cat:x.cat,q:x.q,lv:x.lv,chiSo:x.chiSo,moTa:x.moTa}); qtTipHide(); qtRender(); };
         el.onmouseenter=function(e){ qtTipShow(QT.res[+el.dataset.i],e); }; el.onmousemove=qtTipMove; el.onmouseleave=qtTipHide; });
     });
   }
@@ -1072,7 +1069,7 @@
   $('qtBtn').addEventListener('click',function(){
     if(!QT.slots.length) return;
     $('qtBtn').disabled=true;
-    api('/api/quatest/gui',{ds:JSON.stringify(QT.slots.map(function(x){ return {id:x.id,sl:x.sl,cuong:x.cuong,han:x.han}; }))}).then(function(r){
+    api('/api/quatest/gui',{ds:JSON.stringify(QT.slots.map(function(x){ return {id:x.id}; }))}).then(function(r){
       var m=$('qtMsg'); m.className='msg '+(r&&r.success?'ok':'err'); m.textContent=(r&&r.message)||'Có lỗi xảy ra.';
       if(r&&r.success){ toast(r.message); QT.slots=[]; qtRender(); } else $('qtBtn').disabled=false;
     });
