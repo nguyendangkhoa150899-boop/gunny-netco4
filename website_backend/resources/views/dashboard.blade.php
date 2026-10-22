@@ -149,8 +149,21 @@
   .qtsearch{display:flex;gap:8px} .qtsearch .in{flex:1 1 auto;min-width:0}
   .qtsearch select{flex:0 0 210px;width:210px;min-width:0;text-overflow:ellipsis;background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 10px;font-size:14px}
   .qtsearch .b{flex:0 0 auto;padding:0 18px;background:linear-gradient(180deg,#ffb347,#f08a1c);color:#2b1600}
+  /* o chon loai co o tim (thay select xo xuong qua dai) */
+  .qtcat{position:relative;flex:0 0 210px;min-width:0}
+  .qtcatbtn{width:100%;height:100%;min-height:42px;text-align:left;background:#12141a;border:1px solid var(--line);border-radius:10px;color:var(--text);padding:0 30px 0 12px;font-size:14px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+  .qtcatbtn:after{content:'';position:absolute;right:12px;top:50%;margin-top:-3px;border:5px solid transparent;border-top-color:var(--muted)}
+  .qtcatpop{position:absolute;z-index:60;top:calc(100% + 6px);left:0;width:max(100%,300px);background:#171a22;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.55);padding:10px}
+  .qtcatpop.hidden{display:none}
+  .qtcatpop .in{width:100%;margin-bottom:8px}
+  #qtCatList{max-height:320px;overflow-y:auto}
+  #qtCatList button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;background:none;border:0;border-radius:8px;color:var(--text);padding:8px 10px;font-size:14px;cursor:pointer}
+  #qtCatList button:hover,#qtCatList button.dau{background:#2563eb;color:#fff}
+  #qtCatList button.on{color:#ffb347;font-weight:700}
+  #qtCatList button span{color:var(--muted);font-size:12.5px} #qtCatList button:hover span,#qtCatList button.dau span{color:#dbe6ff}
+  #qtCatList .rong{color:var(--muted);padding:8px 10px;font-size:13px}
   .b.more{background:#2563eb;color:#fff}
-  @@media (max-width:640px){ .qtsearch{flex-wrap:wrap} .qtsearch .in{flex-basis:100%} .qtsearch select{flex:1 1 auto;width:auto} }
+  @@media (max-width:640px){ .qtsearch{flex-wrap:wrap} .qtsearch .in{flex-basis:100%} .qtsearch select,.qtsearch .qtcat{flex:1 1 auto;width:auto} }
   .qtgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:12px;max-height:560px;overflow-y:auto;padding-right:4px}
   .qtc{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;text-align:center;padding:2px}
   .qtc .ic{width:64px;height:64px;border-radius:10px;border:2px solid;background:radial-gradient(circle at 50% 35%,#1f2a44,#0d1220 70%);position:relative;transition:transform .1s,box-shadow .1s}
@@ -353,6 +366,7 @@
   .row2.qt{grid-template-columns:minmax(380px,.85fr) minmax(0,1.15fr)}
   .qtsearch{flex-wrap:wrap;gap:10px} .qtsearch .in{flex:1 1 200px}
   .qtsearch select{flex:1 1 170px;width:auto;height:48px;font-size:15px}
+  .qtsearch .qtcat{flex:1 1 170px} .qtcatbtn{height:48px;font-size:15px}
   .qtto{display:block;line-height:1.6}   /* chu chay 1 dong, het cho thi xuong dong tu nhien (truoc chia 3 cot o man 1366) */
   .qtsearch .b{height:48px;padding:0 24px}
   .qtgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 10px;max-height:max(560px,calc(100vh - 330px));margin-top:16px}
@@ -589,7 +603,9 @@
     <div class="card">
       <h2>Tìm vật phẩm</h2>
       <div class="qtsearch"><input class="in" id="qtQ" placeholder="Nhập ID hoặc tên, vd: 7194 hoặc Thương Cổ" autocomplete="off">
-        <select id="qtCat"><option value="0">Tất cả loại</option></select><button class="b" id="qtFind">Tìm</button></div>
+        <div class="qtcat"><button type="button" class="qtcatbtn" id="qtCatBtn">Tất cả loại</button>
+          <div class="qtcatpop hidden" id="qtCatPop"><input class="in" id="qtCatQ" placeholder="Tìm loại, vd: thú, cánh, áo" autocomplete="off"><div id="qtCatList"></div></div>
+          <select id="qtCat" hidden><option value="0">Tất cả loại</option></select></div><button class="b" id="qtFind">Tìm</button></div>
       <div class="muted" id="qtInfo" style="margin-top:8px">Chọn loại hoặc gõ ID / tên để tìm, bấm vào ô để thêm.</div>
       <div class="qtgrid" id="qtRes"></div>
       <button class="b more" id="qtMore" style="display:none;margin-top:12px;width:100%">Xem thêm</button>
@@ -1090,9 +1106,27 @@
       var s=$('qtCat'), cu=s.value;
       s.innerHTML='<option value="0">Tất cả loại ('+fmt(r.data.tong)+')</option>'+r.data.ds.map(function(x){ QT_LOAI[x.cat]=x.ten; return '<option value="'+x.cat+'">'+esc(x.ten)+' ('+fmt(x.n)+')</option>'; }).join('');
       s.value=cu; if(s.value!==cu) s.value='0';
-      qtSearch();
+      qtCatNhan(); qtSearch();
     });
   }
+  // o chon loai co o tim: doc/ghi qua select #qtCat an (qtSearch van doc $('qtCat').value)
+  function boDau(t){ return String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d'); }
+  function qtCatNhan(){ var s=$('qtCat'); $('qtCatBtn').textContent=s.options[s.selectedIndex]?s.options[s.selectedIndex].text:'Tất cả loại'; }
+  function qtCatVe(){
+    var s=$('qtCat'), q=boDau($('qtCatQ').value.trim()), h='', dau=true;
+    for(var i=0;i<s.options.length;i++){ var o=s.options[i], t=o.text, m=t.match(/^(.*?)\s*\(([\d.]+)\)$/), ten=m?m[1]:t, so=m?m[2]:'';
+      if(q && boDau(ten).indexOf(q)<0) continue;
+      h+='<button type="button" data-v="'+esc(o.value)+'" class="'+(o.value===s.value?'on ':'')+(dau&&q?'dau':'')+'">'+esc(ten)+'<span>'+esc(so)+'</span></button>'; dau=false; }
+    $('qtCatList').innerHTML=h||'<div class="rong">Không có loại nào khớp.</div>';
+  }
+  function qtCatChon(v){ $('qtCat').value=v; qtCatNhan(); $('qtCatPop').classList.add('hidden'); qtSearch(); }
+  $('qtCatBtn').addEventListener('click',function(e){ e.stopPropagation(); var p=$('qtCatPop'); if(!p.classList.contains('hidden')){ p.classList.add('hidden'); return; }
+    p.classList.remove('hidden'); $('qtCatQ').value=''; qtCatVe(); $('qtCatQ').focus(); });
+  $('qtCatQ').addEventListener('input',qtCatVe);
+  $('qtCatQ').addEventListener('keydown',function(e){ if(e.key==='Enter'){ var b=$('qtCatList').querySelector('button'); if(b) qtCatChon(b.dataset.v); } else if(e.key==='Escape') $('qtCatPop').classList.add('hidden'); });
+  $('qtCatList').addEventListener('click',function(e){ var b=e.target.closest('button[data-v]'); if(b) qtCatChon(b.dataset.v); });
+  $('qtCatPop').addEventListener('click',function(e){ e.stopPropagation(); });
+  document.addEventListener('click',function(){ $('qtCatPop').classList.add('hidden'); });
   function qtSearch(them){
     var q=$('qtQ').value.trim(), cat=$('qtCat').value, my=++QT.seq, trang=them?QT.trang+1:0;
     if(!them) $('qtInfo').textContent='Đang tìm...';
