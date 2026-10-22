@@ -17,5 +17,5 @@ Lam lai:
   ffdec-cli -replace 2.png 2-moi.png game.actions.PrepareShootAction PrepareShootAction-doPrepareToShootAction.pcode 5 game.view.prop.WeaponPropCell WeaponPropCell-info-set.pcode 7
 Kiem: chi 2 tag DoABC doi: game/view/prop/WeaponPropCell (3626 -> 3808), game/actions/PrepareShootAction (2789 -> 2806).
 
-Sau moi lan va 2.png: tang <version from="1" to="..."> trong C:Gunny92Flashconfig.xml (client tai 2.png?lv=<so do>),
+Sau moi lan va 2.png: tang <version from="1" to="..."> trong C:\Gunny92\Flash\config.xml (client tai 2.png?lv=<so do>),
 neu khong may nguoi choi dung ban cu trong cache (ca bam Tai lai game lan mo lai). 23/10: 259 -> 260 (sao luu config.xml.bak20261023).
