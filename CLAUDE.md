@@ -47,6 +47,7 @@ Server **test**: tắt nạp tiền thật; nhân vật mới cấp tối đa (6
 ## Web người chơi (`/dashboard`) và tiền tệ
 - Xu web = `Db_Member.Mem_Account.Money` (đổi 1:1 với xu game cả 2 chiều). Chỉ cộng/trừ qua `App\Support\XuWeb::doi()` (không âm, có sổ cái `Web_SoXu`). Điểm hoạt động: `App\Support\Diem` (`Web_Diem`, không đổi từ xu).
 - Đồ cho người chơi: vào `Web_Ruong` bằng `MiniGameController::vaoRuong()` (cộng dồn theo `MaxCount`), rút ra thư bằng `App\Support\GameMail`. Đừng INSERT thẳng `Web_Ruong`.
+- **Mọi món gửi vào game là món gốc trơn** (chủ server chọn 22/10 cho đỡ lỗi): không cường hóa, vĩnh viễn, không khóa. Ép ở `GameMail::send` (số lượng kẹp theo `MaxCount`, đồ không chồng = 1) và admin `actions.php` (x1). Gửi quà test / admin không còn ô số lượng, hạn, cường hóa, khóa. Giftcode (`Active_Award`, SP của game) **không** đi qua đây. Dữ liệu cũ: `_setup/sql/do-tron.sql`.
 - Chỉ đưa ra đồ **client dùng được**: `VatPham::dungDuoc()` (web) / `item_in_client()` (admin) = có ảnh **và** có ID trong `Request/TemplateAlllist.xml`. Có ảnh CHƯA ĐỦ: đồ admin cũ tự chế (352xxxxx...) dùng lại ảnh đồ thật, nằm trong túi là client lỗi lúc dựng sảnh, người chơi kẹt màn hình giấy trống (15/10: hoang, `_setup/sql/go-do-tu-che-hoang.sql`). `GameMail::send` chặn lần cuối.
 - Cấu hình chỉnh được nằm ở `Web_CauHinh` (README mục 22). Thay đổi ảnh hưởng kinh tế phải hỏi chủ server.
 - Test thay đổi web bằng tài khoản tạm (`zz...`) đăng ký qua API rồi **xóa sạch** sau khi test.
