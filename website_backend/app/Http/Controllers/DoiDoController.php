@@ -43,6 +43,15 @@ class DoiDoController extends \App\Http\BaseController
             $out[] = ['item' => (int)$r->ItemID, 'tu' => $tid, 'sang' => $nho[$tid], 'cuong' => (int)$r->StrengthenLevel,
                 'mac' => (int)$r->BagType === 0 && (int)$r->Place < 31, 'vang' => (bool)$r->isGold];
         }
+        // do da dat vang: Road cong chi so vang theo GoldEquipMgr.FindGoldEquipByTemplate(TemplateID, CategoryID) = dong rieng
+        // OldTemplateId = ID, khong co thi dong chung cua loai (OldTemplateId -1). Mon nam/nu cung loai nen dong chung y nhau;
+        // chi chan khi 1 trong 2 mon co dong RIENG (doi ID se doi/mat chi so vang).
+        $ids = [];
+        foreach ($out as $x) if ($x['vang'] && $x['sang']) { $ids[] = $x['tu']; $ids[] = $x['sang']; }
+        $rieng = !$ids ? [] : array_flip(array_map(function ($r) { return (int)$r->OldTemplateId; },
+            $this->db()->select("SELECT DISTINCT OldTemplateId FROM Db_Tank.dbo.GoldEquipTemplateLoad WHERE OldTemplateId IN (" . implode(',', array_map('intval', $ids)) . ")")));
+        foreach ($out as &$x) $x['vang'] = $x['vang'] && $x['sang'] && (isset($rieng[$x['tu']]) || isset($rieng[$x['sang']]));
+        unset($x);
         return $out;
     }
 
@@ -54,8 +63,7 @@ class DoiDoController extends \App\Http\BaseController
         $ten = function ($id) use ($tt) { return isset($tt[$id]) ? trim($tt[$id]->Name) : ('ID ' . $id); };
         $mau = function ($id) use ($tt) { return VatPham::mau(isset($tt[$id]) ? (int)$tt[$id]->Quality : 0); };
         return array_map(function ($x) use ($ten, $mau) {
-            // do da dat vang: ban vang tra theo TemplateID (GoldEquipTemplateLoad), doi ID co the mat hieu ung vang -> khong doi
-            $ly = $x['vang'] ? 'Đã dát vàng, không đổi được' : (!$x['sang'] ? 'Không có bản cho giới tính này' : '');
+            $ly = $x['vang'] ? 'Đã dát vàng loại riêng, không đổi được' : (!$x['sang'] ? 'Không có bản cho giới tính này' : '');
             return ['item' => $x['item'], 'tu' => ['id' => $x['tu'], 'ten' => $ten($x['tu']), 'hinh' => '/hinh/' . $x['tu'], 'mau' => $mau($x['tu'])],
                 'sang' => $x['sang'] && !$x['vang'] ? ['id' => $x['sang'], 'ten' => $ten($x['sang']), 'hinh' => '/hinh/' . $x['sang'], 'mau' => $mau($x['sang'])] : null,
                 'cuong' => $x['cuong'], 'mac' => $x['mac'], 'ly' => $ly];
