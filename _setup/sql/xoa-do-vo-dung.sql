@@ -19,6 +19,12 @@ SELECT g.ItemID FROM dbo.Sys_Users_Goods g WITH (UPDLOCK)
 JOIN @ma m ON m.TemplateID = g.TemplateID
 JOIN dbo.Sys_Users_Detail d ON d.UserID = g.UserID
 WHERE g.IsExist = 1 AND g.UserID > 0 AND d.State = 0;
+-- dinh kem mo coi (UserID 0, khong thu nao tro toi): khong ai nhan duoc nua
+INSERT INTO @go
+SELECT g.ItemID FROM dbo.Sys_Users_Goods g WITH (UPDLOCK)
+JOIN @ma m ON m.TemplateID = g.TemplateID
+WHERE g.IsExist = 1 AND g.UserID = 0 AND NOT EXISTS (SELECT 1 FROM dbo.User_Messages u WHERE CAST(g.ItemID AS nvarchar(20)) IN
+  (CAST(u.Annex1 AS nvarchar(20)), CAST(u.Annex2 AS nvarchar(20)), CAST(u.Annex3 AS nvarchar(20)), CAST(u.Annex4 AS nvarchar(20)), CAST(u.Annex5 AS nvarchar(20))));
 INSERT INTO dbo.bak20261022_dovodung(ItemID,UserID,BagType,TemplateID,Place,[Count],IsJudge,Color,IsExist,StrengthenLevel,StrengthenExp,AttackCompose,DefendCompose,LuckCompose,AgilityCompose,Skin,IsBinds,IsUsed,BeginDate,ValidDate,RemoveDate,RemoveType,Hole1,Hole2,Hole3,Hole4,Hole5,Hole6,Hole5Level,Hole5Exp,Hole6Level,Hole6Exp,StrengthenTimes,StrengthenRefineryLevel,isGold,goldValidDate,goldBeginTime,Blood,latentEnergyCurStr,latentEnergyNewStr,latentEnergyEndTime,cellLocked,curExp)
 SELECT g.ItemID,g.UserID,g.BagType,g.TemplateID,g.Place,g.[Count],g.IsJudge,g.Color,g.IsExist,g.StrengthenLevel,g.StrengthenExp,g.AttackCompose,g.DefendCompose,g.LuckCompose,g.AgilityCompose,g.Skin,g.IsBinds,g.IsUsed,g.BeginDate,g.ValidDate,g.RemoveDate,g.RemoveType,g.Hole1,g.Hole2,g.Hole3,g.Hole4,g.Hole5,g.Hole6,g.Hole5Level,g.Hole5Exp,g.Hole6Level,g.Hole6Exp,g.StrengthenTimes,g.StrengthenRefineryLevel,g.isGold,g.goldValidDate,g.goldBeginTime,g.Blood,g.latentEnergyCurStr,g.latentEnergyNewStr,g.latentEnergyEndTime,g.cellLocked,g.curExp
 FROM dbo.Sys_Users_Goods g JOIN @go x ON x.ItemID = g.ItemID
