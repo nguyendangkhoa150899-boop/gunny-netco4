@@ -7,7 +7,7 @@
                               
                               body
                                  maxstack 4
-                                 localcount 5
+                                 localcount 6
                                  initscopedepth 10
                                  maxscopedepth 11
                                  
@@ -161,21 +161,22 @@
                                     getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
                                     getproperty QName(PackageNamespace(""),"Template")
                                     constructprop QName(PackageNamespace("bagAndInfo.cell"),"BagCell"), 2
-                                    callproperty QName(PackageNamespace(""),"getSmallContent"), 0
+                                    coerce QName(PackageNamespace("bagAndInfo.cell"),"BagCell")
+                                    setlocal 5
+                                    getlocal 5
+                                    pushbyte 34
+                                    pushbyte 34
+                                    callpropvoid QName(PackageNamespace(""),"setContentSize"), 2
+                                    getlocal 5
+                                    findpropstrict QName(PackageNamespace("flash.geom"),"Point")
+                                    pushbyte 3
+                                    pushbyte 3
+                                    constructprop QName(PackageNamespace("flash.geom"),"Point"), 2
+                                    setproperty QName(PackageNamespace(""),"PicPos")
+                                    getlocal 5
+                                    callproperty QName(PackageNamespace(""),"getContent"), 0
                                     coerce QName(PackageNamespace("flash.display"),"DisplayObject")
                                     setlocal 4
-                                    getlocal 4
-                                    pushbyte 3
-                                    setproperty QName(PackageNamespace(""),"x")
-                                    getlocal 4
-                                    pushbyte 3
-                                    setproperty QName(PackageNamespace(""),"y")
-                                    getlocal 4
-                                    pushbyte 32
-                                    setproperty QName(PackageNamespace(""),"width")
-                                    getlocal 4
-                                    pushbyte 32
-                                    setproperty QName(PackageNamespace(""),"height")
                                     findpropstrict QName(PackageNamespace(""),"addChildAt")
                                     getlocal 4
                                     findpropstrict QName(PackageNamespace(""),"getChildIndex")
@@ -188,6 +189,7 @@
                                     getlocal 4
                                     initproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
                                     kill 4
+                                    kill 5
                                     jump ofs00feB
                            ofs00feA:
                                     findproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
