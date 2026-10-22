@@ -312,6 +312,56 @@
   #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#000d;color:#fff;border:1px solid #2a3146;padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;z-index:200}
   #toast.show{opacity:1} #toast.err{background:#3a0f14;border-color:#e5484d;color:#ffd6d9;font-weight:700}
   .msg{margin-top:12px}
+  /* ===== bo cuc rong (22/10): giu nguyen mau, chi noi rong khung + tang co chu cho do chen nhau.
+     Dat TRUOC cac @@media ben duoi de mobile van ghi de duoc. ===== */
+  .wrap{max-width:1560px;padding:22px 28px 60px}
+  .top{margin-bottom:20px}
+  .layout{grid-template-columns:236px minmax(0,1fr);gap:22px}
+  #side{padding:12px;gap:8px}
+  #side button{font-size:15.5px;padding:13px 14px}
+  #subnav{gap:8px;margin-bottom:16px}
+  #subnav button{font-size:15px;padding:12px 6px}
+  .card{padding:22px 24px}
+  .card + .card{margin-top:18px}
+  .card h2{font-size:19px;margin-bottom:14px}
+  .row2{gap:18px}
+  .muted{font-size:14px;line-height:1.55}
+  .sub,.hsub{font-size:14px}
+  .tg{font-size:13px;padding:4px 12px}
+  .stat span,.money div span,.rutInfo span,.hlc span{font-size:13px}
+  .quick{gap:14px;margin:18px 0}
+  .q{padding:16px 18px} .q .qt b{font-size:16px} .q .qt span{font-size:13.5px}
+  .kv,.fr2,.steps2{font-size:15px}
+  .ls{font-size:14.5px} .ls td{padding:10px 6px}
+  .hrow{font-size:14px;padding:8px 0}
+  .note{font-size:14px}
+  /* gui qua test: cot tim vat pham rong hon, o tim tu xuong dong thay vi bi cat chu */
+  .row2.qt{grid-template-columns:minmax(380px,.85fr) minmax(0,1.15fr)}
+  .qtsearch{flex-wrap:wrap;gap:10px} .qtsearch .in{flex:1 1 280px}
+  .qtsearch select{flex:1 1 220px;width:auto;height:48px;font-size:15px}
+  .qtsearch .b{height:48px;padding:0 24px}
+  .qtgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 10px;max-height:max(560px,calc(100vh - 330px));margin-top:16px}
+  .qtc .ic{width:76px;height:76px}
+  .qtc .ic small{font-size:11px}
+  .qtc span{font-size:12.5px;line-height:1.3}
+  .qtto{font-size:15px;padding:11px 14px}
+  .qtrow{padding:11px 12px;gap:12px}
+  .qtrow .nm b{font-size:14.5px} .qtrow .nm span{font-size:12.5px}
+  .qtrow label{font-size:12px} .qtrow input[type=number]{width:68px;font-size:14px;padding:7px}
+  .qtempty{font-size:14px;padding:18px}
+  #qtTip{width:300px;font-size:13.5px}
+  /* ruong, shop, lat the */
+  .rgrid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+  .ri{padding:12px} .ri .ic{width:56px;height:56px} .ri .tn{font-size:14px} .ri .sn{font-size:12.5px}
+  .shopgrid{grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .si{padding:14px} .si .sit{font-size:15.5px} .si .sim{font-size:13px} .si .sil span{font-size:12px}
+  .ltwrap{grid-template-columns:300px minmax(0,1fr);gap:18px}
+  .ltList .nm b{font-size:14px} .ltList .nm span{font-size:12px} .dk{font-size:11.5px}
+  .ltcount{font-size:13.5px} .ltcount button{font-size:13px}
+  .mbar span{font-size:12.5px}
+  .dgr .tn{font-size:14px} .dgr .sn{font-size:12.5px}
+  @@media (max-width:1200px){ .row2.qt{grid-template-columns:1fr} }
+  @@media (max-width:900px){ .wrap{padding:16px 14px 50px} .card{padding:18px} }
   @@media (max-width:900px){
     .layout{grid-template-columns:1fr} #side{position:static;flex-direction:row;overflow-x:auto} #side button{white-space:nowrap;padding:10px 12px} .row2{grid-template-columns:1fr} .stats{grid-template-columns:repeat(2,1fr)} .kv{grid-template-columns:1fr}
     .tiles{grid-template-columns:1fr 1fr} .quick{grid-template-columns:1fr 1fr} .hlc{text-align:left} .cards{gap:6px} .cd .fr .t{font-size:9px}
@@ -512,7 +562,7 @@
     <div id="shopXu"></div></div></section>
 
   <!-- ================= GUI QUA TEST (vao thu game cua chinh minh; tat bang quatest_mo=0) ================= -->
-  <section id="sec-quatest"><div class="row2">
+  <section id="sec-quatest"><div class="row2 qt">
     <div class="card">
       <h2>Gửi quà test vào game</h2>
       <div class="qtto">📮 Người nhận: <b id="qtTo">nhân vật của bạn</b> <span class="muted">(tài khoản đang đăng nhập)</span></div>
