@@ -676,7 +676,8 @@ class MiniGameController extends \App\Http\BaseController
         $ds = [];
         foreach (array_slice($khop, $trang * $moiTrang, $moiTrang) as $x) {
             $ds[] = ['id' => $x[0], 'ten' => $x[1], 'cat' => $x[2], 'mau' => VatPham::mau($x[4]), 'hinh' => '/hinh/' . $x[0],
-                'cs' => $x[10], 'gt' => $x[3], 'chiSo' => [$x[6], $x[7], $x[8], $x[9]], 'lv' => $x[5], 'q' => $x[4], 'moTa' => $x[11]];
+                'cs' => $x[10], 'gt' => $x[3], 'chiSo' => [$x[6], $x[7], $x[8], $x[9]], 'lv' => $x[5], 'q' => $x[4], 'moTa' => $x[11],
+                'mx' => min($x[13], CauHinh::int('quatest_sl_max', 999))];   // so luong toi da (1 = khong chong duoc, khong hien o so luong)
         }
         return $this->success('ok', ['ds' => $ds, 'tong' => count($khop), 'trang' => $trang, 'con' => ($trang + 1) * $moiTrang < count($khop)]);
     }
@@ -725,9 +726,11 @@ class MiniGameController extends \App\Http\BaseController
             if (isset(VatPham::banBac()[$tid])) return $this->error('Món ID ' . $tid . ' là bản nâng bậc của vũ khí. Gửi bản gốc rồi cường hóa trong game để lên bậc.');
             if (in_array((int)$i->NeedSex, [1, 2], true) && (int)$i->NeedSex !== $this->gioiTinh($nv))
                 return $this->error('Món ' . $i->Name . ' dành cho nhân vật ' . ((int)$i->NeedSex === 1 ? 'nam' : 'nữ') . ', ' . $nv->NickName . ' không mặc được.');
-            // 22/10: mon goc tron, 1 cai (khong so luong / cuong hoa / han / khoa) cho do loi
-            $items[] = [$tid, 1];
-            $nk[] = (string)$tid;
+            // 22/10: mon goc tron (khong cuong hoa / han / khoa). So luong chon duoc, kep quatest_sl_max;
+            // GameMail::send kep tiep theo MaxCount nen do khong chong duoc luon la 1.
+            $cnt = max(1, min(CauHinh::int('quatest_sl_max', 999), (int)($x['sl'] ?? 1)));
+            $items[] = [$tid, $cnt];
+            $nk[] = $tid . ' x' . $cnt;
         }
         $kq = GameMail::send((int)$nv->UserID, 'Quà test từ GunnyNetco4', $items);
         if ($kq !== '1') return $this->error('Máy chủ game đang bận, chưa gửi được (mã ' . $kq . '). Thử lại sau.');

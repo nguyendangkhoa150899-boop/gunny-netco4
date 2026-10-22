@@ -127,14 +127,14 @@ class VatPham
 
     /**
      * Moi mon dua vao game duoc (dungDuoc) de tim nhanh o Gui qua test, cache 6 gio (doi TemplateAlllist.xml la dung lai).
-     * Moi dong: [id, ten (theo client), cat, sex, q, lv, atk, def, agi, luck, cs, moTa, chuoi tim (ten client + ten DB)].
+     * Moi dong: [id, ten (theo client), cat, sex, q, lv, atk, def, agi, luck, cs, moTa, chuoi tim (ten client + ten DB), MaxCount].
      * Lan dau mat vai giay (kiem anh ~19k mon).
      */
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc5_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
-            $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
+        return Cache::remember('vp_dungduoc6_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
+            $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,MaxCount,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $bac = self::banBac();
             $tenC = self::tenClient();
             $out = [];
@@ -143,7 +143,7 @@ class VatPham
                 $ten = $tenC[(int)$x->TemplateID] ?? trim((string)$x->Name);
                 $out[] = [(int)$x->TemplateID, $ten, (int)$x->CategoryID, (int)$x->NeedSex, (int)$x->Quality, (int)$x->NeedLevel,
                     (int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck, (bool)$x->CanStrengthen, mb_substr((string)$x->Description, 0, 120),
-                    $ten . ' | ' . trim((string)$x->Name)];
+                    $ten . ' | ' . trim((string)$x->Name), max(1, (int)$x->MaxCount)];
             }
             return $out;
         });
