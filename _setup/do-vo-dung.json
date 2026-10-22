@@ -4816,5 +4816,11 @@
    7100003,
    7100004
   ]
+ },
+ "trung_pet_server_khong_co": {
+  "ly_do": "Trung loai 35 co trong client nhung thu cung ben trong (Property5) khong co o Db_Tank.Pet_Template_Info -> nhan/ap bao \"Du lieu server loi\" (biabia 23/10). 35210201 Ton Ngo Khong 6 -> pet 210201: client co (KindID 12) nhung server khong co, KindID 12 tren server la loai pet khac. Cac trung con lai cung loi (260101, 340103...) da bi loc vi client cung khong co.",
+  "ids": [
+   35210201
+  ]
  }
 }
