@@ -121,7 +121,7 @@ function item_in_client($tid){
   if ($ds === null) {
     $mt = @filemtime(CLIENT_XML); $ds = [];
     if ($mt) {
-      $cf = sys_get_temp_dir().'\\gn_client_ok3_'.$mt.'_'.(int)@filemtime(PET_XML).'.json';
+      $cf = sys_get_temp_dir().'\\gn_client_ok4_'.$mt.'_'.(int)@filemtime(PET_XML).'.json';
       $c = @file_get_contents($cf); $ds = $c !== false ? json_decode($c, true) : null;
       if (!is_array($ds)) {
         $raw = @file_get_contents(CLIENT_XML); $xml = $raw === false ? false : @gzuncompress($raw); $ds = [];
@@ -138,6 +138,8 @@ function item_in_client($tid){
             // 22/10 an mon loi: ID am = diem/tien ao (-200 Xu, -100 vang...), do "Mac dinh" = o trong, anh trong suot ~190 byte
             $ten = trim(html_entity_decode($g('Name'), ENT_QUOTES, 'UTF-8'));
             if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false) continue;
+            // ma game khong dung duoc (giong VatPham::KHONG_DUNG): 201264 Chien hon don gia (server chi nhan 100100), 100001-100005 ma o chien hon
+            if (in_array((int)$g('TemplateID'), [201264, 100001, 100002, 100003, 100004, 100005], true)) continue;
             $anh = RES_DIR.str_replace('/','\\',item_client_path($cat,$pic,(int)$g('NeedSex')));
             if (!is_file($anh) || filesize($anh) < 400) continue;
             if ($cat === 35) { $pp = $pet[$g('Property5')] ?? null; if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue; }
