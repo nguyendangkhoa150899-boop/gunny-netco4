@@ -138,8 +138,6 @@ function item_in_client($tid){
             // 22/10 an mon loi: ID am = diem/tien ao (-200 Xu, -100 vang...), do "Mac dinh" = o trong, anh trong suot ~190 byte
             $ten = trim(html_entity_decode($g('Name'), ENT_QUOTES, 'UTF-8'));
             if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false) continue;
-            // ma game khong dung duoc (giong VatPham::KHONG_DUNG): 201264 Chien hon don gia (server chi nhan 100100), 100001-100005 ma o chien hon
-            if (in_array((int)$g('TemplateID'), [201264, 100001, 100002, 100003, 100004, 100005], true)) continue;
             $anh = RES_DIR.str_replace('/','\\',item_client_path($cat,$pic,(int)$g('NeedSex')));
             if (!is_file($anh) || filesize($anh) < 400) continue;
             if ($cat === 35) { $pp = $pet[$g('Property5')] ?? null; if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue; }
@@ -150,7 +148,18 @@ function item_in_client($tid){
       }
     }
   }
-  return isset($ds[(string)(int)$tid]);
+  return isset($ds[(string)(int)$tid]) && !isset(item_vo_dung()[(int)$tid]);
+}
+// [TemplateID => 1] mon game khong dung duoc, dung chung voi web (VatPham::voDung): _setup/do-vo-dung.json (hop rong, chien hon gia,
+// vat pham nhiem vu, do test...). Ly do tung nhom ghi trong file.
+function item_vo_dung(){
+  static $ds = null;
+  if ($ds === null) {
+    $ds = [];
+    $j = json_decode((string)@file_get_contents(__DIR__.'\\..\\_setup\\do-vo-dung.json'), true);
+    if (is_array($j)) foreach ($j as $nhom) if (is_array($nhom)) foreach ($nhom['ids'] ?? [] as $id) $ds[(int)$id] = 1;
+  }
+  return $ds;
 }
 // [TemplateID => ten] theo client = ten trong game. DB co the khac (7024: DB "VIP-Boomerang", game "SUPER-Boomerang"). Cache json theo mtime.
 function item_client_names(){

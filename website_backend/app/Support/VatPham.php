@@ -17,12 +17,25 @@ class VatPham
 
     private static $dsClient = null;
 
+    /** danh sach mon game KHONG dung duoc, dung chung voi admin (item_in_client): C:\Gunny92\_setup\do-vo-dung.json */
+    const VO_DUNG_JSON = 'C:\\Gunny92\\_setup\\do-vo-dung.json';
+
+    private static $voDung = null;
+
     /**
-     * Mon client co ma game KHONG dung duoc (22/10, giong admin item_in_client):
-     *  201264 "Chien hon don" trung ten 100100 nhung server chi nhan 100100 (ItemInfo.isGemStone, DLL dang chay) -> Len cap chien hon bao loi;
-     *  100001-100005 "Chien hon tan cong/phong thu/..." la ma dinh danh 5 o chien hon (GamePlayer tao FigSpiritId), khong phai vat pham.
+     * [TemplateID => 1] mon client co ma game khong dung duoc (ra soat 22/10, ly do tung nhom trong file): hop rong (mo ra mat hop,
+     * khong nhan gi), chien hon gia 201264, vat pham nhiem vu, khung nhan vat khong mac duoc, do test, do su kien khong dung...
+     * Khong doc duoc file thi coi nhu rong (khong chan them).
      */
-    const KHONG_DUNG = [201264, 100001, 100002, 100003, 100004, 100005];
+    public static function voDung(): array
+    {
+        if (self::$voDung === null) {
+            self::$voDung = [];
+            $j = json_decode((string)@file_get_contents(self::VO_DUNG_JSON), true);
+            if (is_array($j)) foreach ($j as $nhom) if (is_array($nhom)) foreach ($nhom['ids'] ?? [] as $id) self::$voDung[(int)$id] = 1;
+        }
+        return self::$voDung;
+    }
 
     const PET_XML = 'C:\\Gunny92\\Request\\pettemplateinfo.xml';
 
@@ -56,7 +69,7 @@ class VatPham
                     // 22/10 an mon loi: ID am = diem/tien ao (-200 Xu, -100 vang, -1300 Danh vong...) khong phai vat pham;
                     // do "Mac dinh" = o trong cua game, anh trong suot ~190 byte (1101, 1201, 13101...). Giong admin item_in_client.
                     $ten = trim(html_entity_decode($g('Name'), ENT_QUOTES, 'UTF-8'));
-                    if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false || in_array((int)$g('TemplateID'), self::KHONG_DUNG, true)) continue;
+                    if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false) continue;
                     $anh = self::RES_DIR . str_replace('/', '\\', self::duongDanClient($cat, $pic, (int)$g('NeedSex')));
                     if (!is_file($anh) || filesize($anh) < 400) continue;
                     if ($cat === 35) {
@@ -68,7 +81,7 @@ class VatPham
                 return $ok;
             });
         }
-        return isset(self::$dsClient[$tid]);
+        return isset(self::$dsClient[$tid]) && !isset(self::voDung()[$tid]);
     }
 
     /** = PathManager.solveGoodsPath(cat, pic, NeedSex == 1, "icon") cua client: anh icon trong tui (giong _setup/kiem-anh/kiem-anh.js) */
@@ -140,7 +153,7 @@ class VatPham
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc7_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
+        return Cache::remember('vp_dungduoc8_' . $mt . '_' . (int)@filemtime(self::PET_XML) . '_' . (int)@filemtime(self::VO_DUNG_JSON), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,MaxCount,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $bac = self::banBac();
             $tenC = self::tenClient();
