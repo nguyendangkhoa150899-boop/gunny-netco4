@@ -281,6 +281,7 @@ Chỉnh giá/giới hạn ở admin, không cần sửa code. Mở thật nên *
 - Mục **📮 Gửi quà test** trên `/dashboard`: tìm vật phẩm theo ID/tên/loại (chỉ món client có ảnh), tối đa 5 món/lần (số lượng ≤ `quatest_sl_max`, cường hóa ≤ MaxStrengthLevel, hạn ngày), gửi bằng `SendMailAndItem.aspx` vào **hộp thư của nhân vật thuộc tài khoản đang đăng nhập** (không chọn người nhận khác được).
 - Code: `MiniGameController::quaTestTim / quaTestGui`, bảng `_setup/sql/qua-test-web.sql` (`Web_QuaTest` nhật ký, cấu hình `quatest_mo`, `quatest_luot_ngay` = 50, `quatest_sl_max` = 999). Admin > Mini game có bảng nhật ký 15 lần gần nhất.
 - **Mở server thật: đặt `quatest_mo` = 0** (admin > Mini game > Cấu hình). Menu tự ẩn, API trả "đang tắt".
+- **22/10:** mỗi món gửi 1 cái, bản gốc trơn (`GameMail::send`). Vũ khí chỉ cho chọn **bản gốc**: ẩn 640 mã bản bậc (`Item_Strengthen_Goods.GainEquip`: cường hóa +10/+11 lên bậc 1, +12 bậc 2, +15 bậc 3, mỗi bậc mã + hình mới, vd 7024 → 70241/70242/70248) và bản dát vàng (`GoldEquipTemplateLoad.NewTemplateId`, vd 70243). Lý do: gửi bản bậc ở +0 thành "hình +12 mà ghi +0"; tiệm rèn đang 100% nên người chơi tự cường hóa lên bậc. Bản đặc biệt không cày ra được (Hoàng kim vũ 70244/70245, Long Thương Chiến, Chiến thần) vẫn hiện. Admin > Gửi quà vẫn thấy đủ. Chặn cả ở API (`VatPham::banBac`).
 - Test PowerShell lưu ý: PS 5.1 làm mất dấu `"` khi truyền JSON cho `curl.exe`. Gửi JSON bằng file (`--data-urlencode ds@file.json`).
 
 ## 20. Lật thẻ y hệt game (bảng rơi đồ của game)
