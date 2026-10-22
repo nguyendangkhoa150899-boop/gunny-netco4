@@ -318,6 +318,7 @@ Mỗi dòng dưới đây từng làm mất thời gian ít nhất 1 lần.
 - SP mã hóa: `OBJECT_DEFINITION` trả NULL; muốn biết nó ghi vào đâu thì gọi thử trong `BEGIN TRAN ... ROLLBACK`.
 
 **IIS / Laravel / deploy**
+- **PHP chạy dưới `IUSR`** (`php.ini` `fastcgi.impersonate=1`, ẩn danh = IUSR), không phải IIS_IUSRS. Chạy Laravel bằng dòng lệnh (artisan, script `php ...` qua SSH bằng Administrator) tạo file log / cache chủ là Administrators → IUSR không ghi được → mọi API lỗi "laravel-YYYY-MM-DD.log could not be opened ... Permission denied" (22/10 14:03 đến 23:00). Đã cấp `icacls storage, bootstrapcache /grant IUSR:(OI)(CI)M /T` để chuyện này không lặp lại; máy mới phải cấp lại.
 - `deploy.sh` **từ chối chạy khi còn file chưa commit** (kể cả file mới). Đang làm dở thì `git stash push -u -- <file>` → deploy → `git stash pop`.
 - `.gitignore` chặn `*.png`. Ảnh của web phải nằm trong `website_backend/public/img/` (đã mở ngoại lệ), nếu không sẽ không lên git và không được deploy.
 - IIS **nhớ 404** của file tĩnh vừa thêm một lúc: link ảnh mới kèm `?v=`.
