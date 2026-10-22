@@ -28,3 +28,21 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_Web_The_Luot_Ban')
   CREATE INDEX IX_Web_The_Luot_Ban ON dbo.Web_The_Luot(BanID, Xong);
 PRINT N'Da tao lat the chung ban.';
 GO
+-- Gop luot tao truoc khi co ban chung: luot CHUA LAT LA NAO dang o ban rieng, trong khi da co ban chung cua cung tran
+-- (cung ai, lech <= 5 giay) liet ke nguoi nay -> chuyen luot sang ban chung, xoa ban rieng rong. Neu khong, ban chung
+-- khong bao gio "du nguoi lat xong" de hien ket qua. Code (taoBan) cung tu gop tu nay ve sau.
+SET NOCOUNT ON;
+BEGIN TRAN;
+DECLARE @gop TABLE(LuotID bigint, BanCu bigint, BanMoi bigint);
+INSERT INTO @gop
+SELECT l.ID, l.BanID, (SELECT TOP 1 b2.ID FROM dbo.Web_The_Ban b2 WHERE b2.ID <> ISNULL(l.BanID, 0) AND b2.Xong = 0 AND b2.MissionId = l.MissionId
+    AND ABS(DATEDIFF(second, b2.ThoiGian, l.ThoiGian)) <= 5 AND b2.NguoiChoi LIKE N'%"u":' + CAST(l.GameUserID AS nvarchar(12)) + N',%' ORDER BY b2.ID)
+FROM dbo.Web_The_Luot l
+WHERE l.Xong = 0 AND l.DaLat = '' AND l.LogID > 0;
+DELETE FROM @gop WHERE BanMoi IS NULL;
+UPDATE l SET BanID = g.BanMoi FROM dbo.Web_The_Luot l JOIN @gop g ON g.LuotID = l.ID;
+DELETE b FROM dbo.Web_The_Ban b JOIN @gop g ON g.BanCu = b.ID WHERE NOT EXISTS (SELECT 1 FROM dbo.Web_The_Luot x WHERE x.BanID = b.ID);
+COMMIT;
+DECLARE @so int = (SELECT COUNT(*) FROM @gop);
+PRINT N'Gop luot cu vao ban chung: ' + CAST(@so AS nvarchar(10));
+GO

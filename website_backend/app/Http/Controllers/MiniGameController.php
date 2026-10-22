@@ -402,7 +402,15 @@ class MiniGameController extends \App\Http\BaseController
             $banId = $ban ? (int)$ban->ID : (int)$this->mem()->selectOne("SET NOCOUNT ON; INSERT INTO Web_The_Ban(Khoa,MissionId,ThoiGian,Ngay,NguoiChoi) OUTPUT inserted.ID AS id VALUES(?,?,?,?,?)",
                 [$pb->Khoa, $mis, $nhom[0]->TimeCreate, substr((string)$nhom[0]->TimeCreate, 0, 10), json_encode(array_values($nguoi), JSON_UNESCAPED_UNICODE)])->id;
             foreach ($nhom as $n) {
-                if ($this->mem()->selectOne("SELECT 1 x FROM Web_The_Luot WHERE LogID=?", [(int)$n->ID])) continue;
+                $co = $this->mem()->selectOne("SELECT ID, BanID, DaLat FROM Web_The_Luot WHERE LogID=?", [(int)$n->ID]);
+                if ($co) {
+                    // luot tao truoc khi co ban chung (truoc 22/10) ma chua lat la nao: nhap vao ban chung, bo ban rieng rong
+                    if ((int)$co->BanID !== $banId && $co->DaLat === '') {
+                        $this->mem()->update("UPDATE Web_The_Luot SET BanID=? WHERE ID=?", [$banId, (int)$co->ID]);
+                        if ($co->BanID) $this->mem()->delete("DELETE FROM Web_The_Ban WHERE ID=? AND NOT EXISTS (SELECT 1 FROM Web_The_Luot WHERE BanID=?)", [(int)$co->BanID, (int)$co->BanID]);
+                    }
+                    continue;
+                }
                 $m = $this->mem()->selectOne("SELECT UserID FROM Mem_Account WHERE Email=?", [(string)$n->UserName]);
                 if (!$m) continue;
                 $ngay = substr((string)$n->TimeCreate, 0, 10);
