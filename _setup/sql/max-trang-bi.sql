@@ -16,7 +16,9 @@ DECLARE @u int = $(UID);
 IF NOT EXISTS (SELECT 1 FROM dbo.Sys_Users_Detail WHERE UserID = @u) BEGIN RAISERROR(N'Khong co nhan vat %d', 16, 1, @u); RETURN; END
 IF (SELECT State FROM dbo.Sys_Users_Detail WHERE UserID = @u) <> 0 BEGIN RAISERROR(N'Nhan vat %d dang online: thoat game han roi chay lai.', 16, 1, @u); RETURN; END
 DECLARE @bk sysname = N'bak20261023_trangbi_' + CAST(@u AS nvarchar(10));
-IF OBJECT_ID(N'dbo.' + @bk) IS NULL EXEC(N'SELECT * INTO dbo.' + @bk + N' FROM dbo.Sys_Users_Goods WHERE UserID = ' + CAST(@u AS nvarchar(10)) + N' AND BagType = 0 AND Place < 31 AND IsExist = 1');
+-- EXEC(...) chi nhan bien/chuoi, khong goi ham (CAST) ben trong -> ghep cau lenh ra bien truoc
+DECLARE @sql nvarchar(max) = N'SELECT * INTO dbo.' + @bk + N' FROM dbo.Sys_Users_Goods WHERE UserID = ' + CAST(@u AS nvarchar(10)) + N' AND BagType = 0 AND Place < 31 AND IsExist = 1';
+IF OBJECT_ID(N'dbo.' + @bk) IS NULL EXEC(@sql);
 
 -- 1. vu khi
 UPDATE dbo.Sys_Users_Goods SET TemplateID = 71556
