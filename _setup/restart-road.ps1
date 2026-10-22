@@ -1,4 +1,4 @@
-# Restart Road an toan (chay tren VPS): powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\restart-road.ps1 [-Nhanh]
+﻿# Restart Road an toan (chay tren VPS): powershell -ExecutionPolicy Bypass -File C:\Gunny92\_setup\restart-road.ps1 [-Nhanh]
 # Thong bao toan server (SystemNotice) -> con nguoi online thi KitoffUser (dem nguoc 6 phut, game LUU du lieu roi da ra)
 # -> tat Road -> bat lai bang WMI (khong chet theo phien SSH) -> cho cong 9200.
 # -Nhanh: khong bao tri, tat ngay (CHI dung khi khong ai online: nguoi dang online mat du lieu chua luu).
