@@ -25,7 +25,7 @@
   <item LimitStolenCount="20" />
   <item MaxEquipSkillCount="5" />
   <item MaxHunger="10000" />
-  <item MaxLevel="50" />
+  <item MaxLevel="60" />
   <item MaxPaySkillCount="1" />
   <item MaxPetCount="20" />
   <item MaxSkillCount="100" />
