@@ -1,5 +1,6 @@
 -- max-the-tuluyen-tienhoa.sql (23/10/2026, server test): max The bai + Tu luyen + Tien hoa pet cho nhieu nhan vat.
---   sqlcmd -S localhost -E -C -b -f 65001 -v UIDS="227,252,253" -i max-the-tuluyen-tienhoa.sql
+--   sqlcmd -S localhost -E -C -b -f 65001 -v UIDS=227_252_253 -i max-the-tuluyen-tienhoa.sql
+--   (UserID noi bang dau _ vi PowerShell tach dau phay thanh mang)
 -- The bai: Db_Tank41.Sys_Users_Card (Place 0-4 = dang trang bi, 5-99 = tui the). Chi 44 the co Db_Tank.CardUpdateInfo
 --   (cap 1..30) moi nang duoc; CardDataHandler case 3 cong chi so tung cap -> cap 30 = tong 30 dong, CardGP = CardUpdateCondition cap 30.
 --   The nao chua co trong tui thi them vao o trong (5..99); the dang trang bi (Count >= 0) chep chi so nhu cardEquip.CopyProp.
@@ -11,8 +12,8 @@ USE Db_Tank41;
 GO
 SET NOCOUNT ON;
 DECLARE @u TABLE(UserID int PRIMARY KEY);
-INSERT INTO @u SELECT UserID FROM dbo.Sys_Users_Detail WHERE UserID IN ($(UIDS)) AND State = 0;
-SELECT d.UserID, d.NickName, N'ONLINE - bo qua, thoat game roi chay lai' ghi_chu FROM dbo.Sys_Users_Detail d WHERE d.UserID IN ($(UIDS)) AND d.State <> 0;
+INSERT INTO @u SELECT UserID FROM dbo.Sys_Users_Detail WHERE ',' + REPLACE('$(UIDS)', '_', ',') + ',' LIKE '%,' + CAST(UserID AS varchar(10)) + ',%' AND State = 0;
+SELECT d.UserID, d.NickName, N'ONLINE - bo qua, thoat game roi chay lai' ghi_chu FROM dbo.Sys_Users_Detail d WHERE ',' + REPLACE('$(UIDS)', '_', ',') + ',' LIKE '%,' + CAST(d.UserID AS varchar(10)) + ',%' AND d.State <> 0;
 
 IF OBJECT_ID('dbo.bak20261023_max2_card') IS NULL SELECT c.* INTO dbo.bak20261023_max2_card FROM dbo.Sys_Users_Card c JOIN @u x ON x.UserID = c.UserID;
 IF OBJECT_ID('dbo.bak20261023_max2_texp') IS NULL SELECT t.* INTO dbo.bak20261023_max2_texp FROM dbo.Sys_Users_Texp t JOIN @u x ON x.UserID = t.UserID;
