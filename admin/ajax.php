@@ -52,4 +52,15 @@ if ($_GET['ajax'] === 'items') {
   echo json_encode(['items'=>$out, 'hidden'=>$hidden], JSON_UNESCAPED_UNICODE);
   sqlsrv_close($conn); exit;
 }
+
+if ($_GET['ajax'] === 'users') {
+  // nhan vat da tao cho o chon nguoi nhan (Gui qua). Bo tai khoan he thong zz_ (NganHang, tai khoan test). Online truoc.
+  $rows = q($conn, "SELECT UserID,UserName,NickName,Grade,Sex,State FROM Db_Tank41.dbo.Sys_Users_Detail
+    WHERE NickName<>'' AND UserName NOT LIKE 'zz[_]%' ORDER BY State DESC, NickName");
+  $out = [];
+  foreach ($rows as $r) $out[] = ['id'=>(int)$r['UserID'], 'acc'=>$r['UserName'], 'nick'=>$r['NickName'], 'lv'=>(int)$r['Grade'],
+    'sex'=>(int)$r['Sex'] === 1 ? 1 : 2, 'on'=>(int)$r['State'] === 1];
+  echo json_encode(['users'=>$out], JSON_UNESCAPED_UNICODE);
+  sqlsrv_close($conn); exit;
+}
 echo json_encode(['error'=>'unknown']);

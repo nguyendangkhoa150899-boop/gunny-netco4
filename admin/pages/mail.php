@@ -32,6 +32,21 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
   .tip .r{display:flex;justify-content:space-between;color:var(--muted)} .tip .r span:last-child{color:var(--text)}
   .tip .d{margin-top:6px;color:#9fb1cc;line-height:1.45}
   .msgline{font-size:12px;margin-top:8px;min-height:16px}
+  /* chon nguoi nhan tu danh sach nhan vat (?ajax=users) */
+  .upick{margin-top:10px}
+  .usel{display:flex;align-items:center;gap:10px;background:#0d1626;border:1px solid #2a3756;border-radius:10px;padding:10px 12px;margin-bottom:8px;min-height:46px}
+  .usel.on{border-color:#ffb020;box-shadow:0 0 0 1px #ffb02055}
+  .usel .nm2{font-weight:700;font-size:14px} .usel .sub{font-size:12px;color:var(--muted)}
+  .usel .clr{margin-left:auto;background:#2a3756;color:#fff;border:0;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+  .ulist{max-height:228px;overflow:auto;border:1px solid #2a3756;border-radius:10px;margin-top:6px;background:#0b1322}
+  .uit{display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;border-bottom:1px solid #18233a;font-size:13px}
+  .uit:last-child{border-bottom:0}
+  .uit:hover{background:#15213a} .uit.sel{background:#2a2410}
+  .uit .acc{color:var(--muted);font-size:12px}
+  .uit .lv{margin-left:auto;font-size:12px;color:#cfe0ff}
+  .dot{width:9px;height:9px;border-radius:50%;background:#56688a;flex:none} .dot.on{background:#3ddc84;box-shadow:0 0 6px #3ddc84}
+  .sx{font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px} .sx.m{background:#16345e;color:#9cc8ff} .sx.f{background:#4a1838;color:#ffb3dc}
+  .warnsex{color:#ff8a8a;font-size:12px;margin-top:6px;line-height:1.5}
   @media(max-width:980px){.gift{grid-template-columns:1fr}}
 </style>
 
@@ -63,7 +78,13 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
       <label style="flex:0 0 auto"><input type="radio" name="to" value="online"> Đang online</label>
       <label style="flex:0 0 auto"><input type="radio" name="to" value="all"> Tất cả</label>
     </div>
-    <input name="user" placeholder="Tài khoản (khi chọn Một tài khoản)" class="mt">
+    <div class="upick" id="upick">
+      <input type="hidden" name="user" id="uval">
+      <div class="usel" id="usel"><span class="sub">Chưa chọn nhân vật. Bấm 1 dòng bên dưới.</span></div>
+      <input id="uq" placeholder="Tìm theo tên nhân vật hoặc tài khoản..." autocomplete="off">
+      <div class="ulist" id="ulist"><div class="uit"><span class="acc">Đang tải danh sách nhân vật...</span></div></div>
+      <div class="warnsex" id="warnsex"></div>
+    </div>
     <input name="title" class="mt" value="Quà từ GunnyNetco4">
     <textarea name="content" rows="2" placeholder="Nội dung thư" class="mt"></textarea>
     <div class="row"><input name="gold" type="number" min="0" placeholder="Vàng"><input name="money" type="number" min="0" placeholder="Xu"></div>
@@ -153,5 +174,42 @@ $CATS = [0=>'Tất cả loại',7=>'Vũ khí',1=>'Mũ',2=>'Kính',3=>'Tóc',4=>'
   document.getElementById('slots').addEventListener('mouseover',function(e){ var c=e.target.closest('.cell.filled'); if(c){ var it=slotData[+c.dataset.i]; if(it) showTip(it,e);} });
   document.getElementById('slots').addEventListener('mousemove',function(e){ if(tip.style.display==='block') moveTip(e); });
   document.getElementById('slots').addEventListener('mouseout',function(){ tip.style.display='none'; });
+
+  // nguoi nhan: chon tu danh sach nhan vat, khong go tay (de nham ten)
+  var users=[], chosen=null, uq=document.getElementById('uq'), ulist=document.getElementById('ulist'), usel=document.getElementById('usel'), uval=document.getElementById('uval');
+  function sxTag(s){ return s===1?'<span class="sx m">Nam</span>':'<span class="sx f">Nữ</span>'; }
+  function renderUsers(){
+    var q=uq.value.trim().toLowerCase();
+    var ds=users.filter(function(u){ return !q || u.nick.toLowerCase().indexOf(q)>=0 || u.acc.toLowerCase().indexOf(q)>=0; });
+    ulist.innerHTML=ds.length?ds.map(function(u){
+      return '<div class="uit'+(chosen&&chosen.id===u.id?' sel':'')+'" data-id="'+u.id+'"><span class="dot'+(u.on?' on':'')+'" title="'+(u.on?'Đang online':'Offline')+'"></span>'
+        +'<b>'+esc(u.nick)+'</b><span class="acc">'+esc(u.acc)+'</span>'+sxTag(u.sex)+'<span class="lv">Cấp '+u.lv+'</span></div>'; }).join('')
+      :'<div class="uit"><span class="acc">Không có nhân vật nào khớp.</span></div>';
+  }
+  function choose(u){
+    chosen=u; uval.value=u?u.acc:'';
+    usel.className='usel'+(u?' on':'');
+    usel.innerHTML=u?('<span class="dot'+(u.on?' on':'')+'"></span><div><div class="nm2">'+esc(u.nick)+' '+sxTag(u.sex)+'</div><div class="sub">Tài khoản '+esc(u.acc)+' · cấp '+u.lv+' · '+(u.on?'đang online':'offline')+'</div></div><button type="button" class="clr">Đổi người</button>')
+      :'<span class="sub">Chưa chọn nhân vật. Bấm 1 dòng bên dưới.</span>';
+    renderUsers(); checkSex();
+  }
+  // mon chi cho 1 gioi tinh ma nguoi nhan khac gioi: vao game khong mac duoc
+  function checkSex(){
+    var w=[], one=document.querySelector('input[name="to"]:checked').value==='one';
+    if(one && chosen) slotData.forEach(function(it,i){ if(it && it.sex && it.sex!==chosen.sex) w.push('Ô '+(i+1)+': '+it.name+' là đồ '+(it.sex===1?'nam':'nữ')); });
+    document.getElementById('warnsex').innerHTML=w.length?(w.map(esc).join('<br>')+'<br>'+esc(chosen.nick)+' là '+(chosen.sex===1?'nam':'nữ')+', nhận về sẽ không mặc được.'):'';
+  }
+  ulist.addEventListener('click',function(e){ var r=e.target.closest('.uit[data-id]'); if(!r) return; choose(users.filter(function(u){ return u.id===+r.dataset.id; })[0]||null); });
+  usel.addEventListener('click',function(e){ if(e.target.classList.contains('clr')){ choose(null); uq.focus(); } });
+  uq.addEventListener('input',renderUsers);
+  document.querySelectorAll('input[name="to"]').forEach(function(r){ r.addEventListener('change',function(){
+    document.getElementById('upick').style.display=document.querySelector('input[name="to"]:checked').value==='one'?'':'none'; checkSex(); }); });
+  document.getElementById('slots').addEventListener('click',function(){ setTimeout(checkSex,0); });
+  res.addEventListener('click',function(){ setTimeout(checkSex,0); });
+  document.getElementById('mailForm').addEventListener('submit',function(e){
+    if(document.querySelector('input[name="to"]:checked').value==='one' && !uval.value){ e.preventDefault(); usel.innerHTML='<span class="sub" style="color:#ff8a8a">Chọn người nhận trước khi gửi.</span>'; uq.focus(); }
+  });
+  fetch('?ajax=users',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(d){ users=(d&&d.users)||[]; renderUsers(); })
+    .catch(function(){ ulist.innerHTML='<div class="uit"><span class="acc">Không tải được danh sách nhân vật.</span></div>'; });
 })();
 </script>
