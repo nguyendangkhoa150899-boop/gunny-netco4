@@ -120,7 +120,10 @@ class VatPham
             16 => 'Bóng chat', 17 => 'Vũ khí phụ', 18 => 'Hộp thẻ', 19 => 'Bùa hộ thân', 20 => 'Kinh nghiệm', 23 => 'Sách tu luyện',
             24 => 'Đạo cụ khác', 25 => 'Hộp quà', 26 => 'Thẻ', 27 => 'Vũ khí đặc biệt', 28 => 'Vòng tay đặc biệt', 29 => 'Nhẫn đặc biệt',
             30 => 'Đồ ăn', 31 => 'Vũ khí phụ đặc biệt', 32 => 'Hạt giống', 33 => 'Phân bón', 34 => 'Thức ăn thú', 35 => 'Trứng thú cưng',
-            50 => 'Vũ khí thú', 51 => 'Mũ thú', 52 => 'Áo thú'][$cat] ?? null;
+            50 => 'Vũ khí thú', 51 => 'Mũ thú', 52 => 'Áo thú',
+            // dat ten theo mon ben trong (client chi co hang so cho 36 VEGETABLE, 40 BADGE, 72 EXPLORER_MANUAL)
+            36 => 'Nông sản', 40 => 'Huy hiệu', 43 => 'Quà khung nhân vật', 60 => 'Chiến hồn', 63 => 'Quà chế tạo',
+            66 => 'Hộp thẻ quái', 72 => 'Sổ thám hiểm', 73 => 'Khung nhân vật', 80 => 'Thuốc ma pháp', 81 => 'Khoáng thạch'][$cat] ?? null;
     }
 
     /** [TemplateID => {Name, CategoryID, Pic, NeedSex, Quality}] */
