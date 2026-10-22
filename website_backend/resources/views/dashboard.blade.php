@@ -340,8 +340,9 @@
   .note{font-size:14px}
   /* gui qua test: cot tim vat pham rong hon, o tim tu xuong dong thay vi bi cat chu */
   .row2.qt{grid-template-columns:minmax(380px,.85fr) minmax(0,1.15fr)}
-  .qtsearch{flex-wrap:wrap;gap:10px} .qtsearch .in{flex:1 1 280px}
-  .qtsearch select{flex:1 1 220px;width:auto;height:48px;font-size:15px}
+  .qtsearch{flex-wrap:wrap;gap:10px} .qtsearch .in{flex:1 1 200px}
+  .qtsearch select{flex:1 1 170px;width:auto;height:48px;font-size:15px}
+  .qtto{display:block;line-height:1.6}   /* chu chay 1 dong, het cho thi xuong dong tu nhien (truoc chia 3 cot o man 1366) */
   .qtsearch .b{height:48px;padding:0 24px}
   .qtgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:14px 10px;max-height:max(560px,calc(100vh - 330px));margin-top:16px}
   .qtc .ic{width:76px;height:76px}
