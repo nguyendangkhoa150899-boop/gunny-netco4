@@ -7,12 +7,14 @@
 -- 23/10 bo sung: Player.SetCurrentWeapon lay dan tu BallConfig theo TemplateID (KHONG lay Property1) -> BallConfig 17017 cung 298 -> 98.
 --   Client khong co hinh dan 298 (bombs/298) nen bam ra hinh nhung khong nem duoc. BallConfigMgr chi nap luc khoi dong: PHAI restart Road
 --   (NoticeServerUpdate type 1 chi nap bang Ball).
--- Hoan tac: UPDATE Db_Tank.dbo.Shop_Goods SET Property1 = 298 WHERE TemplateID = 17017; UPDATE Db_Tank.dbo.BallConfig SET Common = 298, CommonAddWound = 298, CommonMultiBall = 298, Special = 298 WHERE TemplateID = 17017; + legend-thien-su.js voi tham so 298.
+-- Hoan tac: UPDATE Db_Tank.dbo.Shop_Goods SET Property1 = 298, Property7 = 900 WHERE TemplateID = 17017; UPDATE Db_Tank.dbo.BallConfig SET Common = 298, CommonAddWound = 298, CommonMultiBall = 298, Special = 298 WHERE TemplateID = 17017; + legend-thien-su.js voi tham so 298 900.
+-- Client icon o phim R: _setup/va-nut/thien-su (va Flash/2.png).
 USE Db_Tank;
 GO
 SET NOCOUNT ON;
-IF OBJECT_ID('dbo.bak20261023_legend_thien_su') IS NULL SELECT TemplateID, Property1 INTO dbo.bak20261023_legend_thien_su FROM dbo.Shop_Goods WHERE TemplateID = 17017;
-UPDATE dbo.Shop_Goods SET Property1 = 98 WHERE TemplateID = 17017;
+IF OBJECT_ID('dbo.bak20261023_legend_thien_su') IS NULL SELECT TemplateID, Property1, Property7 INTO dbo.bak20261023_legend_thien_su FROM dbo.Shop_Goods WHERE TemplateID = 17017;
+-- 23/10 buff (chu server): hoi = Property7 * 1.1^cuong hoa (SimpleBomb) -> 2394 = 10.000 mau o +15 (+10: 6.210, +5: 3.856, +0: 2.394).
+UPDATE dbo.Shop_Goods SET Property1 = 98, Property7 = 2394 WHERE TemplateID = 17017;
 IF OBJECT_ID('dbo.bak20261023_legend_thien_su_ball') IS NULL SELECT * INTO dbo.bak20261023_legend_thien_su_ball FROM dbo.BallConfig WHERE TemplateID = 17017;
 UPDATE dbo.BallConfig SET Common = 98, CommonAddWound = 98, CommonMultiBall = 98, Special = 98 WHERE TemplateID = 17017;
 SELECT * FROM dbo.BallConfig WHERE TemplateID IN (17000, 17017);
