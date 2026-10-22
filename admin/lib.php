@@ -76,7 +76,8 @@ function item_icon_rel($cat,$pic,$sex){
 }
 function item_icon_file($cat,$pic,$sex){
   $pic=(string)$pic;
-  if($pic==='' || strpos($pic,'..')!==false || !preg_match('#^[A-Za-z0-9_\-/]+$#',$pic)) return null;
+  // co dau cach: anh client "Legend Na Than-8bit" (200270)
+  if($pic==='' || strpos($pic,'..')!==false || !preg_match('#^[A-Za-z0-9_\-/ ]+$#',$pic)) return null;
   $try=[item_icon_rel($cat,$pic,$sex),"image/unfrightprop/$pic/icon.png","image/prop/$pic/icon.png","image/error/$pic/icon.png"];
   if((int)$sex!==2) $try[]=str_replace('/m/','/f/',$try[0]); else $try[]=str_replace('/f/','/m/',$try[0]);
   foreach($try as $r){ $f=RES_DIR.str_replace('/','\\',$r); if(is_file($f)) return $f; }
