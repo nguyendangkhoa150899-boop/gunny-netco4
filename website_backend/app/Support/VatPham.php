@@ -31,7 +31,7 @@ class VatPham
     {
         if (self::$dsClient === null) {
             $mt = (int)@filemtime(self::CLIENT_XML);
-            self::$dsClient = !$mt ? [] : Cache::rememberForever('client_ok_' . $mt . '_' . (int)@filemtime(self::PET_XML), function () {
+            self::$dsClient = !$mt ? [] : Cache::rememberForever('client_ok3_' . $mt . '_' . (int)@filemtime(self::PET_XML), function () {
                 $raw = @file_get_contents(self::CLIENT_XML);
                 $xml = $raw === false ? false : @gzuncompress($raw);
                 if ($xml === false) return [];
@@ -46,7 +46,12 @@ class VatPham
                     $pic = $g('Pic');
                     if ($pic === '' || $pic === 'null' || !preg_match('#^[A-Za-z0-9_\- ]+$#', $pic)) continue;
                     $cat = (int)$g('CategoryID');
-                    if (!$co(self::duongDanClient($cat, $pic, (int)$g('NeedSex')))) continue;
+                    // 22/10 an mon loi: ID am = diem/tien ao (-200 Xu, -100 vang, -1300 Danh vong...) khong phai vat pham;
+                    // do "Mac dinh" = o trong cua game, anh trong suot ~190 byte (1101, 1201, 13101...). Giong admin item_in_client.
+                    $ten = trim(html_entity_decode($g('Name'), ENT_QUOTES, 'UTF-8'));
+                    if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false) continue;
+                    $anh = self::RES_DIR . str_replace('/', '\\', self::duongDanClient($cat, $pic, (int)$g('NeedSex')));
+                    if (!is_file($anh) || filesize($anh) < 400) continue;
                     if ($cat === 35) {
                         $pp = $pet[$g('Property5')] ?? null;
                         if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue;
@@ -100,7 +105,7 @@ class VatPham
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc2_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
+        return Cache::remember('vp_dungduoc3_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
             $out = [];
             foreach ($rows as $x) {
@@ -174,7 +179,8 @@ class VatPham
     public static function file($cat, $pic, $sex): ?string
     {
         $pic = (string)$pic;
-        if ($pic === '' || strpos($pic, '..') !== false || !preg_match('#^[A-Za-z0-9_\-/]+$#', $pic)) return null;
+        // co dau cach: client co anh ten "Legend Na Than-8bit" (200270), truoc day web chan nen hien o "?"
+        if ($pic === '' || strpos($pic, '..') !== false || !preg_match('#^[A-Za-z0-9_\-/ ]+$#', $pic)) return null;
         $first = self::duongDan($cat, $pic, $sex);
         $try = [$first, "image/unfrightprop/$pic/icon.png", "image/prop/$pic/icon.png"];
         $try[] = (int)$sex !== 2 ? str_replace('/m/', '/f/', $first) : str_replace('/f/', '/m/', $first);

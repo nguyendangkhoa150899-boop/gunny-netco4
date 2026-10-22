@@ -120,7 +120,7 @@ function item_in_client($tid){
   if ($ds === null) {
     $mt = @filemtime(CLIENT_XML); $ds = [];
     if ($mt) {
-      $cf = sys_get_temp_dir().'\\gn_client_ok_'.$mt.'_'.(int)@filemtime(PET_XML).'.json';
+      $cf = sys_get_temp_dir().'\\gn_client_ok3_'.$mt.'_'.(int)@filemtime(PET_XML).'.json';
       $c = @file_get_contents($cf); $ds = $c !== false ? json_decode($c, true) : null;
       if (!is_array($ds)) {
         $raw = @file_get_contents(CLIENT_XML); $xml = $raw === false ? false : @gzuncompress($raw); $ds = [];
@@ -134,7 +134,11 @@ function item_in_client($tid){
             $pic = $g('Pic');
             if ($pic === '' || $pic === 'null' || !preg_match('#^[A-Za-z0-9_\- ]+$#', $pic)) continue;
             $cat = (int)$g('CategoryID');
-            if (!$co(item_client_path($cat,$pic,(int)$g('NeedSex')))) continue;
+            // 22/10 an mon loi: ID am = diem/tien ao (-200 Xu, -100 vang...), do "Mac dinh" = o trong, anh trong suot ~190 byte
+            $ten = trim(html_entity_decode($g('Name'), ENT_QUOTES, 'UTF-8'));
+            if ((int)$g('TemplateID') <= 0 || $ten === '' || mb_stripos($ten, 'mặc định') !== false) continue;
+            $anh = RES_DIR.str_replace('/','\\',item_client_path($cat,$pic,(int)$g('NeedSex')));
+            if (!is_file($anh) || filesize($anh) < 400) continue;
             if ($cat === 35) { $pp = $pet[$g('Property5')] ?? null; if ($pp === null || !$co("image/pet/$pp/icon1.png")) continue; }
             $ds[$g('TemplateID')] = 1;
           }
