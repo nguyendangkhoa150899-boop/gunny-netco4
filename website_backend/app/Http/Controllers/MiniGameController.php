@@ -713,7 +713,8 @@ class MiniGameController extends \App\Http\BaseController
         $nv = $this->nhanVat();
         if (!$nv) return $this->error('Tài khoản chưa có nhân vật để nhận quà.');
         $luot = (int)$this->mem()->selectOne("SELECT COUNT(*) n FROM Web_QuaTest WHERE MemberID=? AND ThoiGian>=CAST(GETDATE() AS date)", [$mid])->n;
-        if ($luot >= CauHinh::int('quatest_luot_ngay', 50)) return $this->error('Hôm nay đã gửi đủ ' . $luot . ' lần, mai gửi tiếp.');
+        $gh = CauHinh::int('quatest_luot_ngay', 50);   // 0 = khong gioi han (chu server tat 22/10)
+        if ($gh > 0 && $luot >= $gh) return $this->error('Hôm nay đã gửi đủ ' . $luot . ' lần, mai gửi tiếp.');
         $ds = json_decode((string)$r->input('ds', '[]'), true);
         if (!is_array($ds) || !$ds) return $this->error('Chọn ít nhất 1 món.');
         $ds = array_slice($ds, 0, 5);
@@ -735,7 +736,7 @@ class MiniGameController extends \App\Http\BaseController
         $kq = GameMail::send((int)$nv->UserID, 'Quà test từ GunnyNetco4', $items);
         if ($kq !== '1') return $this->error('Máy chủ game đang bận, chưa gửi được (mã ' . $kq . '). Thử lại sau.');
         $this->mem()->insert("INSERT INTO Web_QuaTest(MemberID,GameUserID,VatPham) VALUES(?,?,?)", [$mid, (int)$nv->UserID, mb_substr(implode('; ', $nk), 0, 1000)]);
-        return $this->success('Đã gửi ' . count($items) . ' món vào hộp thư của ' . $nv->NickName . ' trong game.', ['conLuot' => CauHinh::int('quatest_luot_ngay', 50) - $luot - 1]);
+        return $this->success('Đã gửi ' . count($items) . ' món vào hộp thư của ' . $nv->NickName . ' trong game.', ['conLuot' => $gh > 0 ? $gh - $luot - 1 : null]);
     }
 
     /* ======================= ANH VAT PHAM (cong khai) ======================= */
