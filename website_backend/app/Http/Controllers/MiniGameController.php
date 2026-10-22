@@ -352,7 +352,16 @@ class MiniGameController extends \App\Http\BaseController
 
     /* ======================= LAT THE SAU PHO BAN ======================= */
 
-    /** doc Sys_Users_Log (WinMission) moi -> thang ai cuoi cua pho ban dang bat -> tao luot lat (trong gioi han ngay) */
+    /**
+     * Nguoi di chung 1 tran: log WinMission cung ai, lech nhau toi da bay nhieu giay (do that 22/10: 3-4 mili giay).
+     * 2 phong khac nhau thang cung 1 ai trong cung 5 giay thi bi gop chung ban (hiem, chap nhan).
+     */
+    const NHOM_GIAY = 5;
+
+    /**
+     * doc Sys_Users_Log (WinMission) moi -> thang ai cuoi cua pho ban dang bat -> tao BAN CHUNG cho ca nhom di cung
+     * + luot cho moi nguoi con luot ngay (lat-the-chung.sql). Ai vao web truoc thi tao cho ca nhom.
+     */
     private function quetPhoBan(int $mid, int $gid): void
     {
         if (CauHinh::int('lt_mo', 1) !== 1) return;
@@ -367,20 +376,57 @@ class MiniGameController extends \App\Http\BaseController
             $pb = $this->mem()->selectOne("SELECT p.Khoa, ISNULL(p.SoLanNgay,?) SoLan FROM Web_The_Man m JOIN Web_The_PhoBan p ON p.Khoa=m.Khoa
                 WHERE m.MissionId=? AND p.ManCuoi=m.MissionId AND p.BatTat=1", [$macDinh, (int)$l->Content]);
             if (!$pb) continue;
-            $ngay = substr((string)$l->TimeCreate, 0, 10);
-            $da = (int)$this->mem()->selectOne("SELECT COUNT(*) n FROM Web_The_Luot WHERE GameUserID=? AND Khoa=? AND Ngay=?", [$gid, $pb->Khoa, $ngay])->n;
-            if ($da >= (int)$pb->SoLan) continue;
-            try {
-                $this->mem()->insert("INSERT INTO Web_The_Luot(MemberID,GameUserID,LogID,Khoa,MissionId,Bai,ThoiGian,Ngay) VALUES(?,?,?,?,?,?,?,?)",
-                    [$mid, $gid, (int)$l->ID, $pb->Khoa, (int)$l->Content, '[]', $l->TimeCreate, $ngay]);
-            } catch (\Throwable $e) { continue; /* LogID da co luot */ }
-            // diem hoat dong: moi lan thang boss (moi luot lat) +diem_phoban, tran diem_phoban_tran/ngay
-            $cong = min(CauHinh::int('diem_phoban', 5), CauHinh::int('diem_phoban_tran', 50) - Diem::homNay($mid, 'phoban'));
-            if ($cong > 0) Diem::doi($mid, $cong, 'phoban', 'Thắng ' . $pb->Khoa);
+            if ($this->mem()->selectOne("SELECT 1 x FROM Web_The_Luot WHERE LogID=?", [(int)$l->ID])) continue;   // nguoi di cung da tao
+            try { $this->taoBan($l, $pb); } catch (\Throwable $e) { continue; }
         }
         if ($max > $last) {
             $this->mem()->statement("MERGE Web_The_Quet t USING (SELECT ? g, ? l) s ON t.GameUserID=s.g WHEN MATCHED THEN UPDATE SET LogID=s.l WHEN NOT MATCHED THEN INSERT(GameUserID,LogID) VALUES(s.g,s.l);", [$gid, $max]);
         }
+    }
+
+    /** ban chung cua tran chua log $l (tao neu chua co) + luot cho tung nguoi trong nhom con luot ngay, cong diem hoat dong tung nguoi */
+    private function taoBan($l, $pb): void
+    {
+        $mis = (int)$l->Content;
+        $t = (string)$l->TimeCreate;
+        $nhom = DB::connection('sqlsrv_tank41')->select("SELECT ID, UserID, UserName, NickName, TimeCreate FROM Sys_Users_Log WHERE Type='WinMission' AND Content=?
+            AND TimeCreate BETWEEN DATEADD(second,-?,CAST(? AS datetime2)) AND DATEADD(second,?,CAST(? AS datetime2)) ORDER BY ID",
+            [(string)$mis, self::NHOM_GIAY, $t, self::NHOM_GIAY, $t]);
+        if (!$nhom) return;
+        $nguoi = [];
+        foreach ($nhom as $n) $nguoi[(int)$n->UserID] = ['u' => (int)$n->UserID, 'n' => (string)$n->NickName];
+        $this->mem()->transaction(function () use ($mis, $t, $nhom, $nguoi, $pb) {
+            // HOLDLOCK: 2 nguoi cung nhom mo web cung luc khong tao 2 ban
+            $ban = $this->mem()->selectOne("SELECT ID FROM Web_The_Ban WITH (UPDLOCK, HOLDLOCK) WHERE MissionId=?
+                AND ThoiGian BETWEEN DATEADD(second,-?,CAST(? AS datetime2)) AND DATEADD(second,?,CAST(? AS datetime2))", [$mis, self::NHOM_GIAY, $t, self::NHOM_GIAY, $t]);
+            $banId = $ban ? (int)$ban->ID : (int)$this->mem()->selectOne("SET NOCOUNT ON; INSERT INTO Web_The_Ban(Khoa,MissionId,ThoiGian,Ngay,NguoiChoi) OUTPUT inserted.ID AS id VALUES(?,?,?,?,?)",
+                [$pb->Khoa, $mis, $nhom[0]->TimeCreate, substr((string)$nhom[0]->TimeCreate, 0, 10), json_encode(array_values($nguoi), JSON_UNESCAPED_UNICODE)])->id;
+            foreach ($nhom as $n) {
+                if ($this->mem()->selectOne("SELECT 1 x FROM Web_The_Luot WHERE LogID=?", [(int)$n->ID])) continue;
+                $m = $this->mem()->selectOne("SELECT UserID FROM Mem_Account WHERE Email=?", [(string)$n->UserName]);
+                if (!$m) continue;
+                $ngay = substr((string)$n->TimeCreate, 0, 10);
+                $da = (int)$this->mem()->selectOne("SELECT COUNT(*) n FROM Web_The_Luot WHERE GameUserID=? AND Khoa=? AND Ngay=?", [(int)$n->UserID, $pb->Khoa, $ngay])->n;
+                if ($da >= (int)$pb->SoLan) continue;   // nguoi nay het luot ngay: van hien ten tren ban, khong co luot lat
+                $this->mem()->insert("INSERT INTO Web_The_Luot(MemberID,GameUserID,LogID,Khoa,MissionId,Bai,ThoiGian,Ngay,BanID) VALUES(?,?,?,?,?,?,?,?,?)",
+                    [(int)$m->UserID, (int)$n->UserID, (int)$n->ID, $pb->Khoa, $mis, '[]', $n->TimeCreate, $ngay, $banId]);
+                // diem hoat dong: moi lan thang boss (moi luot lat) +diem_phoban, tran diem_phoban_tran/ngay
+                $cong = min(CauHinh::int('diem_phoban', 5), CauHinh::int('diem_phoban_tran', 50) - Diem::homNay((int)$m->UserID, 'phoban'));
+                if ($cong > 0) Diem::doi((int)$m->UserID, $cong, 'phoban', 'Thắng ' . $pb->Khoa);
+            }
+        });
+    }
+
+    /** luot cu (truoc 22/10) chua co ban chung: tao ban rieng tu chinh luot do (la da lat gan ten nguoi lat) */
+    private function banCuaLuot($v, string $ten): int
+    {
+        if ($v->BanID) return (int)$v->BanID;
+        $bai = json_decode($v->Bai, true) ?: [];
+        foreach ($bai as $i => $b) if ($b) { $bai[$i]['u'] = (int)$v->GameUserID; $bai[$i]['n'] = $ten; }
+        $id = (int)$this->mem()->selectOne("SET NOCOUNT ON; INSERT INTO Web_The_Ban(Khoa,MissionId,ThoiGian,Ngay,Bai,NguoiChoi,Xong) OUTPUT inserted.ID AS id VALUES(?,?,?,?,?,?,?)",
+            [$v->Khoa, (int)$v->MissionId, $v->ThoiGian, $v->Ngay, json_encode($bai, JSON_UNESCAPED_UNICODE), json_encode([['u' => (int)$v->GameUserID, 'n' => $ten]], JSON_UNESCAPED_UNICODE), (int)$v->Xong])->id;
+        $this->mem()->update("UPDATE Web_The_Luot SET BanID=? WHERE ID=?", [$id, (int)$v->ID]);
+        return $id;
     }
 
     /**
@@ -498,22 +544,61 @@ class MiniGameController extends \App\Http\BaseController
         }, $bai);
     }
 
+    /**
+     * Trang thai 1 ban chung cho nguoi xem $gid: 21 o (null = up; co qua thi kem 'ai' toi/khac/lo + 'nguoi' ten nguoi lat),
+     * danh sach nguoi di cung + so la da lat (null = het luot ngay, khong lat duoc ban nay).
+     */
+    private function banOut($ban, int $gid): array
+    {
+        $bai = array_replace(array_fill(0, self::SO_LA, null), json_decode($ban->Bai, true) ?: []);
+        $mt = $this->moTaBai($bai);
+        foreach ($bai as $i => $b) if ($b) {
+            $mt[$i]['ai'] = !isset($b['u']) ? 'lo' : ((int)$b['u'] === $gid ? 'toi' : 'khac');
+            $mt[$i]['nguoi'] = (string)($b['n'] ?? '');
+        }
+        $luot = [];
+        foreach ($this->mem()->select("SELECT GameUserID, DaLat, Xong FROM Web_The_Luot WHERE BanID=?", [(int)$ban->ID]) as $l)
+            $luot[(int)$l->GameUserID] = $l->DaLat === '' ? 0 : count(explode(',', $l->DaLat));
+        $nguoi = array_map(function ($p) use ($luot, $gid) {
+            return ['ten' => $p['n'], 'toi' => (int)$p['u'] === $gid, 'lat' => $luot[(int)$p['u']] ?? null];
+        }, json_decode($ban->NguoiChoi, true) ?: []);
+        return ['phoBan' => $ban->Khoa, 'tg' => substr((string)$ban->ThoiGian, 0, 16), 'bai' => $mt, 'nguoi' => $nguoi, 'banXong' => (bool)$ban->Xong];
+    }
+
+    /**
+     * cac luot cua minh: dang cho lat (Xong=0) + da lat du (mo xem lai, cho nguoi di cung) + ca nhom xong nhung minh chua bam Xong
+     * (hien het bai ke ca la bo lo). Ban cu hon 3 ngay tu an (nguoi di cung bo khong lat thi ban khong bao gio xong).
+     */
     public function latThe()
     {
         $mid = $this->mid();
         $nv = $this->nhanVat();
         if (!$nv) return $this->error('Tài khoản chưa có nhân vật.');
-        $this->quetPhoBan($mid, (int)$nv->UserID);
-        $rows = $this->mem()->select("SELECT TOP 100 ID,Khoa,ThoiGian,DaLat,Bai FROM Web_The_Luot WHERE MemberID=? AND Xong=0 ORDER BY ID", [$mid]);
-        $ds = array_map(function ($x) {
-            $lat = $x->DaLat === '' ? [] : array_map('intval', explode(',', $x->DaLat));
-            $bai = $this->moTaBai(array_replace(array_fill(0, self::SO_LA, null), json_decode($x->Bai, true) ?: []));
-            $mo = [];
-            foreach ($lat as $i) $mo[$i] = $bai[$i];
-            return ['id' => (int)$x->ID, 'phoBan' => $x->Khoa, 'tg' => substr((string)$x->ThoiGian, 0, 16), 'daLat' => $mo];
+        $gid = (int)$nv->UserID;
+        $this->quetPhoBan($mid, $gid);
+        foreach ($this->mem()->select("SELECT * FROM Web_The_Luot WHERE MemberID=? AND Xong=0 AND BanID IS NULL", [$mid]) as $v) $this->banCuaLuot($v, $nv->NickName);
+        $rows = $this->mem()->select("SELECT TOP 100 l.ID, l.DaLat, l.Xong, b.ID BanID, b.Khoa, b.ThoiGian, b.Bai, b.NguoiChoi, b.Xong BXong
+            FROM Web_The_Luot l JOIN Web_The_Ban b ON b.ID=l.BanID
+            WHERE l.MemberID=? AND (l.Xong=0 OR (l.DaXem=0 AND b.ThoiGian>=DATEADD(day,-3,GETDATE()))) ORDER BY l.ID", [$mid]);
+        $ds = array_map(function ($x) use ($gid) {
+            $n = $x->DaLat === '' ? 0 : count(explode(',', $x->DaLat));
+            $ban = (object)['ID' => $x->BanID, 'Khoa' => $x->Khoa, 'ThoiGian' => $x->ThoiGian, 'Bai' => $x->Bai, 'NguoiChoi' => $x->NguoiChoi, 'Xong' => $x->BXong];
+            return ['id' => (int)$x->ID, 'daLat' => $n, 'xong' => (bool)$x->Xong] + $this->banOut($ban, $gid);
         }, $rows);
-        $homNay = $this->mem()->select("SELECT Khoa, COUNT(*) n FROM Web_The_Luot WHERE GameUserID=? AND Ngay=CAST(GETDATE() AS date) GROUP BY Khoa", [(int)$nv->UserID]);
+        $homNay = $this->mem()->select("SELECT Khoa, COUNT(*) n FROM Web_The_Luot WHERE GameUserID=? AND Ngay=CAST(GETDATE() AS date) GROUP BY Khoa", [$gid]);
         return $this->success('ok', ['ds' => $ds, 'homNay' => $homNay, 'soLan' => CauHinh::int('lt_solan', 3), 'mo' => CauHinh::int('lt_mo', 1), 'soLa' => self::SO_LA, 'soLat' => $this->soLat()]);
+    }
+
+    /** 1 ban (trang tu goi vai giay/lan khi dang xem ban con nguoi khac chua lat, de thay ho lat) */
+    public function latTheBan(Request $r)
+    {
+        $nv = $this->nhanVat();
+        if (!$nv) return $this->error('Tài khoản chưa có nhân vật.');
+        $x = $this->mem()->selectOne("SELECT ID, DaLat, Xong, BanID FROM Web_The_Luot WHERE ID=? AND MemberID=? AND BanID IS NOT NULL", [(int)$r->input('id'), $this->mid()]);
+        $ban = $x ? $this->mem()->selectOne("SELECT * FROM Web_The_Ban WHERE ID=?", [(int)$x->BanID]) : null;
+        if (!$ban) return $this->error('Không thấy lượt lật này.');
+        $n = $x->DaLat === '' ? 0 : count(explode(',', $x->DaLat));
+        return $this->success('ok', ['id' => (int)$x->ID, 'daLat' => $n, 'xong' => (bool)$x->Xong] + $this->banOut($ban, (int)$nv->UserID));
     }
 
     public function latTheLat(Request $r)
@@ -523,16 +608,22 @@ class MiniGameController extends \App\Http\BaseController
         $o = (int)$r->input('o');
         if ($o < 0 || $o >= self::SO_LA) return $this->error('Lá bài không hợp lệ.');
         $nv = $this->nhanVat();
+        if (!$nv) return $this->error('Tài khoản chưa có nhân vật.');
+        $gid = (int)$nv->UserID;
         $out = null;
         try {
-        $this->mem()->transaction(function () use ($mid, $id, $o, $nv, &$out) {
+        $this->mem()->transaction(function () use ($mid, $gid, $id, $o, $nv, &$out) {
             $v = $this->mem()->selectOne("SELECT * FROM Web_The_Luot WITH (UPDLOCK,ROWLOCK) WHERE ID=? AND MemberID=? AND Xong=0", [$id, $mid]);
             if (!$v) { $out = 'het'; return; }
+            $banId = $this->banCuaLuot($v, $nv->NickName);
+            // khoa ban chung: 2 nguoi cung nhom bam cung 1 la thi nguoi sau bi bao la da co nguoi lat
+            $ban = $this->mem()->selectOne("SELECT * FROM Web_The_Ban WITH (UPDLOCK,ROWLOCK) WHERE ID=?", [$banId]);
             $lat = $v->DaLat === '' ? [] : array_map('intval', explode(',', $v->DaLat));
-            if (in_array($o, $lat, true) || count($lat) >= $this->soLat()) { $out = 'roi'; return; }
-            $bai = array_replace(array_fill(0, self::SO_LA, null), json_decode($v->Bai, true) ?: []);
+            if (count($lat) >= $this->soLat()) { $out = 'roi'; return; }
+            $bai = array_replace(array_fill(0, self::SO_LA, null), json_decode($ban->Bai, true) ?: []);
+            if ($bai[$o]) { $out = 'trung'; return; }
             $pool = null;
-            $b = $bai[$o] = $this->quay($v, $pool);
+            $b = $this->quay($v, $pool);
             $nguon = 'Lật thẻ ' . $v->Khoa;
             if ($b['x'] > 0) XuWeb::doi($mid, $b['x'], 'latthe', $nguon);
             // vang / xu game (ItemId -100 / -200 cua bang roi do game) gui thang vao thu game; loi thi huy ca lan lat
@@ -542,20 +633,34 @@ class MiniGameController extends \App\Http\BaseController
                 if ($kq !== '1') throw new \RuntimeException('mail ' . $kq);
             }
             if ($b['t'] > 0) $this->vaoRuong($mid, $b['t'], max(1, $b['c']), $b['v'], $b['s'], (bool)$b['b'], $nguon);
+            $bai[$o] = $b + ['u' => $gid, 'n' => (string)$nv->NickName];
             $lat[] = $o;
             $xong = count($lat) >= $this->soLat();
-            // lat du: quay not cac la con lai (cung ty le game) chi de hien cho nguoi choi biet da bo lo gi
-            if ($xong) for ($i = 0; $i < self::SO_LA; $i++) if (!$bai[$i]) $bai[$i] = $this->quay($v, $pool);
-            $this->mem()->update("UPDATE Web_The_Luot SET DaLat=?, Xong=?, Bai=? WHERE ID=?", [implode(',', $lat), $xong ? 1 : 0, json_encode($bai), $id]);
-            $mt = $this->moTaBai($bai);
-            $out = ['o' => $o, 'bai' => $mt[$o], 'conLai' => $this->soLat() - count($lat), 'xong' => $xong, 'tatCa' => $xong ? $mt : null];
+            $this->mem()->update("UPDATE Web_The_Luot SET DaLat=?, Xong=? WHERE ID=?", [implode(',', $lat), $xong ? 1 : 0, $id]);
+            // ca nhom lat du: quay not cac la con lai (cung ty le game) chi de moi nguoi thay da bo lo gi, roi moi nguoi bam Xong de an
+            $banXong = $xong && !$this->mem()->selectOne("SELECT 1 x FROM Web_The_Luot WHERE BanID=? AND Xong=0", [$banId]);
+            if ($banXong) for ($i = 0; $i < self::SO_LA; $i++) if (!$bai[$i]) $bai[$i] = $this->quay($v, $pool);
+            $this->mem()->update("UPDATE Web_The_Ban SET Bai=?, Xong=? WHERE ID=?", [json_encode($bai, JSON_UNESCAPED_UNICODE), $banXong ? 1 : (int)$ban->Xong, $banId]);
+            $ban->Bai = json_encode($bai, JSON_UNESCAPED_UNICODE);
+            $ban->Xong = $banXong ? 1 : (int)$ban->Xong;
+            $kq = $this->banOut($ban, $gid);
+            $out = ['o' => $o, 'la' => $kq['bai'][$o], 'conLai' => $this->soLat() - count($lat), 'daLat' => count($lat), 'xong' => $xong] + $kq;
         });
         } catch (\Throwable $e) {
             return $this->error('Máy chủ game đang bận, lá này chưa lật. Thử lại sau ít phút.');
         }
         if ($out === 'het') return $this->error('Lượt lật này đã xong.');
-        if ($out === 'roi') return $this->error('Lá này đã lật hoặc đã hết lượt lật.');
+        if ($out === 'roi') return $this->error('Bạn đã lật đủ số lá của lượt này.');
+        if ($out === 'trung') return $this->error('Lá này người đi cùng vừa lật rồi, chọn lá khác.');
         return $this->success('ok', $out + ['soDu' => XuWeb::soDu($mid)]);
+    }
+
+    /** ca nhom da lat xong (ban Xong): nguoi xem bam Xong de an ban khoi danh sach cua minh */
+    public function latTheXong(Request $r)
+    {
+        $n = $this->mem()->update("UPDATE l SET DaXem=1 FROM Web_The_Luot l JOIN Web_The_Ban b ON b.ID=l.BanID WHERE l.ID=? AND l.MemberID=? AND b.Xong=1",
+            [(int)$r->input('id'), $this->mid()]);
+        return $n ? $this->success('ok') : $this->error('Bàn này chưa lật xong hết.');
     }
 
     /* ======================= RUONG WEB ======================= */

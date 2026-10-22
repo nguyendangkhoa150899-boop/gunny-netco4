@@ -67,6 +67,9 @@ Route::post('/domin/mo', "App\Http\Controllers\MiniGameController@doMinMo")->mid
 Route::post('/domin/rut', "App\Http\Controllers\MiniGameController@doMinRut")->middleware('auth.bearer');
 Route::post('/latthe', "App\Http\Controllers\MiniGameController@latThe")->middleware('auth.bearer');
 Route::post('/latthe/lat', "App\Http\Controllers\MiniGameController@latTheLat")->middleware('auth.bearer');
+// lat the chung ban (lat-the-chung.sql): xem 1 ban (tu cap nhat khi nguoi di cung lat), bam Xong khi ca nhom da lat het
+Route::post('/latthe/ban', "App\Http\Controllers\MiniGameController@latTheBan")->middleware('auth.bearer');
+Route::post('/latthe/xong', "App\Http\Controllers\MiniGameController@latTheXong")->middleware('auth.bearer');
 Route::post('/ruong', "App\Http\Controllers\MiniGameController@ruong")->middleware('auth.bearer');
 Route::post('/ruong/rut', "App\Http\Controllers\MiniGameController@ruongRut")->middleware('auth.bearer');
 // shop web: xu web + diem hoat dong (_setup/sql/shop-web.sql)

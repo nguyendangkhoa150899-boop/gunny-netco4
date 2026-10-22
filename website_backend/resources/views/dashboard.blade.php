@@ -273,6 +273,17 @@
   .cd .fr .t{position:absolute;left:6%;right:6%;bottom:5%;font-size:10.5px;font-weight:800;color:#fff;line-height:1.15;text-shadow:0 1px 2px #000;max-height:2.4em;overflow:hidden}
   .cd .fr .h{font-size:9.5px;color:#5a3a12;font-weight:700;margin-top:3px}
   .cd.mine .fr{box-shadow:0 0 0 3px #ffe08a,0 0 22px #ffcf5ccc}
+  /* lat chung ban: la nguoi di cung da lat (vien xanh + ten), ten nguoi lat tren dau la */
+  .cd.other{cursor:default} .cd.other .fr{box-shadow:0 0 0 3px #4da3ff,0 0 14px #4da3ff88}
+  .cd .who{position:absolute;left:6%;right:6%;top:4%;font-size:10.5px;font-weight:800;line-height:1.5;border-radius:6px;background:#12233dcc;color:#cfe4ff;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1}
+  .cd .who.toi{background:#3d2c05dd;color:#ffe9a8}
+  .ltp{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px}
+  .ltp span{font-size:12.5px;font-weight:700;color:#d9c49a;background:#2a1d0c;border:1px solid #6b4a1e;border-radius:999px;padding:3px 11px}
+  .ltp span.toi{color:#ffe9a8;border-color:#a8842f}
+  .ltp span.het{color:#8a90a3;border-color:#3a3f4f;background:#1b1e27}
+  .ltgrp{font-size:12px;font-weight:800;letter-spacing:.3px;padding:8px 6px 4px;color:var(--muted)}
+  .ltgrp.cho{color:var(--gold)} .ltgrp.ket{color:#7dffb0} .ltgrp.doi{color:#7db4ff}
   .cd.miss{cursor:default} .cd.miss .fr{filter:grayscale(.55) brightness(.7)}
   .cd.lock{cursor:default}
   .ltNote{margin-top:12px;color:#d9c49a;font-size:13px;text-align:center}
@@ -646,6 +657,7 @@
     window.scrollTo(0,0);
     // dang mo Vi: 10 giay kiem tra thu rut xu 1 lan
     clearInterval(window._viPoll);
+    if(sec!=='latthe') clearInterval(window._ltPoll);   // ban lat chung tu cap nhat chi khi dang mo Lat the
     if(sec==='vi') window._viPoll=setInterval(function(){ if(!document.hidden) loadVi(); },10000);
   }
   document.querySelectorAll('[data-grp]').forEach(function(a){ a.addEventListener('click',function(){ go(NHOM[a.dataset.grp][0]); }); });
@@ -755,19 +767,24 @@
   });
   function refreshBal(){ api('/api/vi').then(function(d){ if(d&&d.success){ VI=d.data; setBal(d.data.soDu); setDiem(d.data.diem); $('qtNav').style.display=d.data.quaTest?'':'none'; } }); }
 
-  // ---------- lat the ----------
+  // ---------- lat the (chung ban nhu trong game: nguoi di cung 1 tran lat chung 21 la) ----------
   var LT={ds:[],cur:null,busy:false};
+  // trang thai 1 luot: cho = con la de lat; ket = ca nhom lat xong, cho bam Xong; doi = minh lat du, cho nguoi di cung
+  function ltTt(x){ return !x.xong?'cho':(x.banXong?'ket':'doi'); }
   function ltLoad(){
     api('/api/latthe').then(function(r){
       if(!r||!r.success){ $('ltList').innerHTML=''; $('ltBoard').innerHTML='<div class="empty">'+esc((r&&r.message)||'Không tải được.')+'</div>'; return; }
       LT.ds=r.data.ds; LT.soLa=r.data.soLa||21; LT.soLat=r.data.soLat||3;
-      var n=LT.ds.length; $('ltN').style.display=n?'':'none'; $('ltN').textContent=n;
-      $('tLt').textContent=n?('Có '+n+' lượt lật đang chờ!'):'Đánh boss là có lượt'; hot('qLt',n);
-      $('ltInfo').innerHTML='Đánh xong <b>boss ải cuối</b> của phó bản trong game là có 1 lượt lật (mỗi phó bản <b>'+r.data.soLan+' lượt/ngày</b>). Mỗi lượt lật <b>'+LT.soLat+' lá</b>, đồ vào <b>Rương web</b>, xu vào ví.'+(r.data.mo?'':' <b style="color:#ff8a8a">Lật thẻ đang tạm tắt.</b>');
-      if(!LT.cur || !LT.ds.some(function(x){ return x.id===LT.cur; })) LT.cur=n?LT.ds[0].id:null;
+      var cho=LT.ds.filter(function(x){ return ltTt(x)!=='doi'; }).length;   // con viec: lat hoac xem ket qua
+      $('ltN').style.display=cho?'':'none'; $('ltN').textContent=cho;
+      $('tLt').textContent=cho?('Có '+cho+' bàn lật thẻ đang chờ!'):'Đánh boss là có lượt'; hot('qLt',cho);
+      $('ltInfo').innerHTML='Đánh xong <b>boss ải cuối</b> của phó bản là có 1 lượt lật (mỗi phó bản <b>'+r.data.soLan+' lượt/ngày</b>). <b>Người đi cùng trận lật chung 1 bàn</b>, mỗi người <b>'+LT.soLat+' lá</b>, lá người khác đã lật thì hiện tên họ. Đồ vào <b>Rương web</b>, xu vào ví.'+(r.data.mo?'':' <b style="color:#ff8a8a">Lật thẻ đang tạm tắt.</b>');
+      if(!LT.cur || !LT.ds.some(function(x){ return x.id===LT.cur; })) LT.cur=ltDau();
       ltRenderList(); ltRenderBoard();
     });
   }
+  // luot nen mo truoc: ban co ket qua, roi ban con la de lat, roi ban dang cho nguoi khac
+  function ltDau(){ var uu={ket:0,cho:1,doi:2}, ds=LT.ds.slice().sort(function(a,b){ return uu[ltTt(a)]-uu[ltTt(b)]||a.id-b.id; }); return ds.length?ds[0].id:null; }
   // tach do kho o cuoi ten pho ban -> nhan mau; sap xep theo ten goc roi do kho
   var DK=[['ác mộng','am','Ác mộng',5],['anh hùng','ah','Anh hùng',4],['ah','ah','Anh hùng',4],['khó','kh','Khó',3],['thường','th','Thường',2],['dễ','de','Dễ',1]];
   function tachDk(ten){
@@ -777,15 +794,21 @@
   }
   function ltRenderList(){
     var q=($('ltFind').value||'').trim().toLowerCase();
-    var ds=LT.ds.map(function(x){ var d=tachDk(x.phoBan); return {x:x,goc:d.goc,dk:d.dk}; })
+    var ds=LT.ds.map(function(x){ var d=tachDk(x.phoBan); return {x:x,goc:d.goc,dk:d.dk,tt:ltTt(x)}; })
       .filter(function(r){ return !q||r.x.phoBan.toLowerCase().indexOf(q)>=0; })
       .sort(function(a,b){ return a.goc.localeCompare(b.goc,'vi')||((a.dk?a.dk[3]:0)-(b.dk?b.dk[3]:0))||(a.x.id-b.x.id); });
-    LT.thuTu=ds.map(function(r){ return r.x.id; });
-    $('ltCnt').textContent=LT.ds.length;
-    $('ltList').innerHTML=ds.length?ds.map(function(r){ var x=r.x, n=Object.keys(x.daLat).length;
-      return '<button data-id="'+x.id+'" class="'+(x.id===LT.cur?'on':'')+'"><span class="nm"><b>'+esc(r.goc)+'</b><span>'+esc(x.tg.slice(11))+' · đã lật '+n+'/'+LT.soLat+'</span></span>'
-        +(r.dk?'<span class="dk '+r.dk[1]+'">'+r.dk[2]+'</span>':'')+'</button>'; }).join('')
-      :'<div class="ltempty2">'+(LT.ds.length?'Không thấy phó bản nào.':'Chưa có lượt nào.')+'</div>';
+    // nut "Luot ke tiep" chi di qua ban con la de lat
+    LT.thuTu=ds.filter(function(r){ return r.tt==='cho'; }).map(function(r){ return r.x.id; });
+    $('ltCnt').textContent=LT.ds.filter(function(x){ return ltTt(x)==='cho'; }).length;
+    var NH=[['cho','Chờ lật'],['ket','Có kết quả, bấm Xong để tắt'],['doi','Đã lật, chờ người đi cùng']], h='';
+    NH.forEach(function(g){
+      var dd=ds.filter(function(r){ return r.tt===g[0]; }); if(!dd.length) return;
+      h+='<div class="ltgrp '+g[0]+'">'+g[1]+' ('+dd.length+')</div>'+dd.map(function(r){ var x=r.x, ban=x.nguoi.length>1?' · '+x.nguoi.length+' người':'';
+        var ph=g[0]==='cho'?'đã lật '+x.daLat+'/'+LT.soLat:(g[0]==='ket'?'xem kết quả':'bấm để xem lại');
+        return '<button data-id="'+x.id+'" class="'+(x.id===LT.cur?'on':'')+'"><span class="nm"><b>'+esc(r.goc)+'</b><span>'+esc(x.tg.slice(11))+ban+' · '+ph+'</span></span>'
+          +(r.dk?'<span class="dk '+r.dk[1]+'">'+r.dk[2]+'</span>':'')+'</button>'; }).join('');
+    });
+    $('ltList').innerHTML=h||'<div class="ltempty2">'+(LT.ds.length?'Không thấy phó bản nào.':'Chưa có lượt nào.')+'</div>';
     $('ltList').querySelectorAll('button').forEach(function(b){ b.onclick=function(){ LT.cur=+b.dataset.id; ltRenderList(); ltRenderBoard(); }; });
     var on=$('ltList').querySelector('button.on'); if(on&&on.scrollIntoView) on.scrollIntoView({block:'nearest'});
   }
@@ -795,38 +818,62 @@
   });
   function faceHtml(c){
     var ic=c.hinh?'<img src="'+esc(c.hinh)+'" alt="" style="border:2px solid '+esc(c.mau)+'">':'<div class="xu"></div>';
-    return '<div class="f fr'+(c.hiem?' vip':'')+'">'+ic+(c.han?'<div class="h">'+esc(c.han)+'</div>':'')+'<div class="t">'+esc(c.ten)+'</div></div>';
+    // ten nguoi lat (nhu trong game): "Bạn" / ten nguoi di cung; la bo lo (ai lo) khong co ten
+    var ai=c.ai==='toi'?'<div class="who toi">Bạn</div>':(c.ai==='khac'?'<div class="who">'+esc(c.nguoi||'')+'</div>':'');
+    return '<div class="f fr'+(c.hiem?' vip':'')+'">'+ai+ic+(c.han?'<div class="h">'+esc(c.han)+'</div>':'')+'<div class="t">'+esc(c.ten)+'</div></div>';
   }
-  function ltRenderBoard(xongData){
-    var b=$('ltBoard'), s=LT.ds.filter(function(x){ return x.id===LT.cur; })[0];
-    if(!s && !xongData){ b.innerHTML='<div class="empty"><b>Chưa có lượt lật</b>Vào game đánh xong boss ải cuối của một phó bản, rồi quay lại đây.</div>'; return; }
-    var sess=xongData||s, lat=sess.daLat||{}, daLat=Object.keys(lat).length, con=LT.soLat-daLat;
-    var h='<div class="board"><div class="bhd"><b>'+esc(sess.phoBan)+'</b><span class="luot">Lượt lật: '+Math.max(0,con)+'</span></div><div class="cards">';
+  function ltCur(){ return LT.ds.filter(function(x){ return x.id===LT.cur; })[0]; }
+  function ltRenderBoard(){
+    var b=$('ltBoard'), s=ltCur();
+    clearInterval(window._ltPoll);
+    if(!s){ b.innerHTML='<div class="empty"><b>Chưa có lượt lật</b>Vào game đánh xong boss ải cuối của một phó bản, rồi quay lại đây.</div>'; return; }
+    var tt=ltTt(s), con=Math.max(0,LT.soLat-s.daLat), choLat=tt==='cho'&&con>0;
+    var h='<div class="board"><div class="bhd"><b>'+esc(s.phoBan)+'</b><span class="luot">'+(tt==='cho'?'Lượt lật: '+con:(tt==='ket'?'Đã lật xong cả bàn':'Bạn đã lật đủ'))+'</span></div>';
+    // nguoi di cung + tien do: lat = null la het luot ngay (khong lat ban nay)
+    h+='<div class="ltp">'+s.nguoi.map(function(p){ return '<span class="'+(p.toi?'toi':'')+(p.lat===null?' het':'')+'">'+esc(p.toi?p.ten+' (bạn)':p.ten)
+      +' · '+(p.lat===null?'hết lượt hôm nay':p.lat+'/'+LT.soLat)+'</span>'; }).join('')+'</div><div class="cards">';
     for(var i=0;i<LT.soLa;i++){
-      var c=lat[i], all=xongData&&xongData.tatCa?xongData.tatCa[i]:null;
-      if(c) h+='<div class="cd up mine" data-o="'+i+'"><div class="in2"><div class="f bk"></div>'+faceHtml(c)+'</div></div>';
-      else if(all) h+='<div class="cd up miss" data-o="'+i+'"><div class="in2"><div class="f bk"></div>'+faceHtml(all)+'</div></div>';
-      else h+='<div class="cd'+(con<=0?' lock':'')+'" data-o="'+i+'"><div class="in2"><div class="f bk"></div><div class="f fr"></div></div></div>';
+      var c=s.bai[i];
+      if(c) h+='<div class="cd up '+(c.ai==='toi'?'mine':(c.ai==='khac'?'other':'miss'))+'" data-o="'+i+'"><div class="in2"><div class="f bk"></div>'+faceHtml(c)+'</div></div>';
+      else h+='<div class="cd'+(choLat?'':' lock')+'" data-o="'+i+'"><div class="in2"><div class="f bk"></div><div class="f fr"></div></div></div>';
     }
-    h+='</div><div class="ltNote">'+(xongData?'Đã lật đủ '+LT.soLat+' lá. Các lá mờ là quà bạn đã bỏ lỡ. <button class="b gold" id="ltDone" style="margin-left:8px;padding:7px 14px">Xong</button>':'Chọn '+con+' lá bất kỳ để lật')+'</div></div>';
+    var doi=s.nguoi.filter(function(p){ return !p.toi && p.lat!==null && p.lat<LT.soLat; }).map(function(p){ return p.ten; });
+    h+='</div><div class="ltNote">'+(tt==='ket'
+        ?'Cả nhóm đã lật xong. Lá mờ là quà không ai lật trúng. <button class="b gold" id="ltDone" style="margin-left:8px;padding:7px 14px">Xong</button>'
+        :tt==='doi'
+          ?'Bạn đã lật đủ '+LT.soLat+' lá. Đang chờ <b>'+esc(doi.join(', ')||'người đi cùng')+'</b> lật, bàn tự cập nhật. Khi cả nhóm xong, bàn hiện lại kết quả cho mọi người.'
+            +(LT.thuTu.length?' <button class="b gray" id="ltNextBan" style="margin-left:8px;padding:7px 14px">Sang lượt khác</button>':'')
+          :'Chọn '+con+' lá bất kỳ để lật'+(s.nguoi.length>1?'. Lá đã có người lật thì không chọn được.':''))+'</div></div>';
     b.innerHTML=h;
-    if(xongData){ $('ltDone').onclick=function(){ var t=LT.thuTu||[], i=t.indexOf(LT.cur); LT.cur=t.length>1?t[(i+1)%t.length]:null; ltLoad(); }; return; }
-    b.querySelectorAll('.cd:not(.up):not(.lock)').forEach(function(el){ el.onclick=function(){ ltFlip(sess,+el.dataset.o,el); }; });
+    if($('ltDone')) $('ltDone').onclick=function(){ api('/api/latthe/xong',{id:s.id}).then(function(){ LT.cur=null; ltLoad(); }); };
+    if($('ltNextBan')) $('ltNextBan').onclick=function(){ LT.cur=LT.thuTu[0]; ltRenderList(); ltRenderBoard(); };
+    if(choLat) b.querySelectorAll('.cd:not(.up):not(.lock)').forEach(function(el){ el.onclick=function(){ ltFlip(s,+el.dataset.o,el); }; });
+    // ban con nguoi di cung chua lat: 4 giay hoi lai 1 lan de thay ho lat (dung khi roi muc Lat the)
+    if(tt!=='ket' && s.nguoi.length>1) window._ltPoll=setInterval(function(){
+      if(document.hidden||LT.busy) return;
+      api('/api/latthe/ban',{id:s.id}).then(function(r){
+        if(!r||!r.success||LT.cur!==s.id||LT.busy) return;
+        var d=r.data, cu=JSON.stringify([s.bai,s.nguoi,s.banXong]);
+        if(cu===JSON.stringify([d.bai,d.nguoi,d.banXong])) return;
+        Object.assign(s,{bai:d.bai,nguoi:d.nguoi,banXong:d.banXong,xong:d.xong,daLat:d.daLat});
+        ltRenderList(); ltRenderBoard();
+        if(d.banXong) toast('Cả nhóm đã lật xong, xem lá bỏ lỡ.');
+      });
+    },4000);
   }
-  function ltFlip(sess,o,el){
+  function ltFlip(s,o,el){
     if(LT.busy) return; LT.busy=true; el.classList.add('lock');
-    api('/api/latthe/lat',{id:sess.id,o:o}).then(function(r){
+    api('/api/latthe/lat',{id:s.id,o:o}).then(function(r){
       LT.busy=false;
       if(!r||!r.success){ toast((r&&r.message)||'Có lỗi xảy ra.',true); ltLoad(); return; }
       var d=r.data; setBal(d.soDu);
-      el.querySelector('.fr').outerHTML=faceHtml(d.bai); el.classList.add('up','mine');
-      sess.daLat[o]=d.bai;
-      document.querySelector('#ltBoard .luot').textContent='Lượt lật: '+d.conLai;
-      toast('Nhận: '+d.bai.ten);
-      if(d.xong){
-        // lat du: lat ngua het bai cho biet da bo lo gi
-        setTimeout(function(){ ltRenderBoard({phoBan:sess.phoBan,daLat:sess.daLat,tatCa:d.tatCa}); rgCount(); },700);
-      }
+      el.querySelector('.fr').outerHTML=faceHtml(d.la); el.classList.add('up','mine');
+      toast('Nhận: '+d.la.ten);
+      Object.assign(s,{bai:d.bai,nguoi:d.nguoi,banXong:d.banXong,xong:d.xong,daLat:d.daLat});
+      var lu=document.querySelector('#ltBoard .luot'); if(lu) lu.textContent='Lượt lật: '+d.conLai;
+      // het la (cua minh hoac ca ban): ve lai sau khi hoat canh lat xong
+      if(d.xong) setTimeout(function(){ ltRenderList(); ltRenderBoard(); rgCount(); },700);
+      else ltRenderList();
     });
   }
 
