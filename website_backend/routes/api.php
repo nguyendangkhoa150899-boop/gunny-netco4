@@ -76,3 +76,6 @@ Route::post('/shop/mua', "App\Http\Controllers\MiniGameController@shopMua")->mid
 Route::post('/quatest/tim', "App\Http\Controllers\MiniGameController@quaTestTim")->middleware('auth.bearer');
 Route::post('/quatest/loai', "App\Http\Controllers\MiniGameController@quaTestLoai")->middleware('auth.bearer');
 Route::post('/quatest/gui', "App\Http\Controllers\MiniGameController@quaTestGui")->middleware('auth.bearer');
+// doi do khac gioi sau The Bien Tinh, chi khi nhan vat offline (DoiDoController, App\Support\DoiGioiTinh)
+Route::post('/doido', "App\Http\Controllers\DoiDoController@xem")->middleware('auth.bearer');
+Route::post('/doido/doi', "App\Http\Controllers\DoiDoController@doi")->middleware('auth.bearer');

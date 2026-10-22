@@ -288,6 +288,20 @@
   .ri .sn{font-size:11.5px;color:var(--muted)}
   .ri .ck{position:absolute;top:6px;right:8px;width:16px;height:16px;border-radius:4px;border:1px solid var(--line)}
   .ri.on .ck{background:var(--gold);border-color:var(--gold)}
+  /* doi do gioi tinh: mon cu -> mon moi */
+  .dgOn{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#3a0f14;border:1px solid #e5484d;color:#ffd6d9;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:14px;line-height:1.5}
+  .dgOn b{color:#fff} .dgOn .b{margin-left:auto}
+  .dgOff{background:#10291b;border:1px solid #2f8f57;color:#bff5d3;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:14px}
+  .dgList{display:flex;flex-direction:column;gap:8px}
+  .dgr{display:grid;grid-template-columns:1fr 28px 1fr;align-items:center;gap:8px;background:#12141a;border:1px solid var(--line);border-radius:12px;padding:10px}
+  .dgr.no{opacity:.6}
+  .dgr .it{display:flex;align-items:center;gap:10px;min-width:0}
+  .dgr .ic{width:44px;height:44px;border-radius:9px;border:2px solid;background:#0d1220;flex:none}
+  .dgr .ic img{width:100%;height:100%;object-fit:contain}
+  .dgr .tn{font-size:13px;font-weight:700;line-height:1.25}
+  .dgr .sn{font-size:11.5px;color:var(--muted)}
+  .dgr .ar{text-align:center;color:var(--gold);font-size:18px;font-weight:900}
+  .dgr .ly{font-size:12.5px;color:#ffb35c}
   /* popup xac nhan (gConfirm theo TLBB) + toast */
   #gmodal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:120;padding:16px}
   #gmodal.hidden{display:none}
@@ -389,6 +403,18 @@
       <button class="b go" id="dd_btn" disabled>ĐIỂM DANH HÔM NAY</button>
       <div class="msg" id="dd_msg"></div>
       <div class="note">Đồ gửi vào <b>hộp thư trong game</b>, xu web cộng thẳng vào ví. Mỗi ngày 1 lần, sang tháng mới đếm lại.</div>
+    </div>
+  </section>
+
+  <!-- ================= DOI DO GIOI TINH (DoiDoController, chi khi offline) ================= -->
+  <section id="sec-doido">
+    <div class="card">
+      <h2>Đổi đồ theo giới tính</h2>
+      <div class="muted" style="margin-bottom:14px">Dùng <b>Thẻ Biến Tính</b> xong, đồ của giới tính cũ tháo ra là không mặc lại được ("Không đồng dạng, không thể trang bị"). Mục này đổi các món đó sang <b>bản đúng giới tính</b>, giữ nguyên cường hóa, khảm và hạn dùng. Chỉ đổi được khi nhân vật <b>đang offline</b>.</div>
+      <div id="dgState"></div>
+      <div class="dgList" id="dgList"><div class="muted">Đang kiểm tra túi đồ...</div></div>
+      <button class="b go" id="dgBtn" disabled>ĐỔI ĐỒ</button>
+      <div class="msg" id="dgMsg"></div>
     </div>
   </section>
 
@@ -546,8 +572,8 @@
 
   // ---------- dieu huong ----------
   // menu trai = nhom, moi nhom gom cac muc (tab con). Hash: #vi, #taixiu, ... (ten muc)
-  var NHOM={hoso:['hoso','vi','diemdanh'],latthe:['latthe'],minigame:['taixiu','domin'],shop:['shopdiem','shopxu'],quatest:['quatest'],ruong:['ruong','ghep']};
-  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',quatest:'Gửi quà test',shopdiem:'Kệ điểm hoạt động',shopxu:'Kệ xu web',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
+  var NHOM={hoso:['hoso','vi','diemdanh','doido'],latthe:['latthe'],minigame:['taixiu','domin'],shop:['shopdiem','shopxu'],quatest:['quatest'],ruong:['ruong','ghep']};
+  var TEN={hoso:'Thông tin',vi:'Ví xu',diemdanh:'Điểm danh',doido:'Đổi đồ giới tính',latthe:'Lật thẻ',taixiu:'Tài xỉu',domin:'Dò mìn',quatest:'Gửi quà test',shopdiem:'Kệ điểm hoạt động',shopxu:'Kệ xu web',ruong:'Rương đồ',ghep:'Ghép đồ<small>sắp có</small>'};
   function nhomCua(sec){ for(var g in NHOM) if(NHOM[g].indexOf(sec)>=0) return g; return 'hoso'; }
   var loaded={};
   function go(sec){
@@ -561,8 +587,8 @@
     sn.innerHTML=NHOM[g].length>1?NHOM[g].map(function(x){ return '<button data-sub="'+x+'" class="'+(x===sec?'on':'')+'">'+TEN[x]+'</button>'; }).join(''):'';
     sn.querySelectorAll('button').forEach(function(b){ b.onclick=function(){ go(b.dataset.sub); }; });
     if(location.hash!=='#'+sec) history.replaceState(null,'','#'+sec);
-    var f={vi:loadVi,diemdanh:ddLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad,shopdiem:shopLoad,shopxu:shopLoad,quatest:qtLoaiLoad}[sec];
-    if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||sec.indexOf('shop')===0||!loaded[sec])){ loaded[sec]=1; f(); }
+    var f={vi:loadVi,diemdanh:ddLoad,doido:dgLoad,latthe:ltLoad,taixiu:txLoad,domin:mLoad,ruong:rgLoad,shopdiem:shopLoad,shopxu:shopLoad,quatest:qtLoaiLoad}[sec];
+    if(f && (sec==='latthe'||sec==='ruong'||sec==='vi'||sec==='doido'||sec.indexOf('shop')===0||!loaded[sec])){ loaded[sec]=1; f(); }
     window.scrollTo(0,0);
     // dang mo Vi: 10 giay kiem tra thu rut xu 1 lan
     clearInterval(window._viPoll);
@@ -1002,6 +1028,45 @@
   // ---------- ruong ----------
   var RG={ds:[],sel:[]};
   function rgCount(){ api('/api/ruong').then(function(r){ if(r&&r.success){ var n=r.data.ds.length; $('rgN').style.display=n?'':'none'; $('rgN').textContent=n; $('tRg').textContent=n?(n+' món chờ rút vào game'):'Rương trống'; hot('qRg',n); } }); }
+  // ---------- doi do gioi tinh (chi khi offline) ----------
+  var DG={ds:[],online:false,ten:''};
+  function dgItem(x,cuong){ return '<div class="it"><div class="ic" style="border-color:'+esc(x.mau)+'"><img src="'+esc(x.hinh)+'" alt=""></div>'
+    +'<div><div class="tn">'+esc(x.ten)+(cuong?' +'+cuong:'')+'</div><div class="sn">ID '+x.id+'</div></div></div>'; }
+  function dgVe(d){
+    DG.ds=d.ds||[]; DG.online=!!d.online; if(d.ten) DG.ten=d.ten;
+    var doiDuoc=DG.ds.filter(function(x){ return x.sang; }).length;
+    $('dgState').innerHTML=DG.online
+      ?'<div class="dgOn"><div><b>'+esc(DG.ten)+' đang online.</b><br>Thoát game hẳn (tắt launcher) rồi bấm Kiểm tra lại. Đồ của người đang online nằm trong máy chủ game, đổi lúc này sẽ bị ghi đè.</div><button class="b gray" id="dgReload">Kiểm tra lại</button></div>'
+      :(DG.ds.length?'<div class="dgOff">'+esc(DG.ten)+' đang offline ('+esc(d.gioiTinh||'')+'), đổi được ngay.</div>':'');
+    $('dgList').innerHTML=DG.ds.length?DG.ds.map(function(x){
+      return '<div class="dgr'+(x.sang?'':' no')+'">'+dgItem(x.tu,x.cuong)+'<div class="ar">→</div>'
+        +(x.sang?dgItem(x.sang,x.cuong):'<div class="ly">'+esc(x.ly)+'</div>')+'</div>'; }).join('')
+      :'<div class="empty"><b>Không có đồ khác giới tính</b>Mọi món trong túi đều mặc được.</div>';
+    $('dgBtn').disabled=DG.online||!doiDuoc;
+    $('dgBtn').textContent=DG.online?'THOÁT GAME ĐỂ ĐỔI':(doiDuoc?'ĐỔI '+doiDuoc+' MÓN':'ĐỔI ĐỒ');
+    var rl=$('dgReload'); if(rl) rl.onclick=dgLoad;
+  }
+  function dgLoad(){
+    $('dgMsg').className='msg';
+    api('/api/doido').then(function(r){
+      if(!r||!r.success){ $('dgList').innerHTML=''; $('dgMsg').className='msg err'; $('dgMsg').textContent=(r&&r.message)||'Không tải được túi đồ.'; return; }
+      dgVe(r.data);
+    });
+  }
+  $('dgBtn').addEventListener('click',function(){
+    var n=DG.ds.filter(function(x){ return x.sang; }).length; if(!n||DG.online) return;
+    gConfirm('Đổi <b>'+n+' món</b> sang bản đúng giới tính của <b>'+esc(DG.ten)+'</b>?<br><span class="muted">Cường hóa, khảm, hạn dùng giữ nguyên. Đừng vào game cho tới khi đổi xong.</span>').then(function(ok){
+      if(!ok) return;
+      $('dgBtn').disabled=true;
+      api('/api/doido/doi').then(function(r){
+        var m=$('dgMsg'); m.className='msg '+(r&&r.success?'ok':'err'); m.textContent=(r&&r.message)||'Lỗi máy chủ, thử lại sau.';
+        if(r&&r.data&&r.data.online){ dgLoad(); return; }
+        if(r&&r.data&&r.data.ds) dgVe({ds:r.data.ds,online:false,gioiTinh:''}); else dgLoad();
+        if(r&&r.success) toast(r.message);
+      });
+    });
+  });
+
   function rgLoad(){
     api('/api/ruong').then(function(r){
       if(!r||!r.success) return;
