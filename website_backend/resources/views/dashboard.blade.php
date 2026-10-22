@@ -314,7 +314,10 @@
   .msg{margin-top:12px}
   /* ===== bo cuc rong (22/10): giu nguyen mau, chi noi rong khung + tang co chu cho do chen nhau.
      Dat TRUOC cac @@media ben duoi de mobile van ghi de duoc. ===== */
-  .wrap{max-width:1560px;padding:22px 28px 60px}
+  .wrap{max-width:1680px;padding:22px 28px 60px}
+  .row2 > .card + .card{margin-top:0}   /* 2 the dat canh nhau: truoc day the phai bi day xuong 14px */
+  .foot{font-size:13px}
+  .shd .muted{max-width:none}
   .top{margin-bottom:20px}
   .layout{grid-template-columns:236px minmax(0,1fr);gap:22px}
   #side{padding:12px;gap:8px}
