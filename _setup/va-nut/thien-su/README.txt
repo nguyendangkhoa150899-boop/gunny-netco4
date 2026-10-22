@@ -9,3 +9,11 @@ Cach lam lai (JPEXS FFDec: "C:\Program Files (x86)\FFDec\ffdec-cli.exe"):
 Kiem: chi tag DoABC game/view/prop/WeaponPropCell doi (3626 -> 3641 byte). md5 truoc ca60180e..., sau 5b9f0e11...
 Hoan tac tren VPS: copy C:\Gunny92\Flash\2.png.bak20261023 de len 2.png.
 Them vu khi phu moi can icon: chen them nhanh "pushshort <ID> / getlocal2 / ifstrictne <nhan sau> / pushshort <case> / jump ofs0177" tuong tu.
+
+Dot 2 (23/10): pet dung ky nang loai dan (BallType 1, vd Dan Liet Bang) 1 lan thi MOI phat ban sau van hien canh pet.
+Loi: GamePlayer.__usePetSkill them vao UsedPetSkill nhung khong bao gio xoa; PrepareShootAction.prepare xet UsedPetSkill.list[0]
+ -> ky nang dau tien phat lai mai (va ky nang dan dung sau mot ky nang loai khac thi khong phat canh).
+Sua: dau PrepareShootAction.doPrepareToShootAction (chay sau canh pet hoac khi khong co canh) them "_player.UsedPetSkill.clear()".
+  node _setup/va-nut/timham.js 2.png game/actions/PrepareShootAction game.actions:PrepareShootAction/private:doPrepareToShootAction   -> body 5
+  ffdec-cli -replace 2.png 2-moi.png game.actions.PrepareShootAction PrepareShootAction-doPrepareToShootAction.pcode 5
+Kiem: chi tag game/actions/PrepareShootAction doi (2789 -> 2806). md5 sau ca 2 dot: 8972f07b...

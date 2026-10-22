@@ -1,0 +1,180 @@
+                     method
+                        name "game.actions:PrepareShootAction/private:doPrepareToShootAction"
+                        returns QName(PackageNamespace(""),"void")
+                        
+                        body
+                           maxstack 3
+                           localcount 2
+                           initscopedepth 5
+                           maxscopedepth 6
+                           
+                           code
+                              debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;game\\actions;PrepareShootAction.as"
+                              debugline 71
+                              getlocal0
+                              pushscope
+                              debug 1, "_loc1_", 0, 74
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"UsedPetSkill")
+                              callpropvoid QName(PackageNamespace(""),"clear"), 0
+                              debugline 73
+                              getlocal0
+                              pushtrue
+                              setproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_hasDonePrepareAction")
+                              debugline 74
+                              findpropstrict QName(PackageNamespace("ddt.manager"),"BallManager")
+                              getproperty QName(PackageNamespace("ddt.manager"),"BallManager")
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"player")
+                              getproperty QName(PackageNamespace(""),"currentBomb")
+                              callproperty QName(PackageNamespace(""),"findBall"), 1
+                              coerce QName(PackageNamespace("ddt.data"),"BallInfo")
+                              setlocal1
+                              debugline 75
+                              getlocal0
+                              getlocal1
+                              getproperty QName(PackageNamespace(""),"ActionType")
+                              pushbyte 0
+                              equals
+                              iffalse ofs003d
+                              findpropstrict QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace(""),"SHOWTHROWS")
+                              coerce QName(PackageNamespace("ddt.command"),"PlayerAction")
+                              jump ofs0045
+                     ofs003d:
+                              findpropstrict QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace(""),"SHOWGUN")
+                              coerce QName(PackageNamespace("ddt.command"),"PlayerAction")
+                     ofs0045:
+                              setproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_actionType")
+                              debugline 76
+                              findpropstrict QName(PackageNamespace("game"),"GameManager")
+                              getproperty QName(PackageNamespace("game"),"GameManager")
+                              getproperty QName(PackageNamespace(""),"Instance")
+                              getproperty QName(PackageNamespace(""),"Current")
+                              getproperty QName(PackageNamespace(""),"roomType")
+                              findpropstrict QName(PackageNamespace("room.model"),"RoomInfo")
+                              getproperty QName(PackageNamespace("room.model"),"RoomInfo")
+                              getproperty QName(PackageNamespace(""),"ACTIVITY_DUNGEON_ROOM")
+                              equals
+                              not
+                              convert_b
+                              dup
+                              convert_b
+                              iftrue ofs006c
+                              pop
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              findpropstrict QName(PackageNamespace("game.objects"),"GameLocalPlayer")
+                              getproperty QName(PackageNamespace("game.objects"),"GameLocalPlayer")
+                              istypelate
+                              convert_b
+                     ofs006c:
+                              iffalse ofs00c2
+                              debugline 78
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"player")
+                              getproperty QName(PackageNamespace(""),"skill")
+                              pushbyte 0
+                              greaterequals
+                              convert_b
+                              dup
+                              convert_b
+                              iftrue ofs008c
+                              pop
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"player")
+                              getproperty QName(PackageNamespace(""),"isSpecialSkill")
+                              convert_b
+                     ofs008c:
+                              dup
+                              convert_b
+                              iffalse ofs009c
+                              pop
+                              findpropstrict QName(PackageNamespace("ddt.manager"),"SharedManager")
+                              getproperty QName(PackageNamespace("ddt.manager"),"SharedManager")
+                              getproperty QName(PackageNamespace(""),"Instance")
+                              getproperty QName(PackageNamespace(""),"showParticle")
+                              convert_b
+                     ofs009c:
+                              dup
+                              convert_b
+                              iffalse ofs00a9
+                              pop
+                              findpropstrict QName(PackageNamespace(""),"hasDoSkillAnimation")
+                              getproperty QName(PackageNamespace(""),"hasDoSkillAnimation")
+                              not
+                              convert_b
+                     ofs00a9:
+                              iffalse ofs00c2
+                              debugline 80
+                              findproperty QName(PackageNamespace(""),"hasDoSkillAnimation")
+                              pushtrue
+                              setproperty QName(PackageNamespace(""),"hasDoSkillAnimation")
+                              debugline 81
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"map")
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              callproperty QName(PackageNamespace(""),"spellKill"), 1
+                              pop
+                     ofs00c2:
+                              debugline 84
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              findpropstrict QName(PackageNamespace("ddt.manager"),"BallManager")
+                              getproperty QName(PackageNamespace("ddt.manager"),"BallManager")
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"player")
+                              getproperty QName(PackageNamespace(""),"currentBomb")
+                              callproperty QName(PackageNamespace(""),"createShootMovieMovie"), 1
+                              setproperty QName(PackageNamespace(""),"weaponMovie")
+                              debugline 85
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"body")
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_actionType")
+                              callproperty QName(PackageNamespace(""),"doAction"), 1
+                              pop
+                              debugline 86
+                              findpropstrict QName(PackageNamespace(""),"Boolean")
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"weaponMovie")
+                              callproperty QName(PackageNamespace(""),"Boolean"), 1
+                              iffalse ofs0119
+                              debugline 88
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"weaponMovie")
+                              pushtrue
+                              setproperty QName(PackageNamespace(""),"visible")
+                              debugline 89
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              pushstring "start"
+                              callproperty QName(PackageNamespace(""),"setWeaponMoiveActionSyc"), 1
+                              pop
+                              debugline 90
+                              getlocal0
+                              getproperty QName(PrivateNamespace("game.actions:PrepareShootAction"),"_player")
+                              getproperty QName(PackageNamespace(""),"body")
+                              findpropstrict QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace("ddt.view.character"),"GameCharacter")
+                              getproperty QName(PackageNamespace(""),"GAME_WING_SHOOT")
+                              setproperty QName(PackageNamespace(""),"WingState")
+                     ofs0119:
+                              debugline 92
+                              returnvoid
+                           end ; code
+                        end ; body
+                     end ; method
