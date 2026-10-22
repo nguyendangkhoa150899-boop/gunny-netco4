@@ -333,7 +333,7 @@ Mỗi dòng dưới đây từng làm mất thời gian ít nhất 1 lần.
 - **Điểm danh trong game bị khóa cứng** trong DLL (`SignAwardHandler` chỉ báo "Tính năng bị khóa!"). Vì vậy làm điểm danh trên web.
 - **Mỗi màn thắng, server tự ghi** `Db_Tank41.Sys_Users_Log` (`Type='WinMission'`, `Content`=Mission_Info.Id) qua `SP_Insert_UsersLog`. Lật thẻ trên web dựa vào bảng này, không cần sửa game.
 - Tên ải mã hóa phó bản: "Gà Dễ S1", "Vòng Xoáy Thời Gian Thường S4", "Đấu trường gà thường ải 4". Bỏ đuôi `S4` / `ải 4` là ra phó bản, ải số lớn nhất là boss.
-- Bảng rơi đồ lật bài (`Drop_Condiction` loại 5 → `Drop_Item`): **113 khai báo nhưng 17 bảng rỗng** (vd Vòng Xoáy Thường/Khó/AH). Luôn kiểm `EXISTS Drop_Item`.
+- Bảng rơi đồ lật bài (`Drop_Condiction` loại 5 → `Drop_Item`): **113 khai báo nhưng 17 bảng rỗng** (vd Vòng Xoáy Thường/Khó/AH) → **lật bài trong game ra lá trắng, không nhận gì**. Đã chép đồ từ bảng cùng phó bản (`_setup/sql/lat-bai-game-bang-rong.sql`, 22/10), cần restart Road. Vẫn luôn kiểm `EXISTS Drop_Item`.
 - Thuật toán rơi đồ của game: ngưỡng = rand[0, Random lớn nhất), giữ món `Random ≥ ngưỡng`, chọn đều 1 món. Món trọng số 10.000 ra khoảng 7,5%, món 6.000 khoảng 0,9% (không phải tỉ lệ thuận trọng số).
 - **Gửi thư kèm xu trong game** (`UserSendMailHandler`): server tự `RemoveMoney` + tạo thư `Type=1` + `SaveIntoDatabase` ngay. Đây là đường rút xu an toàn khi online (nhân vật `NganHang`). Đồ **khóa** không gửi thư được.
 - Lúc thoát game: `State=0` và xu được lưu trong **cùng một lần** `SaveIntoDatabase`.
