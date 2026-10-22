@@ -1,0 +1,252 @@
+                           method
+                              name "game.view.prop:WeaponPropCell/info/set"
+                              flag HAS_PARAM_NAMES
+                              param QName(PackageNamespace("ddt.data"),"PropInfo")
+                              paramname "param1"
+                              returns QName(PackageNamespace(""),"void")
+                              
+                              body
+                                 maxstack 4
+                                 localcount 5
+                                 initscopedepth 10
+                                 maxscopedepth 11
+                                 
+                                 code
+                                    debugfile "C:\\GunnyKyUcNewSource\\GunnyKyUcNewSource\\flashbaseSrc\\src;game\\view\\prop;WeaponPropCell.as"
+                                    debugline 78
+                                    getlocal0
+                                    pushscope
+                                    pushnull
+                                    coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                    setlocal3
+                                    debug 1, "param1", 0, 78
+                                    debug 1, "_loc2_", 1, 80
+                                    debug 1, "_loc3_", 2, 81
+                                    debugline 80
+                                    pushnull
+                                    coerce QName(PackageNamespace("flash.display"),"DisplayObject")
+                                    setlocal2
+                                    debugline 81
+                                    pushnull
+                                    coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                    setlocal3
+                                    debugline 82
+                                    pushnull
+                                    coerce QName(PackageNamespace("flash.display"),"DisplayObject")
+                                    setlocal2
+                                    debugline 83
+                                    pushnull
+                                    coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                    setlocal3
+                                    debugline 84
+                                    findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ShowTipManager")
+                                    getproperty QName(PackageNamespace("com.pickgliss.ui"),"ShowTipManager")
+                                    getproperty QName(PackageNamespace(""),"Instance")
+                                    getlocal0
+                                    callproperty QName(PackageNamespace(""),"removeTip"), 1
+                                    pop
+                                    debugline 85
+                                    findproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getlocal1
+                                    initproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    debugline 86
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    coerce QName(PackageNamespace("flash.display"),"DisplayObject")
+                                    setlocal2
+                                    debugline 87
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    pushnull
+                                    ifeq ofs0137
+                                    debugline 89
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"Template")
+                                    getproperty QName(PackageNamespace(""),"CategoryID")
+                                    findpropstrict QName(PackageNamespace("ddt.data"),"EquipType")
+                                    getproperty QName(PackageNamespace("ddt.data"),"EquipType")
+                                    getproperty QName(PackageNamespace(""),"OFFHAND")
+                                    equals
+                                    not
+                                    convert_b
+                                    dup
+                                    convert_b
+                                    iffalse ofs0084
+                                    pop
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"Template")
+                                    getproperty QName(PackageNamespace(""),"CategoryID")
+                                    findpropstrict QName(PackageNamespace("ddt.data"),"EquipType")
+                                    getproperty QName(PackageNamespace("ddt.data"),"EquipType")
+                                    getproperty QName(PackageNamespace(""),"TEMP_OFFHAND")
+                                    equals
+                                    not
+                                    convert_b
+                           ofs0084:
+                                    iffalse ofs00a8
+                                    debugline 91
+                                    findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                    getproperty QName(PackageNamespace("com.pickgliss.ui"),"ComponentFactory")
+                                    getproperty QName(PackageNamespace(""),"Instance")
+                                    pushstring "game.crazyTank.view.Prop"
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"Template")
+                                    getproperty QName(PackageNamespace(""),"Pic")
+                                    add
+                                    pushstring "Asset"
+                                    add
+                                    callproperty QName(PackageNamespace(""),"creatBitmap"), 1
+                                    coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                    setlocal3
+                                    jump ofs00b8
+                           ofs00a8:
+                                    debugline 95
+                                    findpropstrict QName(PrivateNamespace("game.view.prop:WeaponPropCell"),"creatDeputyWeaponIcon")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"TemplateID")
+                                    callproperty QName(PrivateNamespace("game.view.prop:WeaponPropCell"),"creatDeputyWeaponIcon"), 1
+                                    coerce QName(PackageNamespace("flash.display"),"Bitmap")
+                                    setlocal3
+                           ofs00b8:
+                                    debugline 97
+                                    findpropstrict QName(PackageNamespace(""),"Boolean")
+                                    getlocal3
+                                    callproperty QName(PackageNamespace(""),"Boolean"), 1
+                                    iffalse ofs00fe
+                                    debugline 99
+                                    getlocal3
+                                    pushtrue
+                                    setproperty QName(PackageNamespace(""),"smoothing")
+                                    debugline 100
+                                    getlocal3
+                                    getlocal3
+                                    pushbyte 3
+                                    dup
+                                    setlocal 4
+                                    setproperty QName(PackageNamespace(""),"y")
+                                    getlocal 4
+                                    kill 4
+                                    setproperty QName(PackageNamespace(""),"x")
+                                    debugline 101
+                                    getlocal3
+                                    getlocal3
+                                    pushbyte 32
+                                    dup
+                                    setlocal 4
+                                    setproperty QName(PackageNamespace(""),"height")
+                                    getlocal 4
+                                    kill 4
+                                    setproperty QName(PackageNamespace(""),"width")
+                                    debugline 102
+                                    findpropstrict QName(PackageNamespace(""),"addChildAt")
+                                    getlocal3
+                                    findpropstrict QName(PackageNamespace(""),"getChildIndex")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_fore")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_fore")
+                                    callproperty QName(PackageNamespace(""),"getChildIndex"), 1
+                                    callproperty QName(PackageNamespace(""),"addChildAt"), 2
+                                    pop
+                           ofs00fe:
+                                    debugline 104
+                                    getlocal3
+                                    pushnull
+                                    ifne ofs00feA
+                                    findpropstrict QName(PackageNamespace("bagAndInfo.cell"),"BagCell")
+                                    pushbyte 0
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"Template")
+                                    constructprop QName(PackageNamespace("bagAndInfo.cell"),"BagCell"), 2
+                                    callproperty QName(PackageNamespace(""),"getSmallContent"), 0
+                                    coerce QName(PackageNamespace("flash.display"),"DisplayObject")
+                                    setlocal 4
+                                    findpropstrict QName(PackageNamespace(""),"addChildAt")
+                                    getlocal 4
+                                    findpropstrict QName(PackageNamespace(""),"getChildIndex")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_fore")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_fore")
+                                    callproperty QName(PackageNamespace(""),"getChildIndex"), 1
+                                    callproperty QName(PackageNamespace(""),"addChildAt"), 2
+                                    pop
+                                    findproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    getlocal 4
+                                    initproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    kill 4
+                                    jump ofs00feB
+                           ofs00feA:
+                                    findproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    getlocal3
+                                    initproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                           ofs00feB:
+                                    debugline 105
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_tipInfo")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_tipInfo")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(PackageNamespace(""),"Template")
+                                    setproperty QName(PackageNamespace(""),"info")
+                                    debugline 106
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_tipInfo")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_tipInfo")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_shortcutKey")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_shortcutKey")
+                                    setproperty QName(PackageNamespace(""),"shortcutKey")
+                                    debugline 107
+                                    findpropstrict QName(PackageNamespace("com.pickgliss.ui"),"ShowTipManager")
+                                    getproperty QName(PackageNamespace("com.pickgliss.ui"),"ShowTipManager")
+                                    getproperty QName(PackageNamespace(""),"Instance")
+                                    getlocal0
+                                    callproperty QName(PackageNamespace(""),"addTip"), 1
+                                    pop
+                                    debugline 108
+                                    findproperty QName(PackageNamespace(""),"buttonMode")
+                                    pushtrue
+                                    initproperty QName(PackageNamespace(""),"buttonMode")
+                                    jump ofs013e
+                           ofs0137:
+                                    debugline 112
+                                    findproperty QName(PackageNamespace(""),"buttonMode")
+                                    pushfalse
+                                    initproperty QName(PackageNamespace(""),"buttonMode")
+                           ofs013e:
+                                    debugline 114
+                                    getlocal2
+                                    pushnull
+                                    ifeq ofs0151
+                                    debugline 116
+                                    findpropstrict QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                    getproperty QName(PackageNamespace("com.pickgliss.utils"),"ObjectUtils")
+                                    getlocal2
+                                    callproperty QName(PackageNamespace(""),"disposeObject"), 1
+                                    pop
+                           ofs0151:
+                                    debugline 118
+                                    getlocal0
+                                    getproperty QName(PrivateNamespace("game.view.prop:WeaponPropCell"),"_countField")
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_info")
+                                    pushnull
+                                    equals
+                                    not
+                                    convert_b
+                                    dup
+                                    convert_b
+                                    iftrue ofs016d
+                                    pop
+                                    findpropstrict QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    getproperty QName(ProtectedNamespace("game.view.prop:PropCell"),"_asset")
+                                    pushnull
+                                    equals
+                                    not
+                                    convert_b
+                           ofs016d:
+                                    setproperty QName(PackageNamespace(""),"visible")
+                                    debugline 119
+                                    returnvoid
+                                 end ; code
+                              end ; body
+                           end ; method
