@@ -105,15 +105,34 @@ class VatPham
     public static function tatCaDungDuoc(): array
     {
         $mt = (int)@filemtime(self::CLIENT_XML);
-        return Cache::remember('vp_dungduoc3_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
+        return Cache::remember('vp_dungduoc4_' . $mt . '_' . (int)@filemtime(self::PET_XML), 21600, function () {
             $rows = DB::connection('sqlsrv_tank41')->select("SELECT TemplateID,Name,CategoryID,Pic,NeedSex,Quality,NeedLevel,Attack,Defence,Agility,Luck,CanStrengthen,CAST(Description AS nvarchar(200)) Description FROM Db_Tank.dbo.Shop_Goods ORDER BY TemplateID");
+            $bac = self::banBac();
             $out = [];
             foreach ($rows as $x) {
-                if (!self::dungDuoc($x)) continue;
+                if (!self::dungDuoc($x) || isset($bac[(int)$x->TemplateID])) continue;
                 $out[] = [(int)$x->TemplateID, (string)$x->Name, (int)$x->CategoryID, (int)$x->NeedSex, (int)$x->Quality, (int)$x->NeedLevel,
                     (int)$x->Attack, (int)$x->Defence, (int)$x->Agility, (int)$x->Luck, (bool)$x->CanStrengthen, mb_substr((string)$x->Description, 0, 120)];
             }
             return $out;
+        });
+    }
+
+    /**
+     * [TemplateID => 1] cac ban BAC cua vu khi: cuong hoa toi moc thi game tu doi sang ma moi + hinh moi
+     * (Item_Strengthen_Goods.GainEquip: +10/+11 bac 1, +12 bac 2, +15 bac 3) va ban dat vang (GoldEquipTemplateLoad.NewTemplateId).
+     * Gui qua test chi cho chon BAN GOC (chu server chot 22/10): moi mon vao game la +0 (GameMail::send) nen gui ban bac
+     * se thanh "hinh +12 ma ghi +0"; tiem ren dang 100% nen nguoi choi tu cuong hoa len bac. Ban dac biet khong cay ra duoc
+     * (Hoang kim vu, Chien than...) khong nam trong 2 bang nay nen van hien. Admin > Gui qua van thay du.
+     */
+    public static function banBac(): array
+    {
+        return Cache::remember('vp_banbac', 21600, function () {
+            $t = DB::connection('sqlsrv_tank41');
+            $ds = [];
+            foreach ($t->select("SELECT DISTINCT GainEquip i FROM Db_Tank.dbo.Item_Strengthen_Goods WHERE GainEquip <> OrginEquip") as $r) $ds[(int)$r->i] = 1;
+            foreach ($t->select("SELECT DISTINCT NewTemplateId i FROM Db_Tank.dbo.GoldEquipTemplateLoad WHERE NewTemplateId <> OldTemplateId AND NewTemplateId > 0") as $r) $ds[(int)$r->i] = 1;
+            return $ds;
         });
     }
 
