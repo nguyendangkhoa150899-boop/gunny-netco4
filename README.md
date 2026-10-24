@@ -1,7 +1,9 @@
 # GunnyNetco4: server Gunny (DDTank) test
 
 Server Gunny riêng để chơi thử với bạn bè. **Claude phiên sau: đọc hết file này + `CLAUDE.md` trước khi làm gì.**
-Mật khẩu, key SSH, cách kết nối VPS **không nằm trong repo**: chủ server giữ ở thư mục `GunnyNetco4-BAO-MAT` (Desktop), hỏi chủ server nếu cần.
+Mật khẩu, key SSH, cách kết nối VPS **không nằm trong repo**: chủ server giữ ở `D:\dự án gunny + tlbb\Gunny\3-bao-mat` (bộ lưu đầy đủ 24/10, xem `Gunny\README.md` ở đó), hỏi chủ server nếu cần.
+
+**Kiến thức dịch ngược / bản đồ hệ thống (code ↔ DB ↔ công thức ↔ cách vá client): `docs/NGHIEN-CUU.md`.**
 
 | | |
 |---|---|
@@ -10,7 +12,7 @@ Mật khẩu, key SSH, cách kết nối VPS **không nằm trong repo**: chủ 
 | VPS | Windows Server, `171.244.39.225`, thư mục chạy `C:\Gunny92` |
 | Repo | https://github.com/nguyendangkhoa150899-boop/gunny-netco4 (riêng tư) |
 
-**Mở lại server trên máy mới (gói bản trắng): `docs/MO-LAI-SERVER.md`** · tạo gói: `_setup/dong-goi.ps1`.
+**Mở lại server trên máy mới: `docs/MO-LAI-SERVER.md`** · tạo gói bản trắng: `_setup/dong-goi.ps1`, gói đầy đủ (y chang đang chơi): `_setup/dong-goi-day-du.ps1` (mục 34).
 
 **Đọc nhanh:** bẫy và kinh nghiệm ở **mục 21**, cấu hình web **mục 22**, dựng lại web **mục 23**, việc cần làm khi mở thật **mục 24**. Web người chơi: điểm danh (13), dashboard (14), mini game (15), rút xu (16), shop (18), gửi quà test (19), lật thẻ (20).
 
