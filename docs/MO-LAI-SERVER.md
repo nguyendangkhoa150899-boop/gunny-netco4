@@ -3,6 +3,8 @@
 **Claude đọc file này trước, sau đó đọc `README.md` và `CLAUDE.md` của repo** (https://github.com/nguyendangkhoa150899-boop/gunny-netco4).
 Làm đúng thứ tự dưới đây là có server giống hệt server cũ: cùng code, cấu hình, bản vá, dữ liệu game. Khác ở 2 điểm: **không có người chơi**, và **phải tạo bí mật mới**.
 
+> Muốn dựng **y chang lúc đang chơi** (có người chơi + bí mật cũ): dùng gói đầy đủ  (). Các bước giống file này, trừ: bỏ mục 4 và , đặt mật khẩu sa SQL mới = sa cũ (hoặc thay ở config + ). Hướng dẫn chi tiết + bí mật nằm ở bộ lưu của chủ server (), README mục 34.
+
 ## 0. Gói bản trắng là gì
 
 File `GunnyNetco4-ban-trang-<ngày>.zip` tạo bằng `_setup/dong-goi.ps1`. Nhật ký lúc tạo ở `C:\GoiGunny\dong-goi.log` trên máy cũ.
